@@ -1,0 +1,40 @@
+To:
+The Editors-in-Chief
+Computer Methods in Applied Mechanics and Engineering (CMAME)
+Elsevier Science
+
+Date: September 25, 2026
+Subject: Submission of Original Research Article
+
+Dear Editors-in-Chief,
+
+We are pleased to submit our original research manuscript entitled:
+
+"Stateful Selective Maintenance of Two-Level Schwarz Preconditioners for Evolving Sparse Linear Systems"
+
+for consideration for publication as a regular research article in Computer Methods in Applied Mechanics and Engineering (CMAME).
+
+Context and Motivation:
+In transient continuum mechanics, thermal transport, and multiphysics simulations, numerical time integration generates sequences of large, sparse symmetric positive definite linear algebraic systems A_t x_t = b_t. In problems characterized by moving phase-change fronts, localized thermal softening, non-Newtonian boundary layer evolution, or progressive damage, the physical differential operator evolves intensely across a localized sub-region while the vast background remains quasi-static. Traditional parallel domain decomposition methods face an expensive operational dilemma: recomputing all subdomain sparse direct factorizations at every time step prevents Krylov iteration inflation but incurs heavy setup overhead (often 25%--45% of total execution time in three dimensions); conversely, freezing the initial preconditioner statically costs zero setup but triggers severe spectral mismatch and solver divergence.
+
+Core Scientific Contributions:
+In this work, we introduce a stateful selective maintenance framework for Two-Level Overlapping Restricted Additive Schwarz (RAS) preconditioners accelerated by sparse direct subdomain solvers (PETSc/MUMPS) and adaptive coarse Galerkin projections. The key contributions include:
+1. Persistent Stateful Architecture: Rather than rebuilding from scratch or freezing statically, the preconditioner is maintained as a persistent stateful object where symbolic structures are cached and numerical refactorizations are targeted dynamically.
+2. Inexpensive Online Monitoring: An O(n_i) diagonal operator-drift proxy senses local perturbations with negligible computational overhead (< 0.28% of saved setup time), showing strong empirical agreement in subdomain ranking (Pearson r = 1.0000, Spearman rho in [0.79, 0.98] on tested benchmarks).
+3. Mass-alpha Cumulative-Drift Policy: Disturbed subdomains are selected via a cumulative staleness metric with aging penalty, balancing local high-frequency correction while the coarse space maintains global error control.
+4. Subdomain Granularity Resolution Effect: A systematic study across N_sub in {8, 27, 64} quantifies how spatial decomposition resolution enables sharper front isolation, reducing the refactored ratio to 31.8% and eliminating Krylov iteration penalty (47.0 vs. 47.0 iterations).
+5. Certified 3-D Flagship Speedup: On a flagship 3-D benchmark with 110,592 degrees of freedom (48^3), a 63.9% reduction in preconditioner setup translates into up to a 21.8% reduction in end-to-end simulation runtime (1.24x ~ 1.28x net speedup), certified under an independent algebraic residual bound of RelRes <= 3.89e-10 << 1.0e-8.
+
+Delineation from Contemporary Literature:
+We clearly delineate our work from contemporary Krylov subspace recycling (e.g., Hanek, Papez & Sistek, CMAME 452 (2026), 118788). While Krylov recycling deflates an invariant operator A x_t = b_t, our framework actively repairs the preconditioner to track a time-evolving operator A_t x_t = b_t (A_t != A_{t-1}).
+
+Reproducibility Statement:
+In accordance with CMAME's open science and reproducibility standards, the complete source code, benchmark drivers, and verification suites are made publicly available under the MIT license at https://github.com/Deepsleepinger/JSR under the official release tag v1.2-cmame-final.
+
+We confirm that this manuscript represents original work, has not been published previously, and is not currently under consideration for publication elsewhere. All authors have approved the submission.
+
+Sincerely,
+
+JSR Research Group
+Computational Mathematics and High-Performance Engineering Laboratory
+Email: jsr-research@domain.org

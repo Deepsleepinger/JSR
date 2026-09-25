@@ -304,7 +304,7 @@ Mesh $N$ & DOFs & $T_{\text{monitor}}$ (ms) & $T_{\text{saved}}$ (ms) & $\eta_{\
 \end{table}
 
 **Observations**:
-- For the tested structured-grid diffusion benchmark, the diagonal drift proxy achieves exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) with the full local Frobenius drift, faithfully preserving the ordering of most-disturbed subdomains at negligible computational cost.
+- For the tested structured-grid diffusion benchmark, the diagonal drift proxy achieves exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) with the full local Frobenius drift, showing strong empirical agreement in subdomain ranking at negligible computational cost.
 - Monitoring overhead fraction $\eta_{\text{mon}} = T_{\text{monitor}} / T_{\text{saved}}$ remains strictly below **0.28%** across all mesh resolutions ($\le 0.222\text{ ms}$ vs. savings exceeding $110\text{ ms}$).
 
 ### 4.4 Robustness of the Cumulative-Drift Truncation Policy (\texttt{mass\_alpha})
@@ -433,8 +433,9 @@ A qualitative interpretation is that localized coefficient perturbations primari
 
 ### 5.2 The Negative Fact: When JSR is Not the Fastest
 Scientific objectivity requires documenting where selective maintenance does not provide an advantage:
-- When operator perturbations are completely global ($\rho = 1.00$), the adaptive selector identifies that all subdomains require maintenance, converging to Full Rebuild with approximately neutral performance ($0.98\times \sim 1.02\times$).
-- Under modest perturbation on relatively small meshes where setup does not dominate total runtime (e.g., $N=28$ in Pillar 2), blind reuse can exhibit slightly lower wall-clock time ($0.9225\text{s}$) than adaptive maintenance ($0.9594\text{s}$), because the small setup savings are offset by run-to-run timing noise.
+- **Coarse Decomposition Resolution ($N_{\text{sub}} = 8$)**: When the subdomain partition is coarse relative to the spatial support of the localized perturbation front, the moving front intersects virtually every subdomain ($|S_t| / N_{\text{sub}} = 91.7\%$), yielding only a modest $7.9\%$ setup reduction and an end-to-end speedup of $S = 0.99\times$. Conversely, refining the partition to $N_{\text{sub}} = 64$ isolates the front into $|S_t| / N_{\text{sub}} = 31.8\%$ of subdomains with zero Krylov iteration penalty ($K_{\text{Full}} = K_{\text{JSR}} = 47.0$) and a net speedup of $S = 1.06\times$. **This confirms that selective maintenance is not "always faster"; its effectiveness fundamentally depends on whether the decomposition resolution is sufficiently fine to resolve and isolate the localized physical front.**
+- **Global Operator Perturbations ($\rho = 1.00$)**: When operator perturbations encompass the entire computational domain, the adaptive selector identifies that all subdomains require maintenance, converging to Full Rebuild with approximately neutral performance ($0.98\times \sim 1.02\times$).
+- **Small Meshes without Setup Dominance**: Under modest perturbation on relatively small meshes where setup does not dominate total runtime (e.g., $N=28$ in the trade-off study), blind reuse can exhibit slightly lower wall-clock time ($0.9225\text{s}$) than adaptive maintenance ($0.9594\text{s}$), because the small setup savings are offset by run-to-run timing noise.
 - Therefore, the goal of stateful selective maintenance is not to guarantee faster execution than static reuse at every single step, but rather to **convert the catastrophic risk of stale-preconditioner divergence into a controlled, modest maintenance cost** that yields robust, certified net speedup in setup-dominated regimes.
 
 ### 5.3 Limitations and Practical Considerations

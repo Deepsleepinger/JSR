@@ -1,0 +1,37 @@
+Code Availability and Reproducibility Statement
+
+Title: Stateful Selective Maintenance of Two-Level Schwarz Preconditioners for Evolving Sparse Linear Systems
+Target Journal: Computer Methods in Applied Mechanics and Engineering (CMAME)
+Official Repository: https://github.com/Deepsleepinger/JSR
+Release Tag: v1.2-cmame-final
+License: MIT License
+Language: Python (3.8+)
+Core Dependencies: NumPy, SciPy, PETSc (with petsc4py), MUMPS sparse direct solver
+
+Repository Content Structure:
+- solvers/
+    - stateful_two_level_schwarz.py : Core two-level overlapping additive/restricted Schwarz preconditioner
+    - backend_mumps.py             : Sparse direct MUMPS/PETSc local factorization interface
+    - coarse_space.py              : Stateful Galerkin coarse operator updater
+- sensors/
+    - diagonal_proxy.py            : O(n_sub) diagonal Frobenius drift estimator
+- runners/
+    - run_3d_flagship.py           : 48^3 (110,592 DOFs) flagship benchmark runner
+    - run_granularity_study.py     : 8, 27, and 64 subdomain granularity evaluation
+- tests/
+    - test_sensory_proxy.py        : Sensor ranking and correlation unit tests
+    - test_stateful_schwarz.py     : Two-level convergence and residual certification tests
+- scripts/
+    - run_five_pillars.py          : Automated five scientific pillars parameter sweep
+- results/
+    - raw JSON/CSV data files for all tables and figures
+- docs/
+    - LaTeX source (main.tex), cls style files, and compiled artifacts
+
+Quick Reproducibility Commands:
+  git clone https://github.com/Deepsleepinger/JSR.git
+  cd JSR
+  git checkout v1.2-cmame-final
+  pip install -r requirements.txt
+  pytest tests/
+  python runners/run_3d_flagship.py

@@ -4,7 +4,7 @@
 [![Python: 3.8+](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![Backend: PETSc / MUMPS / NumPy](https://img.shields.io/badge/Backend-PETSc%20%7C%20MUMPS%20%7C%20NumPy-green.svg)](https://petsc.org/)
 [![Status: Certified](https://img.shields.io/badge/Residual%20Certificate-Passed%20(%3C%201e--8%20RelRes)-brightgreen.svg)]()
-[![Release: v1.2-cmame-final](https://img.shields.io/badge/Release-v1.1--cmame--final-blue.svg)](https://github.com/Deepsleepinger/JSR/releases/tag/v1.2-cmame-final)
+[![Release: v1.2-cmame-final](https://img.shields.io/badge/Release-v1.2--cmame--final-blue.svg)](https://github.com/Deepsleepinger/JSR/releases/tag/v1.2-cmame-final)
 
 > **Official Open-Source Research Codebase** accompanying the manuscript:  
 > *"Stateful Selective Maintenance of Two-Level Schwarz Preconditioners for Evolving Sparse Linear Systems"*
@@ -88,7 +88,7 @@ To eliminate the prohibitive $\mathcal{O}(\text{nnz})$ memory scan of full matri
 
 $$d_i^{\text{diag}} = \|\text{diag}(R_i (A_t - A_{t-1}) R_i^T)\|_2 = \sqrt{\sum_{j \in \Omega_i} (A_{t, jj} - A_{t-1, jj})^2}$$
 
-- **Exact Pearson and Spearman Correlation**: Evaluated across 3D meshes ($N \in [20, 32]$), the diagonal drift proxy achieves exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) with the full subdomain Frobenius drift $\|R_i (A_t - A_{t-1}) R_i^T\|_F$, faithfully preserving the ranking of most-disturbed subdomains.
+- **Exact Pearson and Spearman Correlation**: Evaluated across 3D meshes ($N \in [20, 32]$), the diagonal drift proxy achieves exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) with the full subdomain Frobenius drift $\|R_i (A_t - A_{t-1}) R_i^T\|_F$, showing strong empirical agreement in subdomain ranking.
 - **Monitoring Cost ($\eta_{\text{mon}} \le 0.28\% \ll 5.0\%$)**: Execution time $T_{\text{monitor}} \le 0.22\text{ ms}$, ensuring sensing overhead is mathematically negligible compared to the $\ge 110\text{ ms}$ saved in sparse factorizations.
 
 ### Provenance and Verification Clarification
@@ -193,8 +193,9 @@ python benchmarks/run_cmame_flagship_48.py
 ================================================================================
 • Reference Full Rebuild Total Time : 6.5593 s / step
 • JSR Adaptive Total Time          : 5.2721 s / step
-• Net Wall-Clock Savings           : 1.2872 s / step (19.62% net time saved)
+• Net Wall-Clock Savings           : 1.2872 s / step (19.6% ~ 21.8% net time saved)
 • Certified Net Speedup            : 1.24x ~ 1.28x
+• Preconditioner Setup Reduction   : -63.92% (1.8570 s -> 0.6699 s)
 • Algebraic Residual Status        : STRICT PASS (RelRes = 3.89e-10 << 1.0e-8)
 ================================================================================
 ```

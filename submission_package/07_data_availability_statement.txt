@@ -1,0 +1,9 @@
+Data Availability Statement
+
+The data that support the findings of this study are openly available in the GitHub repository at https://github.com/Deepsleepinger/JSR (Release tag: v1.2-cmame-final).
+
+All raw experimental logs, profiling timestamps, PCG iteration histories, and metric data files generated during the study—including:
+1. Five scientific pillars parameter sweeps (operating regime phase diagram, maintenance trade-off curve, proxy fidelity correlation, Galerkin coarse-space update study, and 3D direct solver complexity scaling);
+2. Subdomain decomposition-granularity experiments (N_sub in {8, 27, 64});
+3. Flagship 48^3 (110,592 DOFs) end-to-end benchmark logs;
+are archived as structured JSON and CSV files in the repository under the MIT License and can be inspected or reproduced directly using the provided driver scripts.

@@ -27,11 +27,9 @@
             country={Country}}
 
 \begin{abstract}
-Sequences of large, sparse, symmetric positive definite (SPD) linear systems $A_t x_t = b_t$ arise ubiquitously in transient continuum mechanics, thermal transport, and multiphysics simulations. In many engineering problems---such as moving phase-change interfaces, localized thermal softening, non-Newtonian boundary layer evolution, and progressive mechanical damage---the physical evolution of the continuum is spatially localized: during each time step, significant variation of the discrete differential operator is confined to a small spatial sub-region, while the ambient background remains quasi-static. Traditional parallel domain decomposition preconditioners, such as Two-Level Overlapping Additive Schwarz (AS) or Restricted Additive Schwarz (RAS) accelerated by sparse direct subdomain solvers (e.g., MUMPS), encounter an expensive operational trade-off: recomputing all subdomain factorizations at every time step prevents Krylov iteration inflation but incurs heavy setup overhead (often 25\%--45\% of total execution time in three dimensions); conversely, freezing the initial preconditioner incurs zero setup cost but triggers severe spectral mismatch, resulting in Krylov iteration explosion or solver divergence.
+Transient engineering simulations---such as moving phase-change interfaces, thermal softening localization, non-Newtonian flow fronts, and dynamic crack damage---generate sequences of evolving sparse linear systems $A_t x_t = b_t$ ($A_t \neq A_{t-1}$). In these problems, localized operator changes imply localized preconditioner staleness: while the physical differential operator evolves intensely within a moving sub-region, the ambient background remains quasi-static. Traditional domain decomposition methods either rebuild the entire preconditioner at heavy setup cost or freeze it statically, incurring spectral mismatch and risking Krylov iteration explosion.
 
-In this work, we propose a stateful selective maintenance framework for two-level overlapping Schwarz preconditioners. Rather than treating the preconditioner as a static snapshot or rebuilding it from scratch at each step, we maintain it as a persistent, stateful computational object. At each time step, an inexpensive diagonal operator-drift proxy $d_i^{\text{diag}}$ senses local operator perturbations across subdomains with negligible computational cost ($\le 0.28\%$ of the saved setup time). A cumulative risk metric with age-based memory triggers selective refactorization of only the physically disturbed subdomains, while an updated Galerkin coarse space ($A_0 = Z^T A_t Z$) preserves global error propagation control.
-
-We systematically evaluate the method on a 3-D unsteady variable-coefficient diffusion-reaction benchmark discretized via a structured-grid second-order central finite difference scheme on Cartesian meshes up to $110,592$ degrees of freedom ($48 \times 48 \times 48$). The results demonstrate that selective maintenance achieves substantial setup time reductions while maintaining near-identical Krylov iteration counts compared to full rebuilds (e.g., 50.7 vs. 51.0 iterations on the $48^3$ mesh). For the $48^3$ flagship production benchmark, a 63.9\% reduction in preconditioner setup translates into a 19.6\%--21.8\% reduction in end-to-end wall-clock time ($1.24\times \sim 1.28\times$ speedup), demonstrating that setup savings remain clearly visible after all solve and monitoring costs are accounted for, while strictly satisfying an independent unpreconditioned algebraic residual tolerance of $\|b_t - A_t x_t\|_2 / \|b_t\|_2 \le 3.89 \times 10^{-10} \ll 1.0 \times 10^{-8}$. A companion study on the effect of subdomain granularity across $N_{\text{sub}} \in \{8, 27, 64\}$ demonstrates that refining the decomposition sharpens the spatial resolution of selective maintenance, reducing the refactored ratio to $31.8\%$ while matching Full Rebuild iteration counts exactly. Furthermore, empirical scaling analysis confirms that subdomain factorization costs follow a superlinear power law with exponent $p \approx 1.43$, establishing that the performance advantages of selective preconditioner maintenance expand systematically with increasing problem resolution.
+In this work, we propose a stateful selective maintenance framework for two-level overlapping Schwarz preconditioners. Rather than rebuilding from scratch at each time step, the preconditioner is maintained as a persistent stateful object: an inexpensive $\mathcal{O}(n_i)$ diagonal operator-drift proxy monitors local perturbations, selectively refactorizing only affected local factors via a mass-$\alpha$ cumulative-drift policy while updating the Galerkin coarse component at every step. On a flagship 3-D benchmark with $110,592$ degrees of freedom ($48 \times 48 \times 48$), a 63.9\% reduction in preconditioner setup translates into up to a 21.8\% reduction in end-to-end simulation runtime ($1.24\times \sim 1.28\times$ net speedup), while strictly satisfying an independent unpreconditioned algebraic residual tolerance of $\|b_t - A_t x_t\|_2 / \|b_t\|_2 \le 3.89 \times 10^{-10} \ll 1.0 \times 10^{-8}$. A companion study on subdomain granularity ($N_{\text{sub}} \in \{8, 27, 64\}$) shows that refining the partition isolates local fronts tightly, reducing refactored subdomains to 31.8\% with zero Krylov iteration penalty ($47.0$ vs. $47.0$ iterations) and confirming that the framework's effectiveness is governed by decomposition resolution.
 \end{abstract}
 
 \begin{keyword}
@@ -121,7 +119,7 @@ We consider the sequence of discrete SPD systems $A_t x_t = b_t$ for $t = 1, \do
 \subsection{Two-Level Overlapping Schwarz Architecture}
 The computational domain $\Omega = (0, 1)^3$ is discretized using a uniform Cartesian mesh with $N$ intervals along each coordinate direction, yielding $n = N^3$ degrees of freedom. A second-order central finite difference scheme yields the 7-point stencil operator $A_t \in \mathbb{R}^{n \times n}$.
 
-The domain is partitioned into $M$ overlapping subdomains $\{\Omega_i\}_{i=1}^M$ with overlap width $\delta \ge 1$, restriction operators $R_i$, and partition-of-unity diagonal weights $D_i$ satisfying $\sum_{i=1}^M R_i^T D_i R_i = I$. Local subdomain matrices are defined as $A_i(t) = R_i A_t R_i^T \in \mathbb{R}^{n_i \times n_i}$.
+The domain is partitioned into $M$ overlapping subdomains $\{\Omega_i\}_{i=1}^M$ with overlap $\delta \ge 1$, restriction operators $R_i$, and partition-of-unity diagonal weights $D_i$ satisfying $\sum_{i=1}^M R_i^T D_i R_i = I$. Subdomain operators are defined as $A_i(t) = R_i A_t R_i^T \in \mathbb{R}^{n_i \times n_i}$.
 
 A Galerkin coarse space is constructed via partition indicator vectors $Z \in \mathbb{R}^{n \times M}$, yielding the coarse operator $A_0(t) = Z^T A_t Z \in \mathbb{R}^{M \times M}$. The two-level Symmetric Weighted Additive Schwarz preconditioner is:
 \begin{equation}
@@ -274,7 +272,7 @@ Mesh $N$ & DOFs & $T_{\text{monitor}}$ (ms) & $T_{\text{saved}}$ (ms) & $\eta_{\
 
 \textbf{Observations}:
 \begin{itemize}
-    \item For the tested structured-grid diffusion benchmark, the diagonal drift proxy achieves exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) with the full local Frobenius drift, faithfully preserving the ordering of most-disturbed subdomains at negligible computational cost.
+    \item For the tested structured-grid diffusion benchmark, the diagonal drift proxy achieves exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) with the full local Frobenius drift, showing strong empirical agreement in subdomain ranking at negligible computational cost.
     \item Monitoring overhead fraction $\eta_{\text{mon}} = T_{\text{monitor}} / T_{\text{saved}}$ remains strictly below \textbf{0.28\%} across all mesh resolutions ($\le 0.222\text{ ms}$ vs. savings exceeding $110\text{ ms}$).
 \end{itemize}
 
@@ -349,6 +347,7 @@ On the flagship $48^3$ mesh ($110,592$ DOFs), the subdomain size reaches $n_{\te
 \small
 \caption{Detailed execution breakdown of the Flagship $48^3$ Benchmark ($110,592$ DOFs, 8 subdomains, 3 steps).}
 \label{tab:flagship48}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Metric} & \textbf{Full Rebuild} & \textbf{JSR Adaptive} & \textbf{Absolute Delta} & \textbf{Relative Change} \\
@@ -363,7 +362,8 @@ Setup Time Fraction & 28.31\% & 12.71\% & --- & --- \\
 Subdomains Refactored & 8 / 8 (100\%) & 2 / 8 (25\%) & $-6\text{ subdomains}$ & $-75.00\%$ \\
 Relative Algebraic Residual & $3.89 \times 10^{-10}$ & $3.89 \times 10^{-10}$ & --- & Strict Pass ($< 10^{-8}$) \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \textbf{Key Engineering Findings}:
@@ -382,6 +382,7 @@ To investigate how the spatial resolution of domain decomposition affects select
 \small
 \caption{Effect of subdomain granularity across $N_{\text{sub}} \in \{8, 27, 64\}$ ($N=32$, 3 time steps).}
 \label{tab:subdomain_granularity}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{cccccccccc}
 \toprule
 $N_{\text{sub}}$ & Grid & Sub DOFs & $|S_t| / N_{\text{sub}}$ & $T_{\text{setup}}^{\text{full}}$ (s) & $T_{\text{setup}}^{\text{JSR}}$ (s) & $T_{\text{solve}}^{\text{full}}$ (s) & $T_{\text{total}}^{\text{full}}$ (s) & $T_{\text{total}}^{\text{JSR}}$ (s) & Speedup \\
@@ -390,7 +391,8 @@ $N_{\text{sub}}$ & Grid & Sub DOFs & $|S_t| / N_{\text{sub}}$ & $T_{\text{setup}
 27 & $3\times 3\times 3$ & 1,728 & 10.0/27 (37.0\%) & 0.2660 & 0.1573 & 1.3384 & 1.6048 & 1.5433 & $\mathbf{1.04\times}$ \\
 64 & $4\times 4\times 4$ & 857 & 20.3/64 (31.8\%) & 0.2878 & 0.1584 & 1.7194 & 2.0076 & 1.8960 & $\mathbf{1.06\times}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \textbf{Observations}:
@@ -413,8 +415,9 @@ A qualitative interpretation is that localized coefficient perturbations primari
 \subsection{The Negative Fact: When JSR is Not the Fastest}
 Scientific objectivity requires documenting where selective maintenance does not provide an advantage:
 \begin{itemize}
-    \item When operator perturbations are completely global ($\rho = 1.00$), the adaptive selector identifies that all subdomains require maintenance, converging to Full Rebuild with approximately neutral performance ($0.98\times \sim 1.02\times$).
-    \item Under modest perturbation on relatively small meshes where setup does not dominate total runtime (e.g., $N=28$ in Pillar 2), blind reuse can exhibit slightly lower wall-clock time ($0.9225\text{s}$) than adaptive maintenance ($0.9594\text{s}$), because the small setup savings are offset by run-to-run timing noise.
+    \item \textbf{Coarse Decomposition Resolution ($N_{\text{sub}} = 8$)}: When the subdomain partition is coarse relative to the spatial support of the localized perturbation front, the moving front intersects virtually every subdomain ($|S_t| / N_{\text{sub}} = 91.7\%$), yielding only a modest $7.9\%$ setup reduction and an end-to-end speedup of $S = 0.99\times$. Conversely, refining the partition to $N_{\text{sub}} = 64$ isolates the front into $|S_t| / N_{\text{sub}} = 31.8\%$ of subdomains with zero Krylov iteration penalty ($K_{\text{Full}} = K_{\text{JSR}} = 47.0$) and a net speedup of $S = 1.06\times$. \textbf{This confirms that selective maintenance is not ``always faster''; its effectiveness fundamentally depends on whether the decomposition resolution is sufficiently fine to resolve and isolate the localized physical front.}
+    \item \textbf{Global Operator Perturbations ($\rho = 1.00$)}: When operator perturbations encompass the entire computational domain, the adaptive selector identifies that all subdomains require maintenance, converging to Full Rebuild with approximately neutral performance ($0.98\times \sim 1.02\times$).
+    \item \textbf{Small Meshes without Setup Dominance}: Under modest perturbation on relatively small meshes where setup does not dominate total runtime (e.g., $N=28$ in the trade-off study), blind reuse can exhibit slightly lower wall-clock time ($0.9225\text{s}$) than adaptive maintenance ($0.9594\text{s}$), because the small setup savings are offset by run-to-run timing noise.
     \item Therefore, the goal of stateful selective maintenance is not to guarantee faster execution than static reuse at every single step, but rather to \textbf{convert the catastrophic risk of stale-preconditioner divergence into a controlled, modest maintenance cost} that yields robust, certified net speedup in setup-dominated regimes.
 \end{itemize}
 
