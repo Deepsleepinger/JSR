@@ -42,7 +42,9 @@ wheels/
 *.jsonl
 *.ffc_cache/
 .pytest_cache/
-results/
+results/*
+!results/cmame_3d_five_pillars_v1/
+!results/cmame_3d_five_pillars_v1/**
 data/
 logs/
 

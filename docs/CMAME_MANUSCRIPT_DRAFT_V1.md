@@ -2,19 +2,19 @@
 
 **Authors**: JSR Research Group  
 **Target Journal**: *Computer Methods in Applied Mechanics and Engineering* (CMAME)  
-**Status**: Comprehensive Submission Draft (V1.1 - Reviewer-Hardened)  
+**Status**: Comprehensive Submission Draft (V1.2 - Red-Team Hardened)  
 **Date**: September 2026  
-**Repository & Reproducibility Release**: [https://github.com/Deepsleepinger/JSR](https://github.com/Deepsleepinger/JSR) (Tag: `v1.1-cmame-final`)
+**Repository & Reproducibility Release**: [https://github.com/Deepsleepinger/JSR](https://github.com/Deepsleepinger/JSR) (Tag: `v1.2-cmame-final`)
 
 ---
 
 ## Highlights
 
 - Formulates two-level overlapping Schwarz preconditioning as a stateful, persistent computational object for evolving linear systems $A_t x_t = b_t$.
-- Introduces an $\mathcal{O}(n_i)$ diagonal operator-drift proxy exhibiting near-monotone agreement ($r = 1.0000$) with local Frobenius drift at $< 0.28\%$ monitoring cost.
+- Introduces an $\mathcal{O}(n_i)$ diagonal operator-drift proxy with exact Pearson linear correlation and Spearman rank correlation of 0.79–0.98 on the tested benchmark, at $< 0.28\%$ monitoring cost.
 - Demonstrates that selective subdomain refactorization cuts setup cost by up to 64% while keeping Krylov iteration counts virtually identical to full rebuilds.
-- Evaluates subdomain granularity scaling across $N_{\text{sub}} \in \{8, 27, 64\}$, showing tighter isolation of local physical fronts ($|S_t|/N_{\text{sub}} \to 31.8\%$).
-- Achieves up to **21.8% reduction in end-to-end wall-clock time** (speedup $1.24\times \sim 1.28\times$) on a 3-D flagship benchmark with $110,592$ DOFs ($48^3$) under certified residual tolerances ($\text{RelRes} \le 3.89 \times 10^{-10}$).
+- Investigates the effect of subdomain granularity across $N_{\text{sub}} \in \{8, 27, 64\}$, demonstrating that finer decomposition sharpens local front isolation ($|S_t|/N_{\text{sub}} \to 31.8\%$) and eliminates iteration penalty.
+- Shows that a 63.9% setup reduction translates into a **19.6%–21.8% reduction in end-to-end wall-clock time** ($1.24\times \sim 1.28\times$ speedup) on a 3-D flagship benchmark with $110,592$ DOFs ($48^3$) under certified residual tolerances ($\text{RelRes} \le 3.89 \times 10^{-10}$).
 
 ---
 
@@ -34,7 +34,7 @@
   └──────────────────────────────┬──────────────────────────────┘
                                  │
                                  ▼
-                     Pareto Selector (mass-α)
+                 Mass-α Cumulative-Drift Selector
   ┌─────────────────────────────────────────────────────────────┐
   │  Identifies Disturbed Subset: S_t ⊂ {1, ..., M}             │
   │  (e.g., 2/8 subdomains on 48^3; 20/64 subdomains on 64 sub) │
@@ -92,8 +92,8 @@ Krylov convergence preservation & PCG iteration count matching & Demonstrated cl
 Monitoring overhead & Timer measurements $\le 0.28\%$ & Inexpensive proxy retains ranking at negligible cost \\
 Truncation parameter robustness & $\alpha \in [0.85, 0.97]$ sweep ($\Delta \le 3.8\%$) & Characterized as broad near-optimal parameter plateau \\
 Factorization scaling & Linear fit $p=1.43, R^2=0.98$ & Empirical superlinear power law on tested meshes \\
-Subdomain granularity scaling & $N_{\text{sub}} \in \{8, 27, 64\}$ sweep & Demonstrated: tighter front isolation ($|S_t|/N_{\text{sub}} \to 31.8\%$) \\
-Universally optimal selector & Not proved & Explicitly avoided; framed as heuristic Pareto policy \\
+Subdomain granularity effect & $N_{\text{sub}} \in \{8, 27, 64\}$ sweep & Quantified front isolation ($|S_t|/N_{\text{sub}} \to 31.8\%$); not claimed as parallel scalability \\
+Universally optimal selector & Not proved & Explicitly avoided; framed as heuristic cumulative-drift truncation policy \\
 Universal applicability & Not proved & Explicitly bounded to setup-dominated local evolution \\
 Theoretical parallel complexity & Not proved & Empirical timing on serial MPI/thread baseline \\
 \hline
@@ -182,11 +182,11 @@ d_i^{\text{diag}}(t) = \|\text{diag}(R_i (A_t - A_{t-1}) R_i^T)\|_2 = \sqrt{\sum
 \end{equation}
 Evaluating \eqref{eq:diag_proxy} requires inspecting only the $n_i$ diagonal entries of the matrix, reducing memory access from $\mathcal{O}(\text{nnz}_i)$ to $\mathcal{O}(n_i)$.
 
-### 3.5 Pareto Truncation Policy (\texttt{mass\_alpha})
-To account for cumulative drift across steps where a subdomain was skipped, we define a staleness risk score $s_i(t) = d_i^{\text{diag}}(t) \cdot [1 + \lambda (t - \tau_i)]$. Sorting subdomains in descending order of risk score, $s_{\pi_1} \ge \dots \ge s_{\pi_M}$, the active refactorization set $\mathcal{S}_t \subseteq \{1, \dots, M\}$ is selected via Pareto cumulative mass truncation:
+### 3.5 Cumulative-Drift Truncation Policy (\texttt{mass\_alpha})
+To account for cumulative drift across steps where a subdomain was skipped, we define a staleness risk score $s_i(t) = d_i^{\text{diag}}(t) \cdot [1 + \lambda (t - \tau_i)]$. Sorting subdomains in descending order of risk score, $s_{\pi_1} \ge \dots \ge s_{\pi_M}$, the active refactorization set $\mathcal{S}_t \subseteq \{1, \dots, M\}$ is selected via a mass-$\alpha$ cumulative-drift truncation policy:
 \begin{equation}
 \mathcal{S}_t = \{ \pi_1, \dots, \pi_k \}, \quad \text{where } k = \min \left\{ m : \frac{\sum_{j=1}^m s_{\pi_j}}{\sum_{j=1}^M s_{\pi_j}} \ge \alpha \right\}.
-\label{eq:pareto_truncation}
+\label{eq:cumulative_drift_truncation}
 \end{equation}
 If total drift is negligible ($\sum s_i < \epsilon_{\text{tol}}$), $\mathcal{S}_t = \emptyset$.
 
@@ -304,16 +304,16 @@ Mesh $N$ & DOFs & $T_{\text{monitor}}$ (ms) & $T_{\text{saved}}$ (ms) & $\eta_{\
 \end{table}
 
 **Observations**:
-- For the tested structured-grid diffusion benchmark, the diagonal drift proxy exhibits near-monotone agreement with the full local Frobenius drift (Pearson $r = 1.0000$, Spearman $\rho_s \in [0.79, 0.98]$).
+- For the tested structured-grid diffusion benchmark, the diagonal drift proxy achieves exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) with the full local Frobenius drift, faithfully preserving the ordering of most-disturbed subdomains at negligible computational cost.
 - Monitoring overhead fraction $\eta_{\text{mon}} = T_{\text{monitor}} / T_{\text{saved}}$ remains strictly below **0.28%** across all mesh resolutions ($\le 0.222\text{ ms}$ vs. savings exceeding $110\text{ ms}$).
 
-### 4.4 Robustness of the Truncation Policy (\texttt{mass\_alpha})
-To assess whether the Pareto truncation parameter $\alpha$ is fragile, we conduct a sensitivity sweep across $\alpha \in [0.75, 0.99]$ on the $N=28$ mesh ($21,952$ DOFs).
+### 4.4 Robustness of the Cumulative-Drift Truncation Policy (\texttt{mass\_alpha})
+To assess whether the cumulative-drift truncation parameter $\alpha$ is fragile, we conduct a sensitivity sweep across $\alpha \in [0.75, 0.99]$ on the $N=28$ mesh ($21,952$ DOFs).
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Truncation parameter $\alpha$ sensitivity sweep ($N=28$, 8 subdomains).}
+\caption{Cumulative-drift truncation parameter $\alpha$ sensitivity sweep ($N=28$, 8 subdomains).}
 \label{tab:pillar4_plateau}
 \begin{tabular}{ccccccc}
 \hline
@@ -393,16 +393,16 @@ Relative Algebraic Residual & $3.89 \times 10^{-10}$ & $3.89 \times 10^{-10}$ & 
 
 **Key Engineering Findings**:
 - **Setup Reduction without Iteration Inflation**: JSR slashes per-step setup time from $1.8570\text{ s}$ to $0.6699\text{ s}$ (a 63.9% reduction) by refactorizing only 2 out of 8 subdomains (25%). Simultaneously, Krylov iteration count remains completely unaffected (50.7 vs. 51.0 iterations).
-- **Certified Wall-Clock Speedup**: This setup savings translates directly into an end-to-end wall-clock savings of **$1.2872\text{ s}$ per time step**, reducing overall simulation runtime by **19.62% to 21.8%** ($1.24\times \sim 1.28\times$ net speedup).
+- **Decoupled Setup and Wall-Clock Speedup**: The 63.9% reduction in preconditioner setup translates into a 19.6%–21.8% reduction in end-to-end wall-clock time ($1.24\times \sim 1.28\times$ speedup, saving **$1.2872\text{ s}$ per time step**), demonstrating that setup savings remain clearly visible after all solve and monitoring costs are accounted for.
 - **Strict Algebraic Precision**: Both arms achieve an independent relative residual of $\text{RelRes} = 3.89 \times 10^{-10} \ll 1.0 \times 10^{-8}$.
 
-### 4.6 Subdomain Granularity Scaling ($N_{\text{sub}} \in \{8, 27, 64\}$)
-To investigate the behavior of selective maintenance across decomposition granularities, we fix the global mesh resolution at $N=32$ ($32,768$ DOFs) and systematically vary the subdomain partition from $2 \times 2 \times 2 = 8$ to $3 \times 3 \times 3 = 27$ and $4 \times 4 \times 4 = 64$ subdomains with $\delta = 1$ layer overlap.
+### 4.6 Effect of Subdomain Granularity on Selective Maintenance ($N_{\text{sub}} \in \{8, 27, 64\}$)
+To investigate how the spatial resolution of domain decomposition affects selective maintenance, we fix the global mesh resolution at $N=32$ ($32,768$ DOFs) and systematically vary the subdomain partition from $2 \times 2 \times 2 = 8$ to $3 \times 3 \times 3 = 27$ and $4 \times 4 \times 4 = 64$ subdomains with $\delta = 1$ layer overlap.
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Subdomain granularity scaling across $N_{\text{sub}} \in \{8, 27, 64\}$ ($N=32$, 3 time steps).}
+\caption{Effect of subdomain granularity across $N_{\text{sub}} \in \{8, 27, 64\}$ ($N=32$, 3 time steps).}
 \label{tab:subdomain_granularity}
 \begin{tabular}{cccccccccc}
 \hline
@@ -416,10 +416,11 @@ $N_{\text{sub}}$ & Grid & Sub DOFs & $|S_t| / N_{\text{sub}}$ & $T_{\text{setup}
 \end{table}
 
 **Observations**:
-1. **Sharpened Spatial Localization**: As the partition refines from $N_{\text{sub}}=8$ to $N_{\text{sub}}=64$, the selective refactorization ratio $|S_t| / N_{\text{sub}}$ decreases from $91.7\%$ down to **$31.8\%$**. Finer subdomain partitions provide higher spatial resolution, allowing the adaptive selector to tightly isolate the moving physical front and avoid refactorizing ambient bulk subdomains.
-2. **Setup Cost Reduction**: For $N_{\text{sub}}=64$, setup time is reduced from $0.2878\text{ s}$ to $0.1584\text{ s}$ (a **$45.0\%$ setup reduction**).
-3. **Identical Iteration Count at High Granularity**: At $N_{\text{sub}}=64$, both Full Rebuild and JSR converge in **exactly 47.0 iterations**, demonstrating zero Krylov iteration penalty under fine decomposition granularity.
-4. **End-to-End Speedup**: Despite serial execution of all subdomain solves on a single MPI process, JSR achieves a net wall-clock speedup of $1.06\times$ (saving $5.56\%$ of total step time) on $N_{\text{sub}}=64$, with algebraic residuals strictly certified at $\text{RelRes} \le 4.25 \times 10^{-10} \ll 1.0 \times 10^{-8}$.
+1. **Front Resolution and Coarse Decomposition Limitation**: The decomposition granularity critically dictates how effectively a localized perturbation front can be isolated. At $N_{\text{sub}}=8$, subdomains are coarse ($4,913$ DOFs each), so the moving physical front intersects virtually every subdomain; JSR refactors 7.3 out of 8 subdomains ($91.7\%$), yielding only a $7.9\%$ setup reduction and neutral overall runtime ($0.99\times$). This negative result confirms an essential principle: selective maintenance requires decomposition granularity sufficient to spatially resolve the physical front.
+2. **Sharpened Front Isolation with Finer Granularity**: As the partition refines to $N_{\text{sub}}=27$ and $N_{\text{sub}}=64$, the spatial resolution sharpens markedly. Subdomains outside the active front remain untouched, reducing the refactored fraction to $37.0\%$ ($N_{\text{sub}}=27$) and $31.8\%$ ($N_{\text{sub}}=64$). Setup cost is reduced by $40.8\%$ and $45.0\%$, respectively.
+3. **Exact Convergence Preservation**: At $N_{\text{sub}}=64$, both Full Rebuild and JSR converge in **identically 47.0 PCG iterations**, exhibiting zero iteration penalty despite skipping factorizations on $68.2\%$ of the subdomains.
+4. **End-to-End Speedup**: On $N_{\text{sub}}=64$, JSR achieves a net wall-clock speedup of $1.06\times$ (saving $5.56\%$ of total step time), with independent relative residuals strictly certified at $\text{RelRes} \le 4.25 \times 10^{-10} \ll 1.0 \times 10^{-8}$.
+5. **Scope Distinction**: This study does not constitute a parallel scalability study; rather, it quantifies how decomposition granularity affects the spatial resolution of selective maintenance.
 
 ---
 
@@ -439,6 +440,7 @@ Scientific objectivity requires documenting where selective maintenance does not
 ### 5.3 Limitations and Practical Considerations
 1. **Setup Dominance Requirement**: The net wall-clock benefit of selective maintenance scales directly with the preconditioner setup fraction $\Phi_{\text{setup}}$. On coarse 2D meshes where iterative solve time heavily dominates setup time ($\Phi_{\text{setup}} < 10\%$), the scope for absolute runtime reduction is naturally limited. The method is specifically targeted at 3D problems and high-order discretizations where sparse direct factorizations dominate.
 2. **Unstructured Mesh Generalization**: While demonstrated here on structured Cartesian meshes, the stateful maintenance framework is algebraically general. Extension to unstructured finite element meshes requires algebraic graph partitioning (e.g., METIS) and computing diagonal proxy slices from assembled sparse matrices, which follow identical algorithmic pathways.
+3. **Decomposition Granularity vs. Parallel Scalability**: The granularity study in Section 4.6 quantifies how decomposition resolution affects the spatial isolation of selective maintenance; it does not constitute a parallel scalability study. In distributed-memory parallel environments, asynchronous communication and load balancing among selectively refactored subdomains require dedicated scheduling strategies, which form an important subject for future investigation.
 
 ### 5.4 Comparison with Invariant-Operator Recycling
 Unlike Krylov subspace recycling (e.g., Hanek et al. \cite{hanek2026recycling}), which deflates an invariant operator $A$, our method actively repairs the preconditioner to track a changing operator $A_t$. In problems where both mechanisms are present---such as localized operator evolution accompanied by multiple right-hand sides---combining selective factor maintenance with Krylov recycling represents a natural and promising future direction.
@@ -451,12 +453,12 @@ In this paper, we introduced a stateful selective maintenance framework for two-
 
 The primary conclusions of this study are:
 1. **Setup Reduction without Convergence Penalty**: By selectively refactorizing only physically disturbed subdomains and adaptively maintaining the Galerkin coarse space, setup costs are reduced by up to 64% while PCG iteration counts remain virtually identical to full rebuilds.
-2. **Negligible Sensing Cost**: The diagonal operator-drift proxy $d_i^{\text{diag}}$ achieves near-monotone agreement ($r = 1.0000$) with the full Frobenius drift, while consuming less than $0.28\%$ of the saved setup time for the tested benchmark.
-3. **Subdomain Granularity Scaling**: Across $N_{\text{sub}} \in \{8, 27, 64\}$, refining decomposition granularity sharpens front isolation, decreasing the refactored ratio to $31.8\%$ while matching Full Rebuild iteration counts exactly.
+2. **Negligible Sensing Cost**: The diagonal operator-drift proxy $d_i^{\text{diag}}$ achieves exact Pearson linear correlation and Spearman rank correlation of 0.79–0.98 on the tested benchmark, while consuming less than $0.28\%$ of the saved setup time.
+3. **Effect of Subdomain Granularity**: Across $N_{\text{sub}} \in \{8, 27, 64\}$, refining decomposition granularity sharpens front isolation, decreasing the refactored ratio from $91.7\%$ down to $31.8\%$ and eliminating iteration inflation ($47.0$ vs. $47.0$ iterations). This confirms that selective maintenance requires decomposition resolution sufficient to resolve the localized front, rather than serving as a claim of parallel scalability.
 4. **Certified End-to-End Speedup**: On a flagship 3D benchmark with $110,592$ DOFs ($48^3$), the framework achieves a certified end-to-end wall-clock speedup of $1.24\times \sim 1.28\times$, delivering a **19.6%--21.8% reduction in total simulation time** per step under an independent algebraic residual bound of $\text{RelRes} \le 3.89 \times 10^{-10} \ll 1.0 \times 10^{-8}$.
 5. **Superlinear Scaling Advantage**: Empirical power-law analysis confirms that local factorization costs scale as $\mathcal{O}(n_{\text{sub}}^{1.43})$, proving that the relative advantage of selective preconditioner maintenance expands systematically with increasing mesh resolution.
 
-The full implementation, benchmark drivers, and verification suites are made available as open-source software under the MIT license at [https://github.com/Deepsleepinger/JSR](https://github.com/Deepsleepinger/JSR) (Release tag: `v1.1-cmame-final`).
+The full implementation, benchmark drivers, and verification suites are made available as open-source software under the MIT license at [https://github.com/Deepsleepinger/JSR](https://github.com/Deepsleepinger/JSR) (Release tag: `v1.2-cmame-final`).
 
 ---
 

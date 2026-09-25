@@ -1,0 +1,50 @@
+[
+  {
+    "mesh": 20,
+    "n_dofs": 8000,
+    "t_mon_ms": 0.09340819888166152,
+    "t_setup_full_ms": 62.969477992737666,
+    "t_setup_jsr_ms": 29.385025998635683,
+    "t_saved_ms": 33.58445199410198,
+    "eta_mon_pct": 0.2781292929777911,
+    "spearman_rho": 0.8333333333333335,
+    "pearson_r": 1.0,
+    "gate_passed": false
+  },
+  {
+    "mesh": 24,
+    "n_dofs": 13824,
+    "t_mon_ms": 0.14425840054173023,
+    "t_setup_full_ms": 107.90789699967718,
+    "t_setup_jsr_ms": 56.496408993552905,
+    "t_saved_ms": 51.41148800612427,
+    "eta_mon_pct": 0.2805956531048971,
+    "spearman_rho": 0.9761904761904763,
+    "pearson_r": 1.0,
+    "gate_passed": true
+  },
+  {
+    "mesh": 28,
+    "n_dofs": 21952,
+    "t_mon_ms": 0.21617929960484616,
+    "t_setup_full_ms": 212.75744699960342,
+    "t_setup_jsr_ms": 102.2206420020666,
+    "t_saved_ms": 110.53680499753682,
+    "eta_mon_pct": 0.19557223461422052,
+    "spearman_rho": 0.9761904761904763,
+    "pearson_r": 0.9999999999999998,
+    "gate_passed": true
+  },
+  {
+    "mesh": 32,
+    "n_dofs": 32768,
+    "t_mon_ms": 0.22201709725777619,
+    "t_setup_full_ms": 281.0089729973697,
+    "t_setup_jsr_ms": 133.96838699554792,
+    "t_saved_ms": 147.0405860018218,
+    "eta_mon_pct": 0.15099035123202342,
+    "spearman_rho": 0.7857142857142858,
+    "pearson_r": 1.0,
+    "gate_passed": false
+  }
+]
