@@ -66,7 +66,7 @@ A closely related contemporary direction in accelerating sequences of linear sys
 | **System Sequence** | Invariant matrix: $A x_t = b_t$ | Time-evolving matrix: $A_t x_t = b_t$ ($A_t \neq A_{t-1}$) |
 | **Core Acceleration Mechanism** | Static preconditioner reuse + Krylov subspace recycling (deflation of invariant operator) | Stateful selective factor refactorization + adaptive coarse Galerkin space maintenance |
 | **Preconditioner Architecture** | Adaptive BDDC (Balancing Domain Decomposition by Constraints) | Two-Level Overlapping Schwarz (RAS / Weighted Schwarz) |
-| **Response to Operator Changes** | Operator is strictly invariant; zero preconditioner setup after $t=0$ | Stateful cumulative-drift sensing (`mass95`) triggering selective factor maintenance |
+| **Response to Operator Changes** | Operator is strictly invariant; zero preconditioner setup after $t=0$ | Stateful cumulative-drift sensing (`mass_alpha`) triggering selective factor maintenance |
 | **Failure Safety & Provenance** | No operator evolution; failure rollback is not a central mechanism studied in Hanek et al. | Algebraic residual certification ($\|b-Ax\|_2/\|b\|_2 \le 10^{-8}$), transactional rollback, and SHA-256 provenance auditing |
 
 ---
@@ -89,12 +89,29 @@ To eliminate the prohibitive $\mathcal{O}(\text{nnz})$ memory scan of full matri
 $$d_i^{\text{diag}} = \|\text{diag}(R_i (A_t - A_{t-1}) R_i^T)\|_2 = \sqrt{\sum_{j \in \Omega_i} (A_{t, jj} - A_{t-1, jj})^2}$$
 
 - **Exact Pearson and Spearman Correlation**: Evaluated across 3D meshes ($N \in [20, 32]$), the diagonal drift proxy achieves exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) with the full subdomain Frobenius drift $\|R_i (A_t - A_{t-1}) R_i^T\|_F$, showing strong empirical agreement in subdomain ranking.
-- **Monitoring Cost ($\eta_{\text{mon}} \le 0.28\% \ll 5.0\%$)**: Execution time $T_{\text{monitor}} \le 0.22\text{ ms}$, ensuring sensing overhead is mathematically negligible compared to the $\ge 110\text{ ms}$ saved in sparse factorizations.
+- **Dual Monitoring Overhead**: Setup-normalized $\eta_{\text{mon}}^{\text{setup}} \le 0.28\%$ and total-time-normalized $\eta_{\text{mon}}^{\text{total}} \le 0.026\% \ll 0.1\%$ ($T_{\text{monitor}} \le 0.22\text{ ms}$), ensuring sensing overhead is mathematically negligible compared to the $\ge 110\text{ ms}$ saved in sparse factorizations. Computational complexity is $\mathcal{O}(\sum_i n_i + M \log M)$.
 
 ### Provenance and Verification Clarification
 > **Note on Auditing**: SHA-256 hashing and state ledgers provide **provenance and state-integrity auditing**, ensuring that experimental trajectories are completely tamper-proof and reproducible. Numerical correctness is independently evaluated at every time step using the exact unpreconditioned algebraic residual:
 > $$\text{RelRes} = \frac{\|b_t - A_t x_t\|_2}{\|b_t\|_2} \le 1.0 \times 10^{-8}$$
 > In practice, the solver tolerance $\text{rtol} = 1.0 \times 10^{-11}, \text{atol} = 1.0 \times 10^{-14}$ coupled with iterative refinement achieves $\text{RelRes} \in [7.90 \times 10^{-11}, 4.79 \times 10^{-10}] \ll 1.0 \times 10^{-8}$ across all tested configurations.
+
+### 3.1 Theoretical Foundations: Conditional Spectral Stability (Proposition 1)
+Under the two-level Symmetric Weighted Additive Schwarz (S-AS) preconditioner, Proposition 1 establishes the mathematical link between unrefactored local drift and global PCG convergence:
+
+* **Conditional Perturbation Bound**: Assume that for all unrefactored subdomains $j \notin \mathcal{S}_t$, the symmetric relative operator drift satisfies $\|E_j\|_2 := \|A_j(t)^{-1/2}(A_j(t) - A_j(\tau_j))A_j(t)^{-1/2}\|_2 \le \varepsilon < 1/2$. Then with $\delta = \varepsilon / (1 - \varepsilon) < 1$, the stateful preconditioner $Q$ satisfies $(1 - \delta) P \preceq Q \preceq (1 + \delta) P$.
+* **Strict PCG Condition Number Bound**: Since $Q A_t$ is similar to the SPD operator $A_t^{1/2} Q A_t^{1/2}$ (and $Q^{1/2} A_t Q^{1/2}$), its effective spectral condition number satisfies:
+  $$\kappa_{\text{PCG}}(Q A_t) := \frac{\lambda_{\max}(Q A_t)}{\lambda_{\min}(Q A_t)} = \kappa_{\text{sp}}(Q^{1/2} A_t Q^{1/2}) \le \left(\frac{1}{1 - 2\varepsilon}\right) \kappa_{\text{PCG}}(M_{\text{exact}}^{-1} A_t).$$
+
+**Three-Layer Methodological Architecture**:
+1. **Layer 1 (Mathematical Sufficient Condition)**: Proposition 1 is a *conditional stability theorem* ensuring that PCG iterations cannot blow up when unrefactored subdomains satisfy $\|E_j\|_2 \le \varepsilon < 1/2$.
+2. **Layer 2 (Lightweight Selection Heuristic)**: The cumulative-drift truncation policy (`mass_alpha`) does not mathematically guarantee $\varepsilon < 1/2$ a priori, but rather uses the inexpensive $\mathcal{O}(n_i)$ diagonal proxy $d_i^{\text{diag}}$ and age counter as a practical heuristic to identify and refactor high-drift subdomains, empirically keeping skipped subdomains within the low-$\varepsilon$ regime.
+3. **Layer 3 (Empirical Verification)**: Validated through benchmark sweeps, demonstrating strong proxy rank correlation ($\rho_s \in [0.79, 0.98]$) and convergence invariance ($K_{\text{JSR}} \approx K_{\text{Full}}$).
+
+### 3.2 Operator-Family Generalization: 3-D Damaged Linear Elasticity
+To establish architectural requirements for extending stateful selective maintenance beyond scalar diffusion to vector continuum mechanics, consider 3-D linear elasticity $-\nabla \cdot (\mathbf{C}(x, t) : \boldsymbol{\varepsilon}(\boldsymbol{u})) = \boldsymbol{f}$ under uniform strong ellipticity $\alpha_C \|\boldsymbol{\xi}\|^2 \le \boldsymbol{\xi} : \mathbf{C}(x, t) : \boldsymbol{\xi} \le \beta_C \|\boldsymbol{\xi}\|^2$ ($\alpha_C > 0$):
+1. **Block-Diagonal Drift Surrogate**: For $3 \times 3$ nodal displacement blocks, off-diagonal shear coupling is captured by the Frobenius drift surrogate $d_i^{\text{block}}(t) = \sqrt{\sum_{p \in \Omega_i} \|A_{t, pp} - A_{t-1, pp}\|_F^2}$ in $\mathcal{O}(n_i)$ time (serving as an empirical surrogate rather than a certified norm-equivalent estimator).
+2. **Vector Coarse Space**: Spanning rigid body modes or block-component partition indicators ($Z = Z_{\text{scalar}} \otimes I_3$) prevents low-frequency locking.
 
 ---
 
@@ -118,7 +135,7 @@ JSR/
 │   └── changing_backend.py             # Dynamic spectral coarse space backend
 │
 ├── benchmarks/                         # Authoritative Paper Reproduction Benchmarks
-│   ├── run_cmame_flagship_48.py        # ★ Authoritative 48^3 (110k DOFs) Flagship Scalability Benchmark
+│   ├── run_cmame_flagship_48.py        # ★ Authoritative 48^3 (110k DOFs) Flagship Benchmark
 │   ├── run_cmame_subdomain_scaling.py  # Effect of subdomain granularity study (8 -> 27 -> 64 subdomains)
 │   ├── run_cmame_5pillars.py           # ★ Authoritative CMAME 5-Pillar Verification Campaign Suite
 │   ├── run_cmame_3d_ras_mumps.py       # 3-D Overlapping RAS + MUMPS parametric runner
@@ -169,7 +186,7 @@ pip install -e .
 
 ## ⚡ 6. Authoritative 3D Benchmark Reproduction
 
-### 6.1 Flagship Scalability Benchmark ($48^3$ Mesh, $110,592$ DOFs)
+### 6.1 Flagship Benchmark ($48^3$ Mesh, $110,592$ DOFs)
 To reproduce the flagship high-resolution 3D benchmark demonstrating superlinear scaling and end-to-end net wall-clock speedup:
 
 ```bash
@@ -213,7 +230,7 @@ python benchmarks/run_cmame_5pillars.py --pillar all
 | :--- | :--- | :--- | :--- | :---: |
 | **Pillar 1** | **Operating Regime Phase Diagram**<br>Where does selective maintenance dominate? | $\rho \in [0.125, 1.00] \times \Gamma \in [1.0, 16.0]$<br>16 parameter grid cells | Speedup **1.04x ~ 1.12x** for $\rho \le 0.50$; neutral performance near 1.00x (within ~2%) at $\rho=1.00$; $\text{RelRes} \le 4.79 \times 10^{-10}$ | **PASS** |
 | **Pillar 2** | **U-Shaped Runtime Trade-Off Basin**<br>Does an interior optimal refresh ratio exist? | Forced refresh $k_{\text{ref}} \in [0, 8]$ vs. adaptive JSR ($N=28$) | U-shaped runtime trade-off basin with minimum near 25% refresh ($0.926\text{s}$); adaptive selector identifies the same low-cost regime ($0.959\text{s}$) | **PASS** |
-| **Pillar 3** | **Monitoring Overhead & Proxy Fidelity**<br>Is drift sensing negligible and mathematically sound? | High-res nanosecond profiling ($N \in [20, 32]$); diagonal proxy vs. Frobenius | $\eta_{\text{mon}} \le 0.28\% \ll 5.0\%$ ($T_{\text{mon}} \le 0.22\text{ ms}$); exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) | **PASS** |
+| **Pillar 3** | **Monitoring Overhead & Proxy Fidelity**<br>Is drift sensing negligible and mathematically sound? | High-res nanosecond profiling ($N \in [20, 32]$); diagonal proxy vs. Frobenius | $\eta_{\text{mon}}^{\text{setup}} \le 0.28\%$, $\eta_{\text{mon}}^{\text{total}} \le 0.026\% \ll 0.1\%$ ($T_{\text{mon}} \le 0.22\text{ ms}$); exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) | **PASS** |
 | **Pillar 4** | **Cumulative-Drift Truncation Robustness**<br>Is the `mass_alpha` truncation parameter fragile? | Sensitivity sweep $\alpha \in [0.75, 0.99]$ ($N=28$) including $\alpha=0.97$ | Broad near-optimal plateau across $\alpha \in [0.85, 0.97]$ (relative variation **$3.80\% \le 5.0\%$**) | **PASS** |
 | **Pillar 5** | **3D Factorization Footprint Scaling Law**<br>Does setup fraction expand with problem scale? | Mesh sweep $N \in [16, 48]$<br>Log-log power-law fit $T_{\text{fact}} \sim n_{\text{sub}}^p$ | Empirical power-law $T_{\text{fact}} = 1.66 \times 10^{-7} \cdot n_{\text{sub}}^{1.43}$ ($R^2 = 0.9801$); superlinear scaling confirmed ($p > 1.0$) | **PASS** |
 
@@ -221,7 +238,6 @@ python benchmarks/run_cmame_5pillars.py --pillar all
 > Detailed parameter protocols, gate criteria, and numerical logs are available in [`docs/CMAME_3D_EXPERIMENT_PROTOCOL_V1.md`](docs/CMAME_3D_EXPERIMENT_PROTOCOL_V1.md) and [`docs/CMAME_FIVE_PILLARS_SUMMARY.md`](docs/CMAME_FIVE_PILLARS_SUMMARY.md).
 
 ---
-
 
 ### 6.3 Effect of Subdomain Granularity ($N_{\text{sub}} \in \{8, 27, 64\}$)
 To evaluate how domain decomposition spatial resolution influences selective maintenance:
@@ -239,6 +255,22 @@ python benchmarks/run_cmame_subdomain_scaling.py
 
 ---
 
+### 6.4 Role of Coarse-Space Synchronization: Local-Only vs. Joint Maintenance
+To isolate the mathematical contribution of coarse-space synchronization, we compare Full Rebuild, Joint JSR, and Local-Only maintenance across 4 steps on $N=24$ ($13,824$ DOFs, 27 subdomains):
+
+| Time Step $t$ | Refactored Subdomains $|S_t| / 27$ | Full Rebuild ($K_{\text{Full}}$) | Joint JSR ($K_{\text{Joint}}$) | Local-Only ($K_{\text{Local-Only}}$) |
+| :---: | :---: | :---: | :---: | :---: |
+| Step 1 | 20 / 27 (74.1%) | 51 | **58** | 59 |
+| Step 2 | 17 / 27 (63.0%) | 51 | **60** | 62 |
+| Step 3 | 14 / 27 (51.9%) | 50 | **59** | 61 |
+| Step 4 | 11 / 27 (40.7%) | 50 | **59** | 62 |
+
+* **Coarse Setup Overhead**: Updating the $27 \times 27$ Galerkin coarse system requires $< 0.08\text{ ms}$ ($< 0.05\%$ of total step time); over 99.9% of setup savings derive from selective local factor maintenance.
+* **Consistent Iteration Stabilization**: Updating the coarse space jointly saves 1–3 PCG iterations per step over Local-Only maintenance (58–60 vs. 59–62 iterations).
+* **Calibrated Spectral Separation**: Joint JSR incurs an expected 14%–18% iteration difference from Full Rebuild (58–60 vs. 50–51 iterations) due to partial local factor staleness, confirming that coarse synchronization stabilizes partial maintenance and mitigates error accumulation across steps rather than making partial maintenance identical to full rebuild.
+
+---
+
 ## ⚡ 7. Quick Start: The 7-Step Slow-Motion Walkthrough
 
 Experience the complete lifecycle of JSR on a realistic 144-subdomain transient evolution using the lightweight NumPy engine:
@@ -249,7 +281,7 @@ python examples/demo_7step_walkthrough.py
 ### What You Will See:
 1. **Step 1: Input & Problem Setup** (Loading CSR matrices and subdomains);
 2. **Step 2: Monitor Risk Sensing** (Computing Frobenius matrix drift and age penalties);
-3. **Step 3: Selector Decision** (`mass95` cumulative-drift truncation selecting the disturbed subdomains);
+3. **Step 3: Selector Decision** (`mass_alpha` cumulative-drift truncation selecting the disturbed subdomains);
 4. **Step 4: Backend Refactorization** (Updating local Cholesky/LU factors and coarse Galerkin triplet product);
 5. **Step 5: Two-Level PCG Solve** (Rapid convergence in 9 iterations);
 6. **Step 6: Residual Certification** (Independent CSR $\|b - A x\|_2 / \|b\|_2 \le 10^{-8}$ verification);

@@ -123,7 +123,7 @@ In all these scenarios, while the physical state evolves everywhere in the conti
 Two-level overlapping Schwarz methods---specifically Additive Schwarz (AS) and Restricted Additive Schwarz (RAS)---coupled with coarse-space corrections, represent one of the most widely used and scalable domain decomposition paradigms for solving large-scale sparse elliptic and parabolic systems on modern parallel computers \cite{toselli2005domain, doval2008domain, smith1996domain}. In practical high-performance computing (HPC) implementations, subdomain solves are predominantly executed using sparse direct factorizations (e.g., multifrontal or supernodal algorithms via packages such as MUMPS \cite{amestoy2001fully} or SuperLU \cite{li2005overview}), which provide robust, black-box local inversions even in the presence of strong material anisotropy or ill-conditioning.
 
 However, when applied to time-evolving sequences of linear systems \eqref{eq:seq_linear_systems}, practitioners face an acute operational dilemma:
-- **Always Full Rebuild**: Recomputing all subdomain direct factorizations and the global coarse operator at every time step ($t=1, \dots, T$) guarantees optimal preconditioner quality and minimizes Preconditioned Conjugate Gradient (PCG) iteration counts. Nevertheless, in three-dimensional simulations, sparse direct factorizations scale superlinearly with local subdomain size. Consequently, preconditioner setup frequently consumes **25% to 45%** (and up to 80% on very fine meshes) of the total per-step simulation time.
+- **Always Full Rebuild**: Recomputing all subdomain direct factorizations and the global coarse operator at every time step ($t=1, \dots, T$) preserves nominal preconditioner quality and minimizes Preconditioned Conjugate Gradient (PCG) iteration counts. Nevertheless, in three-dimensional simulations, sparse direct factorizations scale superlinearly with local subdomain size. Consequently, preconditioner setup frequently consumes **25% to 45%** (and up to 80% on very fine meshes) of the total per-step simulation time.
 - **Blind Static Reuse**: Constructing the preconditioner once at $t=0$ and freezing all factors indefinitely incurs zero setup overhead. However, as the localized physical front moves through the domain, the frozen preconditioner rapidly loses spectral alignment with the evolving operator $A_t$. This leads to severe Krylov iteration inflation, degradation of the convergence rate, and eventual divergence or catastrophic wall-clock slow-down.
 
 ---
@@ -216,12 +216,13 @@ Q = \sum_{i \in \mathcal{S}_t} R_i^T D_i A_i(t)^{-1} D_i R_i + \sum_{j \notin \m
 (1 - \delta) P \preceq Q \preceq (1 + \delta) P.
 \label{eq:quadratic_bound}
 \end{equation}
-*Consequently, the generalized eigenvalues $\lambda_k(Q A_t)$ and the effective condition number $\kappa(Q A_t) = \lambda_{\max}(Q A_t) / \lambda_{\min}(Q A_t)$ satisfy:*
+*Consequently, the generalized eigenvalues $\lambda_k(Q A_t)$ satisfy:*
 \begin{equation}
-(1 - \delta) \lambda_k(P A_t) \le \lambda_k(Q A_t) \le (1 + \delta) \lambda_k(P A_t) \quad (\forall k=1, \dots, n),
+(1 - \delta) \lambda_k(P A_t) \le \lambda_k(Q A_t) \le (1 + \delta) \lambda_k(P A_t) \quad (\forall k=1, \dots, n).
 \end{equation}
+*Because $Q A_t$ is similar to the symmetric positive definite operator $A_t^{1/2} Q A_t^{1/2}$ (and $Q^{1/2} A_t Q^{1/2}$), its spectrum is real and positive. The effective spectral condition number governing Preconditioned Conjugate Gradient (PCG) convergence, defined as $\kappa_{\text{PCG}}(Q A_t) := \lambda_{\max}(Q A_t) / \lambda_{\min}(Q A_t) = \kappa_{\text{sp}}(Q^{1/2} A_t Q^{1/2})$, satisfies:*
 \begin{equation}
-\kappa(Q A_t) \le \left( \frac{1 + \delta}{1 - \delta} \right) \kappa(P A_t) = \left( \frac{1}{1 - 2\varepsilon} \right) \kappa(P A_t).
+\kappa_{\text{PCG}}(Q A_t) \le \left( \frac{1 + \delta}{1 - \delta} \right) \kappa_{\text{PCG}}(P A_t) = \left( \frac{1}{1 - 2\varepsilon} \right) \kappa_{\text{PCG}}(P A_t).
 \label{eq:condition_number_bound}
 \end{equation}
 
@@ -242,18 +243,20 @@ Because the diagonal partition-of-unity weights $D_i$ are non-negative, each ter
 \begin{equation}
 \sum_{j \notin \mathcal{S}_t} R_j^T D_j A_j(t)^{-1} D_j R_j \preceq \sum_{i=1}^M R_i^T D_i A_i(t)^{-1} D_i R_i = P_{\text{loc}} \preceq P.
 \end{equation}
-Therefore, $-\delta P \preceq -\delta P_{\text{loc}} \preceq Q - P \preceq \delta P_{\text{loc}} \preceq \delta P$, establishing \eqref{eq:quadratic_bound}. Applying the Courant--Fischer min-max theorem to the generalized eigenvalue problem $(A_t, Q^{-1})$ immediately yields the eigenvalue bounds and the condition number estimate \eqref{eq:condition_number_bound}. $\blacksquare$
+Therefore, $-\delta P \preceq -\delta P_{\text{loc}} \preceq Q - P \preceq \delta P_{\text{loc}} \preceq \delta P$, establishing \eqref{eq:quadratic_bound}.
+
+Under the transformation $y = A_t^{1/2} x$, the generalized eigenvalue problem $A_t x = \lambda Q^{-1} x$ is equivalent to the standard symmetric eigenvalue problem $A_t^{1/2} Q A_t^{1/2} y = \lambda y$. Applying the Courant--Fischer min-max theorem to the symmetric operator $A_t^{1/2} Q A_t^{1/2}$ relative to $A_t^{1/2} P A_t^{1/2}$ yields $(1 - \delta) \lambda_k(P A_t) \le \lambda_k(Q A_t) \le (1 + \delta) \lambda_k(P A_t)$ for all $k$. Taking the ratio $\lambda_{\max} / \lambda_{\min}$ establishes \eqref{eq:condition_number_bound}. $\blacksquare$
 
 **Three-Layer Methodological Architecture**:  
 Proposition 1 clarifies the rigorous boundary between theory, algorithm, and empirical evaluation:
-1. **Layer 1 (Mathematical Sufficient Condition)**: Proposition 1 proves that whenever unrefactored subdomains satisfy $\|E_j\|_2 \le \varepsilon < 1/2$, the spectral condition number of the stateful preconditioner is strictly bounded by $\frac{1}{1-2\varepsilon} \kappa(M_{\text{exact}}^{-1} A_t)$, guaranteeing that PCG iteration counts cannot blow up.
-2. **Layer 2 (Lightweight Selection Heuristic)**: In practice, calculating $\|E_j\|_2$ directly is cost-prohibitive. The cumulative-drift policy \eqref{eq:cumulative_drift_truncation} uses the inexpensive $\mathcal{O}(n_i)$ diagonal proxy $d_i^{\text{diag}}$ and age counter as a practical heuristic to identify and refactor the subdomains exhibiting significant drift, keeping skipped subdomains empirically within the low-$\varepsilon$ stability regime.
+1. **Layer 1 (Mathematical Sufficient Condition)**: Proposition 1 is a *conditional stability theorem*: it proves that whenever unrefactored subdomains satisfy $\|E_j\|_2 \le \varepsilon < 1/2$, the effective PCG condition number is strictly bounded by $\frac{1}{1-2\varepsilon} \kappa_{\text{PCG}}(M_{\text{exact}}^{-1} A_t)$.
+2. **Layer 2 (Lightweight Selection Heuristic)**: In practice, calculating $\|E_j\|_2$ directly is cost-prohibitive. The cumulative-drift policy \eqref{eq:cumulative_drift_truncation} does not mathematically guarantee $\varepsilon < 1/2$ a priori, but rather uses the inexpensive $\mathcal{O}(n_i)$ diagonal proxy $d_i^{\text{diag}}$ and age counter as a practical heuristic to identify and refactor high-drift subdomains, empirically keeping skipped subdomains within the low-$\varepsilon$ stability regime.
 3. **Layer 3 (Empirical Verification)**: The proxy rank fidelity ($\rho_s \in [0.79, 0.98]$) and convergence invariance ($K_{\text{JSR}} \approx K_{\text{Full}}$) are verified through rigorous benchmark sweeps.
 
-### 3.8 Generalization to Vector Continuum Mechanics: 3-D Damaged Linear Elasticity
+### 3.8 Operator-Family Generalization and Architectural Requirements: 3-D Damaged Linear Elasticity
 \label{subsec:elasticity_generalization}
 
-To demonstrate that the stateful maintenance framework is an algebraic operator strategy rather than an artifact of scalar diffusion, we formalize its extension to transient vector continuum mechanics. Consider the 3-D balance of linear momentum for an elastic body undergoing localized damage or phase softening:
+To establish the mathematical formulation and architectural design requirements for extending stateful selective maintenance beyond scalar diffusion to vector continuum mechanics, consider the 3-D balance of linear momentum for an elastic body undergoing localized progressive damage or phase softening:
 \begin{equation}
 -\nabla \cdot \boldsymbol{\sigma}(\boldsymbol{u}, t) = \boldsymbol{f}(x), \quad x \in \Omega = (0, 1)^3,
 \label{eq:elasticity_momentum}
@@ -262,24 +265,23 @@ where $\boldsymbol{u} = (u_1, u_2, u_3)^T$ is the displacement vector field, and
 \begin{equation}
 \boldsymbol{\sigma}(\boldsymbol{u}, t) = \mathbf{C}(x, t) : \boldsymbol{\varepsilon}(\boldsymbol{u}), \quad \boldsymbol{\varepsilon}(\boldsymbol{u}) = \frac{1}{2} \left( \nabla \boldsymbol{u} + (\nabla \boldsymbol{u})^T \right).
 \end{equation}
-The elasticity tensor degrades dynamically in regions of localized microcracking, shear banding, or thermal softening according to an isotropic or anisotropic damage variable $d(x, t) \in [0, 1)$:
+To ensure positive-definiteness throughout time evolution, we assume uniform strong ellipticity: there exist constants $0 < \alpha_C \le \beta_C < \infty$ such that:
 \begin{equation}
-\mathbf{C}(x, t) = \left( 1 - d(x, t) \right) \mathbf{C}_0(x) + d(x, t) \mathbf{C}_{\text{residual}},
-\label{eq:damage_constitutive}
+\alpha_C \|\boldsymbol{\xi}\|^2 \le \boldsymbol{\xi} : \mathbf{C}(x, t) : \boldsymbol{\xi} \le \beta_C \|\boldsymbol{\xi}\|^2, \quad \forall \boldsymbol{\xi} \in \mathbb{R}_{\text{sym}}^{3 \times 3}, \ \forall x \in \Omega, \ \forall t \ge 0.
+\label{eq:strong_ellipticity}
 \end{equation}
-where $\mathbf{C}_0(x)$ is the virgin heterogeneous stiffness tensor. Discretizing \eqref{eq:elasticity_momentum} via continuous Galerkin finite elements or second-order finite differences yields the $3 \times 3$ block sparse system:
+In localized damage mechanics, this is modeled via $\mathbf{C}(x, t) = (1 - d(x, t)) \mathbf{C}_0(x) + d(x, t) \mathbf{C}_{\text{residual}}$ with damage variable $d(x, t) \in [0, 1)$ and $\mathbf{C}_{\text{residual}} \succ 0$.
+
+Discretizing \eqref{eq:elasticity_momentum} via finite elements or finite differences yields the $3 \times 3$ block sparse system $A_t \boldsymbol{u}_t = \boldsymbol{b}_t \in \mathbb{R}^{3n \times 3n}$. Extending the stateful maintenance framework to this vector operator family introduces two key architectural requirements:
+1. **Block-Diagonal Operator-Drift Proxy**: For $3 \times 3$ nodal blocks, scalar diagonal traces can fail to capture off-diagonal shear coupling. We therefore define the block-diagonal Frobenius drift surrogate:
 \begin{equation}
-A_t \boldsymbol{u}_t = \boldsymbol{b}_t, \quad A_t \in \mathbb{R}^{3n \times 3n}.
+d_i^{\text{block}}(t) = \sqrt{\sum_{p \in \Omega_i} \left\| A_{t, pp} - A_{t-1, pp} \right\|_F^2},
+\label{eq:block_proxy}
 \end{equation}
-Crucially, the time rate of change of the discrete operator satisfies:
-\begin{equation}
-\partial_t A_t = \sum_{e \in \mathcal{E}_{\text{active}}(t)} \mathbf{K}_e(t), \quad \mathrm{supp}(\partial_t A_t) \subset \bigcup_{i \in \mathcal{S}_t} \Omega_i,
-\end{equation}
-where $\mathcal{E}_{\text{active}}(t) = \{ e : \partial_t d|_{e} \neq 0 \}$. As long as the physical damage or process zone remains localized ($|\mathrm{supp}(\partial_t A_t)| \ll |\Omega|$), the operator perturbation $\Delta A_t = A_t - A_{t-1}$ is restricted to a small spatial subset of subdomains. The diagonal drift proxy \eqref{eq:diag_proxy} evaluates the nodal trace norm across the three displacement components in $\mathcal{O}(n_i)$ time:
-\begin{equation}
-d_i^{\text{diag, elast}}(t) = \sqrt{\sum_{j \in \Omega_i} \sum_{c=1}^3 \left( A_{t, 3j+c, 3j+c} - A_{t-1, 3j+c, 3j+c} \right)^2}.
-\end{equation}
-This confirms that the stateful selective maintenance mechanism is strictly driven by the spatial localization of $\mathrm{supp}(\partial_t A_t)$ and the sublinear cost of the diagonal proxy, establishing broad cross-problem applicability across computational mechanics.
+where $A_{t, pp} \in \mathbb{R}^{3 \times 3}$ is the diagonal nodal block at spatial grid point $p$. Evaluating \eqref{eq:block_proxy} retains $\mathcal{O}(n_i)$ computational complexity while capturing the full tensor Frobenius norm of nodal stiffness variations. We emphasize that $d_i^{\text{block}}$ serves as an empirical drift surrogate rather than a certified norm-equivalent estimator of the global operator perturbation.
+2. **Vector Coarse Space Construction**: Unlike scalar problems where piecewise constant indicators suffice, vector elasticity requires coarse interpolation operators $Z \in \mathbb{R}^{3n \times 3M}$ that span rigid body modes (translations and infinitesimal rotations) or block-component partition indicators ($Z = Z_{\text{scalar}} \otimes I_3$) to prevent low-frequency locking.
+
+This analysis confirms that stateful selective maintenance is an algebraic operator strategy: the performance advantages translate directly to vector continuum mechanics whenever the physical damage zone is spatially localized ($|\mathrm{supp}(\partial_t A_t)| \ll |\Omega|$).
 
 ### 3.9 Algebraic Residual Certificate and Refinement
 To prevent premature termination from preconditioned residual scaling shifts, all solves are certified against the raw, unpreconditioned algebraic residual:
@@ -394,7 +396,7 @@ Mesh $N$ & DOFs & $T_{\text{monitor}}$ (ms) & $T_{\text{saved}}$ (ms) & $\eta_{\
 
 **Observations**:
 - For the tested structured-grid diffusion benchmark, the diagonal drift proxy achieves exact Pearson linear correlation ($r = 1.0000$) and Spearman rank correlation ($\rho_s \in [0.79, 0.98]$) with the full local Frobenius drift, showing strong empirical agreement in subdomain ranking at negligible computational cost.
-- **Negligible Monitoring Overhead**: Dual-metric profiling confirms that monitoring overhead is utterly negligible whether normalized against net setup savings ($\eta_{\text{mon}}^{\text{setup}} = T_{\text{monitor}} / T_{\text{saved}} \le 0.28\%$) or against total end-to-end wall-clock time ($\eta_{\text{mon}}^{\text{total}} = T_{\text{monitor}} / T_{\text{total}} \le 0.026\% \ll 0.1\%$). In absolute terms, computing $d_i^{\text{diag}}$ across the entire mesh takes $\le 0.222\text{ ms}$, ensuring sensing overhead does not erode the $\ge 110\text{ ms}$ saved in sparse factorizations.
+- **Negligible Monitoring Overhead**: Dual-metric profiling confirms that monitoring overhead is consistently small whether normalized against net setup savings ($\eta_{\text{mon}}^{\text{setup}} = T_{\text{monitor}} / T_{\text{saved}} \le 0.28\%$) or against total end-to-end wall-clock time ($\eta_{\text{mon}}^{\text{total}} = T_{\text{monitor}} / T_{\text{total}} \le 0.026\% \ll 0.1\%$). In absolute terms, computing $d_i^{\text{diag}}$ across the entire mesh takes $\le 0.222\text{ ms}$, ensuring sensing overhead does not erode the $\ge 110\text{ ms}$ saved in sparse factorizations.
 
 ### 4.4 Robustness of the Cumulative-Drift Truncation Policy (\texttt{mass\_alpha})
 To assess whether the cumulative-drift truncation parameter $\alpha$ is fragile, we conduct a sensitivity sweep across $\alpha \in [0.75, 0.99]$ on the $N=28$ mesh ($21,952$ DOFs).
@@ -424,13 +426,13 @@ $\alpha$ & $k_{\text{sel}}$ & $T_{\text{setup}}$ (s) & $T_{\text{solve}}$ (s) & 
 - Total execution time across $\alpha \in [0.85, 0.97]$ spans $[0.9267\text{ s}, 0.9624\text{ s}]$, corresponding to a maximum relative variation of only **3.80%**.
 - Confirms that $\alpha = 0.95$ lies comfortably within a broad near-optimal parameter plateau rather than requiring brittle tuning.
 
-### 4.5 Three-Dimensional Flagship Scalability Benchmark ($48^3$ Mesh)
+### 4.5 Three-Dimensional Mesh Resolution Sweep and Flagship Benchmark ($48^3$ Mesh)
 To demonstrate performance in a large-scale setup-dominated regime, we execute a mesh resolution sweep from $N=16$ up to $N=48$ ($110,592$ DOFs), partitioned into 8 octants with overlap $\delta = 1$.
 
 \begin{table}[htbp]
 \centering
 \small
-\caption{Mesh scalability sweep and empirical power-law factorization scaling.}
+\caption{Mesh resolution sweep and empirical power-law factorization scaling.}
 \label{tab:pillar5_scaling}
 \begin{tabular}{cccccccc}
 \hline
@@ -538,8 +540,8 @@ Step 4 & 11/27 (40.7\%) & 50 & \textbf{59} & 62 \\
 
 **Observations**:
 - **Negligible Coarse Setup Cost**: Assembling and factorizing the $27 \times 27$ Galerkin coarse system requires less than $0.08\text{ ms}$, representing $< 0.05\%$ of total step time. Thus, over 99.9\% of the computational setup savings are generated by selective local factor maintenance.
-- **Prevention of Long-Wave Spectral Degradation**: In the Local-Only policy, freezing the coarse space breaks the exact Galerkin orthogonality $Z^T (b_t - A_t x_t) = 0$ with respect to the evolved operator $A_t$. As the localized front advances, uncorrected low-frequency error modes accumulate, causing PCG iterations to steadily climb from 59 to 62 iterations.
-- **Role of Coarse Synchronization**: Updating the coarse space jointly locks the PCG iteration count firmly at $59 \pm 1$ iterations across all steps. This confirms that **coarse-space synchronization is introduced not for setup runtime reduction, but as an indispensable mathematical anchor to preserve global error damping and prevent long-wave spectral degradation**.
+- **Consistent Improvement over Local-Only Maintenance**: In the tested 27-subdomain, 4-step benchmark, jointly updating the coarse operator consistently reduces PCG iterations compared to freezing the coarse operator (58--60 iterations for Joint JSR vs. 59--62 iterations for Local-Only, an improvement of 1--3 iterations per step).
+- **Realistic Spectral Separation**: Notably, Joint JSR exhibits an approximate 14\%--18\% iteration overhead relative to Full Rebuild ($58 \sim 60$ iterations vs. $50 \sim 51$ iterations), reflecting the fact that skipping factorizations on $37\% \sim 59\%$ of subdomains inherently introduces a mild, bounded spectral deviation. The empirical evidence demonstrates that **coarse-space synchronization consistently improves the stability of partial maintenance and mitigates error accumulation across steps**, rather than rendering partial maintenance spectrally identical to full rebuild.
 
 ---
 
