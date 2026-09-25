@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSR 演化算子多层预条件器有状态联合维护 — 交互式动画实验实验室</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 背景动态科技光效 -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <header class="app-header">
+    <div class="header-left">
+      <div class="badge-tag">TOP JOURNAL · NUMERICAL HPC LAB</div>
+      <h1>JSR: 演化算子多层 Schwarz 预条件器有状态联合维护</h1>
+      <p class="subtitle">Stateful Joint Maintenance of Multilevel Schwarz Preconditioners for Evolving Operators</p>
+    </div>
+    <div class="header-right">
+      <div class="metric-chip">
+        <span class="label">网格规模</span>
+        <span class="value">146,689 自由度</span>
+      </div>
+      <div class="metric-chip">
+        <span class="label">子域切分</span>
+        <span class="value">64 局部子域 (2-Level)</span>
+      </div>
+      <div class="metric-chip highlight">
+        <span class="label">我们工作的核心策略</span>
+        <span class="value">mass95 局部 + 联合粗空间更新</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 全局主控制面板 -->
+  <nav class="control-panel glass-card">
+    <div class="timeline-controls">
+      <button id="btnPlayPause" class="btn btn-primary" title="播放 / 暂停演化动画">
+        <span class="icon">▶</span> <span id="lblPlayPause">开始演化仿真</span>
+      </button>
+      <button id="btnStep" class="btn btn-secondary" title="单步推进到下一个时间步">
+        <span class="icon">⏭</span> 步进 (Step)
+      </button>
+      <button id="btnReset" class="btn btn-ghost" title="重置到初始状态 t=0">
+        <span class="icon">↺</span> 重置 (Reset)
+      </button>
+
+      <div class="time-stepper">
+        <span class="step-label">时间步 <span id="currentStepBadge" class="badge">t = 0</span> / 7</span>
+        <div class="time-ticks">
+          <button class="tick-btn active" data-step="0">t0</button>
+          <button class="tick-btn" data-step="1">t1</button>
+          <button class="tick-btn" data-step="2">t2</button>
+          <button class="tick-btn" data-step="3">t3</button>
+          <button class="tick-btn" data-step="4">t4</button>
+          <button class="tick-btn" data-step="5">t5</button>
+          <button class="tick-btn" data-step="6">t6</button>
+          <button class="tick-btn" data-step="7">t7</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-toggles">
+      <div class="toggle-group">
+        <span class="group-title">物理演化场景:</span>
+        <button id="btnTrajBaseline" class="btn-toggle active" data-traj="baseline">平滑移动 (Baseline)</button>
+        <button id="btnTrajStress" class="btn-toggle" data-traj="stress">高应力移动界面 (Stress)</button>
+      </div>
+      <div class="toggle-group">
+        <span class="group-title">对比模式:</span>
+        <button id="btnModeCompare" class="btn-toggle active">三策略同屏对比竞速</button>
+        <button id="btnModeFocus" class="btn-toggle">单策略深度透视</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主布局区 -->
+  <main class="main-workspace">
+    <!-- 顶栏三策略对比实时状态卡片 -->
+    <section class="strategy-summary-grid">
+      <!-- 策略 A: 全量重构 -->
+      <div class="strategy-card glass-card card-rebuild" id="cardRebuild">
+        <div class="card-header">
+          <div class="strategy-badge badge-rebuild">基线策略 1</div>
+          <h3>步步全量重构 (Always Full Rebuild)</h3>
+          <span class="philosophy">“不信任任何旧缓存，每步将 64 个子域与粗网格全推倒重算”</span>
+        </div>
+        <div class="card-metrics">
+          <div class="m-box">
+            <span class="m-val" id="rebuildSetupTime">0.650s</span>
+            <span class="m-lbl">重构 Setup 开销 (高)</span>
+          </div>
+          <div class="m-box">
+            <span class="m-val" id="rebuildIters">14 步</span>
+            <span class="m-lbl">Krylov 求解步数 (稳)</span>
+          </div>
+          <div class="m-box highlight-cost">
+            <span class="m-val" id="rebuildTotalTime">0.820s</span>
+            <span class="m-lbl">单步总耗时 (开销浪费)</span>
+          </div>
+        </div>
+        <div class="card-status-bar">
+          <div class="bar-fill" id="rebuildBar" style="width: 75%"></div>
+        </div>
+      </div>
+
+      <!-- 策略 B: 永久复用 -->
+      <div class="strategy-card glass-card card-reuse" id="cardReuse">
+        <div class="card-header">
+          <div class="strategy-badge badge-reuse">基线策略 2</div>
+          <h3>永久复用旧缓存 (Always Blind Reuse)</h3>
+          <span class="philosophy">“从 t=0 彻底躺平，Setup 为 0，任由旧缓存随时间累积严重老化”</span>
+        </div>
+        <div class="card-metrics">
+          <div class="m-box">
+            <span class="m-val" id="reuseSetupTime">0.000s</span>
+            <span class="m-lbl">重构 Setup 开销 (零)</span>
+          </div>
+          <div class="m-box warning">
+            <span class="m-val" id="reuseIters">73 步 ⚠</span>
+            <span class="m-lbl">Krylov 求解步数 (暴涨)</span>
+          </div>
+          <div class="m-box highlight-danger">
+            <span class="m-val" id="reuseTotalTime">1.442s</span>
+            <span class="m-lbl">单步总耗时 (严重滞后)</span>
+          </div>
+        </div>
+        <div class="card-status-bar danger">
+          <div class="bar-fill" id="reuseBar" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- 策略 C: 我们的工作 JSR mass95 -->
+      <div class="strategy-card glass-card card-jsr active-hero" id="cardJSR">
+        <div class="card-header">
+          <div class="strategy-badge badge-jsr">★ 我们的核心工作 (Ours)</div>
+          <h3>JSR: 有状态维护 (mass95 + 联合粗网格刷新)</h3>
+          <span class="philosophy">“漂移感知 + 精准锁定 top 95% 扰动子域刷新 + 同步打补丁更新粗空间”</span>
+        </div>
+        <div class="card-metrics">
+          <div class="m-box win">
+            <span class="m-val" id="jsrSetupTime">0.095s</span>
+            <span class="m-lbl">精简 Setup 开销 (-85%)</span>
+          </div>
+          <div class="m-box win">
+            <span class="m-val" id="jsrIters">15 步</span>
+            <span class="m-lbl">Krylov 求解步数 (坚挺)</span>
+          </div>
+          <div class="m-box highlight-win">
+            <span class="m-val" id="jsrTotalTime">0.265s</span>
+            <span class="m-lbl">单步总耗时 (净加速 3.1x!)</span>
+          </div>
+        </div>
+        <div class="card-status-bar success">
+          <div class="bar-fill" id="jsrBar" style="width: 25%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心动画演示视口：物理域仿真网格 + 聚焦剖析 -->
+    <div class="simulation-stage-grid">
+      <!-- 左侧：2D 物理网格与预条件器状态动画画布 -->
+      <div class="canvas-panel glass-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="dot live"></span>
+            <h4>物理网格域动态仿真 (2D Moving Interface Domain)</h4>
+          </div>
+          <div class="layer-switches">
+            <label class="chip-checkbox"><input type="checkbox" id="chkShowHeat" checked> 物理移动热浪/界面</label>
+            <label class="chip-checkbox"><input type="checkbox" id="chkShowSubdomains" checked> 64 局部子域边界</label>
+            <label class="chip-checkbox"><input type="checkbox" id="chkShowCoarse" checked> L2 粗空间拓扑网</label>
+            <label class="chip-checkbox"><input type="checkbox" id="chkShowVectors"> 漂移梯度向量场</label>
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="meshCanvas" width="700" height="520"></canvas>
+          
+          <!-- 悬浮图例 -->
+          <div class="canvas-legend">
+            <div class="legend-item"><span class="box-ind healthy"></span> 正常复用 (Cached)</div>
+            <div class="legend-item"><span class="box-ind drift"></span> 漂移积累 (Drifting)</div>
+            <div class="legend-item"><span class="box-ind jsr-refresh"></span> JSR mass95 命中刷新 (Refreshed)</div>
+            <div class="legend-item"><span class="box-ind wave"></span> 物理演化移动界面 (Wave Front)</div>
+            <div class="legend-item"><span class="line-ind coarse"></span> 全局粗网格通信连边 (L2 Coarse)</div>
+          </div>
+
+          <!-- 子域鼠标悬浮提示气泡 -->
+          <div id="subdomainTooltip" class="subdomain-tooltip hidden">
+            <div class="tt-header">子域 #<span id="ttId">12</span> 详情</div>
+            <div class="tt-body">
+              <div><span>节点规模:</span> <span id="ttDof">2,289 DOFs</span></div>
+              <div><span>缓存年龄 (Age):</span> <span id="ttAge">2 步</span></div>
+              <div><span>漂移量 ||ΔA||_F:</span> <span id="ttDrift">1.48e-2</span></div>
+              <div><span>JSR 决策:</span> <span id="ttDecision" class="decision-badge">局部重构</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="canvas-footer">
+          <span class="tip-text">💡 交互提示：点击画布中的任意子域方块，可在右侧微观面板实时查看该子域的数学矩阵状态与决策链路。</span>
+        </div>
+      </div>
+
+      <!-- 右侧：深入剖析我们做的部分 (JSR 4 步闭环管线) -->
+      <div class="deep-dive-panel glass-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="icon-star">★</span>
+            <h4>我们工作的微观流水线 (JSR Pipeline Deep-Dive)</h4>
+          </div>
+          <div class="step-indicator">
+            <span class="pipe-step active" id="pStep1">1. 状态监测</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step" id="pStep2">2. mass95 筛选</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step" id="pStep3">3. 局部重算</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step" id="pStep4">4. 联合粗网格</span>
+          </div>
+        </div>
+
+        <!-- 步骤 1 & 2: 漂移监测与 mass95 动态截断排序直方图 -->
+        <div class="pipeline-card" id="pipeViewSelection">
+          <div class="pipe-section-title">
+            <h5>子域扰动量谱分布与 95% 累积能量截断 (mass95 Prefix Selection)</h5>
+            <span class="tag-calc">降序累积和 (Cumulative Mass)</span>
+          </div>
+          <p class="pipe-desc">
+            我们不盲目更新 50% 或全量更新，而是计算全部 64 个子域的累积扰动能量，按漂移量由大到小排序，只刷新<b>累积贡献达到 95% 的前缀子域</b>（其余 5% 微弱变化继续安全复用）。
+          </p>
+          <div class="mass-chart-container">
+            <div class="mass-bars-wrapper" id="massBarsWrapper">
+              <!-- JS 动态注入柱状图 -->
+            </div>
+            <div class="mass-cutoff-line" id="massCutoffLine">
+              <span class="cutoff-tag">mass95 截止线 (只刷新左侧 <span id="selectedCountText">8</span> 个高危子块)</span>
+            </div>
+          </div>
+          <div class="selection-summary">
+            <div class="sel-item">
+              <span class="s-label">本步选中刷新子域数:</span>
+              <span class="s-val highlight" id="statSelectedCount">8 / 64 (仅占 12.5% 算力)</span>
+            </div>
+            <div class="sel-item">
+              <span class="s-label">捕获扰动总量 (Mass Captured):</span>
+              <span class="s-val" id="statMassCaptured">95.42%</span>
+            </div>
+            <div class="sel-item">
+              <span class="s-label">粗空间联合更新 (Coarse Sync):</span>
+              <span class="s-val success" id="statCoarseSync">已激活 (Joint Enabled)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤 3 & 4: Phase 4 核心消融结论 (为什么要“联合”刷新粗网格？) -->
+        <div class="pipeline-card highlight-box">
+          <div class="pipe-section-title">
+            <h5>★ Phase 4 突破性科学发现：为什么不能仅刷新局部？</h5>
+            <span class="tag-phase4">Phase 4 Screening Pass (-0.1569s)</span>
+          </div>
+          <div class="ablation-contrast-grid">
+            <div class="ab-item bad">
+              <div class="ab-title">❌ 仅局部刷新 + 粗网格陈旧 (mass95_local_stale_coarse)</div>
+              <p>虽省下了粗空间计算时间，但由于局部子域更新后与旧粗网格基函数脱节，误差在边界跨域反弹泄漏，导致 Krylov 迭代暴增，<b>净得不偿失</b>！</p>
+            </div>
+            <div class="ab-item good">
+              <div class="ab-title">✔ 局部 mass95 + 联合粗网格刷新 (mass95_local_refresh_coarse)</div>
+              <p>局部只重算 8 个高危块，同时**同步组装并求逆全局粗矩阵 $A_0 = R A_t R^T$**，全局低频误差被瞬间吸收，Krylov 步数牢牢锁在 14~15 步！</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 当前选中子域实时信息卡 -->
+        <div class="inspected-subdomain-card" id="inspectCard">
+          <div class="card-mini-title">当前选中的局部子域微观状态 (Subdomain Deep Probe)</div>
+          <div class="mini-grid">
+            <div class="mg-cell"><span class="l">子域编号</span><span class="v" id="subId">#28 (移动热浪前沿)</span></div>
+            <div class="mg-cell"><span class="l">局部矩阵尺寸</span><span class="v">2,289 × 2,289</span></div>
+            <div class="mg-cell"><span class="l">局部条件数 κ(Ai)</span><span class="v" id="subCond">42.1 (良态)</span></div>
+            <div class="mg-cell"><span class="l">缓存状态决策</span><span class="v highlight" id="subAction">JSR mass95 局部求逆重构</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部双图表区：Krylov 迭代收敛动态轨迹 + 算力成本分配柱状图 -->
+    <section class="charts-section-grid">
+      <!-- 图表 1: Krylov 残差动态收敛曲线 (CG Iteration Convergence) -->
+      <div class="chart-panel glass-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="dot green"></span>
+            <h4>Krylov (CG) 实时残差收敛曲线 (True Residual Certificate: $10^{-8}$)</h4>
+          </div>
+          <div class="chart-legend-row">
+            <span class="leg-pill rebuild">全量重构 (14 步)</span>
+            <span class="leg-pill reuse">永久复用 (73~126 步缓慢收敛)</span>
+            <span class="leg-pill jsr">Ours: JSR 联合维护 (15 步极速达标)</span>
+          </div>
+        </div>
+        <div class="canvas-chart-box">
+          <canvas id="krylovChart" width="560" height="240"></canvas>
+        </div>
+        <div class="chart-caption">
+          纵轴为对数相对真实残差 $\log_{10}(\|r_k\| / \|b\|)$，虚线为预注册外部证书阈值 $1.0 \times 10^{-8}$。JSR 曲线几乎与全量重构完全重合，且迭代无拖尾。
+        </div>
+      </div>
+
+      <!-- 图表 2: 真实时间账本分解 (Setup vs Solve Cost Breakdown) -->
+      <div class="chart-panel glass-card">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="dot blue"></span>
+            <h4>完整端到端时间开销账本 (Complete Scored Transition Cost)</h4>
+          </div>
+          <div class="chart-legend-row">
+            <span class="leg-pill setup-color">预条件器 Setup 开销 (秒)</span>
+            <span class="leg-pill solve-color">Krylov 求解 Apply 开销 (秒)</span>
+          </div>
+        </div>
+        <div class="canvas-chart-box">
+          <canvas id="costChart" width="560" height="240"></canvas>
+        </div>
+        <div class="chart-caption">
+          JSR 将耗时最沉重的 Setup 缩减了 80% 以上，同时避免了 Reuse 的求解暴涨，最终取得整条时间线的全局最低综合总耗时。
+        </div>
+      </div>
+    </section>
+
+    <!-- Phase 5 专题：为什么 Sparse GAMG 会出现 Gate Fail？(科学边界实验室) -->
+    <section class="phase5-sandbox glass-card">
+      <div class="sandbox-header">
+        <div class="sh-left">
+          <span class="badge-tag danger">PHASE 5 科学边界探索</span>
+          <h3>从 Dense 原型到 PETSc Sparse GAMG：成本比率翻转之谜</h3>
+        </div>
+        <div class="sh-right">
+          <span class="tag-status">可靠性 100% 通过 · 性能 Gate FAIL</span>
+        </div>
+      </div>
+
+      <div class="sandbox-content-grid">
+        <div class="sandbox-explanation">
+          <p>
+            在前面 Phase 4 的稠密原型中，<b>Setup 非常贵</b>，省掉 Setup 就能大赚；但在 Phase 5 切换到工业级 PETSc 稀疏 GAMG 后，<b>Setup 只有 0.18 秒，而每步 CG 极其轻快（0.016 秒）</b>。
+            当旧层次结构导致迭代数从 14 涨到 100 步时，多跑的 86 步（消耗 1.37 秒）彻底吞噬了省下的 0.18 秒 Setup，导致负收益。
+          </p>
+          <div class="ratio-interactive-box">
+            <div class="slider-row">
+              <label>调节底层硬件/算法求解器特征比率 ($\rho = \text{Setup单耗} / \text{Solve单步耗时}$):</label>
+              <input type="range" id="ratioSlider" min="5" max="150" value="70">
+              <span id="ratioDisplay" class="slider-val">70x (稠密逆原型区)</span>
+            </div>
+            <div class="verdict-banner" id="verdictBanner">
+              <span class="v-icon">✔</span>
+              <span class="v-text">当前区间：Setup 占据绝对瓶颈，<b>JSR 有状态维护获得大幅净加速 (Net Win)</b>！</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sandbox-table">
+          <table>
+            <thead>
+              <tr>
+                <th>测试环境 / 后端</th>
+                <th>Setup 耗时</th>
+                <th>CG 单步耗时</th>
+                <th>Reuse 策略表现</th>
+                <th>JSR 维护表现</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Dense 机制原型 (Phase 4)</b></td>
+                <td>0.65 秒 (极贵)</td>
+                <td>0.018 秒</td>
+                <td>后期迭代发散崩盘</td>
+                <td><span class="status-win">净加速 -0.1569s (Win!)</span></td>
+              </tr>
+              <tr class="highlight-row">
+                <td><b>PETSc 稀疏 GAMG (Phase 5)</b></td>
+                <td>0.18 秒 (很便宜)</td>
+                <td>0.016 秒</td>
+                <td><span class="status-fail">慢了 +0.6127s (Gate Fail)</span></td>
+                <td>需自适应高频阈值截断</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 底部：论文成果与核心论据梳理 -->
+    <footer class="app-footer glass-card">
+      <div class="footer-col">
+        <h4>论文核心结论 (Reviewer Defense)</h4>
+        <p>1. <b>因果闭环</b>：严格无未来信息泄露，所有状态更新严格依赖当前步之前数据。</p>
+        <p>2. <b>数学可靠性</b>：100% 通过独立外部真实残差证书（Residual Certificate），遇到突变具有确定性回滚安全机制。</p>
+      </div>
+      <div class="footer-col">
+        <h4>顶刊主要图表映射</h4>
+        <p>• Fig 2: 演化算子时间线与 mass95 能量前缀截断直方图</p>
+        <p>• Fig 3: 粗网格联合更新消融实验对比曲线 (Fixed-Basis vs Changing-Basis)</p>
+        <p>• Tab 1: Phase 2–7 全阶段多物理场验证独立审计报告</p>
+      </div>
+      <div class="footer-col">
+        <h4>环境与复现</h4>
+        <p>Python 3.12 · PETSc 3.12.4 · 146,689 DOFs · Two-Level Schwarz Framework</p>
+        <p>© 2026 HPC State-Aware Preconditioning Research Group</p>
+      </div>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

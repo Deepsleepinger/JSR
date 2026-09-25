@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stateful-schwarz-jsr"
+version = "1.0.0"
+description = "Stateful Selective Maintenance of Two-Level Schwarz Preconditioners for Evolving Sparse Linear Systems"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+    { name = "JSR Research Group" }
+]
+keywords = [
+    "domain-decomposition",
+    "schwarz-preconditioner",
+    "scientific-computing",
+    "sparse-linear-solvers",
+    "computational-mechanics",
+    "evolving-pde"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dependencies = [
+    "numpy>=1.19.0",
+    "scipy>=1.5.0",
+]
+
+[project.optional-dependencies]
+petsc = ["petsc4py>=3.12.0"]
+test = ["pytest>=6.0.0"]
