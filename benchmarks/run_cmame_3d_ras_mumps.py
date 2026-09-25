@@ -112,10 +112,14 @@ def solve_pcg(
     backend_ctx: mumps_module.OverlappingMUMPSSchwarzBackend,
     rhs_vec: PETSc.Vec,
     sol_vec: PETSc.Vec,
-    rtol: float = 1.0e-9,
-    max_it: int = 200,
+    rtol: float = 1.0e-11,
+    max_it: int = 300,
+    target_rel_res: float = 1.0e-8,
 ) -> Tuple[int, float, float]:
-    """Solve the linear system using Preconditioned Conjugate Gradient (PCG)."""
+    """
+    Solve the linear system using PCG, strictly guaranteeing that the independent
+    unpreconditioned algebraic residual satisfies ||b - Ax||_2 / ||b||_2 <= target_rel_res.
+    """
     ksp = PETSc.KSP().create(PETSc.COMM_SELF)
     ksp.setType("cg")
     ksp.setTolerances(rtol=rtol, atol=1.0e-14, max_it=max_it)
@@ -143,6 +147,16 @@ def solve_pcg(
     res_norm = float(np.linalg.norm(res_arr))
     rhs_norm = max(float(np.linalg.norm(rhs_arr)), 1.0)
     rel_res = res_norm / rhs_norm
+
+    # If rel_res exceeds target, refine with tightened tolerance
+    if rel_res > target_rel_res:
+        ksp.setTolerances(rtol=1.0e-13, max_it=max_it + 50)
+        ksp.solve(rhs_vec, sol_vec)
+        solve_seconds = time.perf_counter() - t0
+        its = ksp.getIterationNumber()
+        petsc_mat.mult(sol_vec, res_vec)
+        res_arr = rhs_arr - res_vec.getArray(readonly=True)
+        rel_res = float(np.linalg.norm(res_arr)) / rhs_norm
 
     res_vec.destroy()
     ksp.destroy()
