@@ -64,6 +64,8 @@ results/*
 !results/monitor_family_case_b_n28.json
 !results/repeated_timing_case_b_n28.json
 !results/repeated_timing_50steps_n28.json
+!results/subdomain_scaling_pressure.json
+!results/multi_front_starvation_stress.json
 data/
 logs/
 

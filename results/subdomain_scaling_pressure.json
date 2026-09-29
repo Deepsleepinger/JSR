@@ -1,0 +1,394 @@
+[
+  {
+    "n_sub": 8,
+    "grid": "2x2x2",
+    "budget_k": 3,
+    "mean_sub_dof": 4913,
+    "arms": {
+      "one_level_selective": {
+        "label": "1-Level Selective Schwarz",
+        "use_coarse": false,
+        "is_full": false,
+        "mean_iters": 45.166666666666664,
+        "max_iters": 48,
+        "min_iters": 43,
+        "iters_history": [
+          43,
+          43,
+          44,
+          46,
+          47,
+          48
+        ],
+        "total_solve_sec": 5.495333414932247,
+        "total_setup_sec": 0.5669324718764983,
+        "total_wall_sec": 6.062265886808746,
+        "mean_solve_sec": 0.9158889024887079,
+        "mean_setup_sec": 0.09448874531274971,
+        "max_rel_res": 5.750497878340567e-10
+      },
+      "two_level_jsr": {
+        "label": "2-Level JSR-relL2",
+        "use_coarse": true,
+        "is_full": false,
+        "mean_iters": 46.666666666666664,
+        "max_iters": 48,
+        "min_iters": 45,
+        "iters_history": [
+          45,
+          45,
+          47,
+          47,
+          48,
+          48
+        ],
+        "total_solve_sec": 5.765765024058055,
+        "total_setup_sec": 0.5707655789447017,
+        "total_wall_sec": 6.336530603002757,
+        "mean_solve_sec": 0.9609608373430092,
+        "mean_setup_sec": 0.09512759649078362,
+        "max_rel_res": 1.4639534492396959e-09
+      },
+      "one_level_full": {
+        "label": "1-Level Full Rebuild",
+        "use_coarse": false,
+        "is_full": true,
+        "mean_iters": 44.666666666666664,
+        "max_iters": 46,
+        "min_iters": 43,
+        "iters_history": [
+          43,
+          43,
+          44,
+          46,
+          46,
+          46
+        ],
+        "total_solve_sec": 5.043507870985195,
+        "total_setup_sec": 1.48876996897161,
+        "total_wall_sec": 6.532277839956805,
+        "mean_solve_sec": 0.8405846451641992,
+        "mean_setup_sec": 0.248128328161935,
+        "max_rel_res": 4.5487995994768927e-10
+      },
+      "two_level_full": {
+        "label": "2-Level Full Rebuild",
+        "use_coarse": true,
+        "is_full": true,
+        "mean_iters": 46.833333333333336,
+        "max_iters": 49,
+        "min_iters": 45,
+        "iters_history": [
+          45,
+          46,
+          47,
+          47,
+          47,
+          49
+        ],
+        "total_solve_sec": 5.61662848101696,
+        "total_setup_sec": 1.4827652569510974,
+        "total_wall_sec": 7.099393737968057,
+        "mean_solve_sec": 0.93610474683616,
+        "mean_setup_sec": 0.2471275428251829,
+        "max_rel_res": 1.5647341520997325e-09
+      }
+    },
+    "iter_bifurcation_ratio": 0.9678571428571429,
+    "solve_bifurcation_ratio": 0.9530970117586455
+  },
+  {
+    "n_sub": 27,
+    "grid": "3x3x3",
+    "budget_k": 10,
+    "mean_sub_dof": 1876,
+    "arms": {
+      "one_level_selective": {
+        "label": "1-Level Selective Schwarz",
+        "use_coarse": false,
+        "is_full": false,
+        "mean_iters": 62.0,
+        "max_iters": 63,
+        "min_iters": 61,
+        "iters_history": [
+          61,
+          62,
+          63,
+          63,
+          62,
+          61
+        ],
+        "total_solve_sec": 7.81637386593502,
+        "total_setup_sec": 0.506074306962546,
+        "total_wall_sec": 8.322448172897566,
+        "mean_solve_sec": 1.3027289776558366,
+        "mean_setup_sec": 0.084345717827091,
+        "max_rel_res": 2.4651613164351567e-10
+      },
+      "two_level_jsr": {
+        "label": "2-Level JSR-relL2",
+        "use_coarse": true,
+        "is_full": false,
+        "mean_iters": 59.0,
+        "max_iters": 60,
+        "min_iters": 58,
+        "iters_history": [
+          58,
+          59,
+          59,
+          60,
+          60,
+          58
+        ],
+        "total_solve_sec": 7.949683676008135,
+        "total_setup_sec": 0.5454652910120785,
+        "total_wall_sec": 8.495148967020214,
+        "mean_solve_sec": 1.3249472793346893,
+        "mean_setup_sec": 0.09091088183534642,
+        "max_rel_res": 2.1648137684696143e-09
+      },
+      "one_level_full": {
+        "label": "1-Level Full Rebuild",
+        "use_coarse": false,
+        "is_full": true,
+        "mean_iters": 62.0,
+        "max_iters": 63,
+        "min_iters": 61,
+        "iters_history": [
+          61,
+          62,
+          63,
+          63,
+          62,
+          61
+        ],
+        "total_solve_sec": 7.94704472203739,
+        "total_setup_sec": 1.4036559270462021,
+        "total_wall_sec": 9.350700649083592,
+        "mean_solve_sec": 1.3245074536728982,
+        "mean_setup_sec": 0.23394265450770035,
+        "max_rel_res": 2.4978004792193474e-10
+      },
+      "two_level_full": {
+        "label": "2-Level Full Rebuild",
+        "use_coarse": true,
+        "is_full": true,
+        "mean_iters": 58.833333333333336,
+        "max_iters": 60,
+        "min_iters": 58,
+        "iters_history": [
+          58,
+          59,
+          59,
+          60,
+          59,
+          58
+        ],
+        "total_solve_sec": 8.184626661008224,
+        "total_setup_sec": 1.4270419959793799,
+        "total_wall_sec": 9.611668656987604,
+        "mean_solve_sec": 1.3641044435013707,
+        "mean_setup_sec": 0.23784033266323,
+        "max_rel_res": 2.1864657893830646e-09
+      }
+    },
+    "iter_bifurcation_ratio": 1.0508474576271187,
+    "solve_bifurcation_ratio": 0.9832308031984418
+  },
+  {
+    "n_sub": 64,
+    "grid": "4x4x4",
+    "budget_k": 24,
+    "mean_sub_dof": 857,
+    "arms": {
+      "one_level_selective": {
+        "label": "1-Level Selective Schwarz",
+        "use_coarse": false,
+        "is_full": false,
+        "mean_iters": 69.0,
+        "max_iters": 70,
+        "min_iters": 68,
+        "iters_history": [
+          68,
+          70,
+          69,
+          69,
+          69,
+          69
+        ],
+        "total_solve_sec": 10.45703400700586,
+        "total_setup_sec": 0.520671127946116,
+        "total_wall_sec": 10.977705134951975,
+        "mean_solve_sec": 1.7428390011676431,
+        "mean_setup_sec": 0.08677852132435267,
+        "max_rel_res": 1.353924440125805e-10
+      },
+      "two_level_jsr": {
+        "label": "2-Level JSR-relL2",
+        "use_coarse": true,
+        "is_full": false,
+        "mean_iters": 60.166666666666664,
+        "max_iters": 61,
+        "min_iters": 60,
+        "iters_history": [
+          61,
+          60,
+          60,
+          60,
+          60,
+          60
+        ],
+        "total_solve_sec": 9.083792139019351,
+        "total_setup_sec": 0.5217243400984444,
+        "total_wall_sec": 9.605516479117796,
+        "mean_solve_sec": 1.5139653565032252,
+        "mean_setup_sec": 0.08695405668307406,
+        "max_rel_res": 1.3509541540874833e-09
+      },
+      "one_level_full": {
+        "label": "1-Level Full Rebuild",
+        "use_coarse": false,
+        "is_full": true,
+        "mean_iters": 69.0,
+        "max_iters": 70,
+        "min_iters": 68,
+        "iters_history": [
+          68,
+          70,
+          68,
+          69,
+          69,
+          70
+        ],
+        "total_solve_sec": 9.731642649043351,
+        "total_setup_sec": 1.2549399849958718,
+        "total_wall_sec": 10.986582634039223,
+        "mean_solve_sec": 1.6219404415072252,
+        "mean_setup_sec": 0.20915666416597864,
+        "max_rel_res": 1.3781516449940298e-10
+      },
+      "two_level_full": {
+        "label": "2-Level Full Rebuild",
+        "use_coarse": true,
+        "is_full": true,
+        "mean_iters": 60.333333333333336,
+        "max_iters": 61,
+        "min_iters": 60,
+        "iters_history": [
+          61,
+          61,
+          60,
+          60,
+          60,
+          60
+        ],
+        "total_solve_sec": 9.442078165069688,
+        "total_setup_sec": 1.3521458369796164,
+        "total_wall_sec": 10.794224002049305,
+        "mean_solve_sec": 1.5736796941782814,
+        "mean_setup_sec": 0.22535763949660273,
+        "max_rel_res": 1.3531145728642593e-09
+      }
+    },
+    "iter_bifurcation_ratio": 1.1468144044321331,
+    "solve_bifurcation_ratio": 1.1511749550155115
+  },
+  {
+    "n_sub": 125,
+    "grid": "5x5x5",
+    "budget_k": 47,
+    "mean_sub_dof": 636,
+    "arms": {
+      "one_level_selective": {
+        "label": "1-Level Selective Schwarz",
+        "use_coarse": false,
+        "is_full": false,
+        "mean_iters": 81.0,
+        "max_iters": 81,
+        "min_iters": 81,
+        "iters_history": [
+          81,
+          81,
+          81,
+          81,
+          81,
+          81
+        ],
+        "total_solve_sec": 18.487940592109226,
+        "total_setup_sec": 0.7230219760676846,
+        "total_wall_sec": 19.21096256817691,
+        "mean_solve_sec": 3.081323432018204,
+        "mean_setup_sec": 0.12050366267794743,
+        "max_rel_res": 1.0484188599677968e-10
+      },
+      "two_level_jsr": {
+        "label": "2-Level JSR-relL2",
+        "use_coarse": true,
+        "is_full": false,
+        "mean_iters": 61.833333333333336,
+        "max_iters": 62,
+        "min_iters": 61,
+        "iters_history": [
+          62,
+          62,
+          62,
+          62,
+          62,
+          61
+        ],
+        "total_solve_sec": 14.648652510950342,
+        "total_setup_sec": 0.7488789201015607,
+        "total_wall_sec": 15.397531431051902,
+        "mean_solve_sec": 2.4414420851583905,
+        "mean_setup_sec": 0.12481315335026011,
+        "max_rel_res": 1.2650967162593528e-09
+      },
+      "one_level_full": {
+        "label": "1-Level Full Rebuild",
+        "use_coarse": false,
+        "is_full": true,
+        "mean_iters": 81.0,
+        "max_iters": 81,
+        "min_iters": 81,
+        "iters_history": [
+          81,
+          81,
+          81,
+          81,
+          81,
+          81
+        ],
+        "total_solve_sec": 18.16078373097116,
+        "total_setup_sec": 1.8261936720227823,
+        "total_wall_sec": 19.986977402993944,
+        "mean_solve_sec": 3.0267972884951937,
+        "mean_setup_sec": 0.304365612003797,
+        "max_rel_res": 1.0503464895751211e-10
+      },
+      "two_level_full": {
+        "label": "2-Level Full Rebuild",
+        "use_coarse": true,
+        "is_full": true,
+        "mean_iters": 61.833333333333336,
+        "max_iters": 62,
+        "min_iters": 61,
+        "iters_history": [
+          62,
+          62,
+          62,
+          62,
+          62,
+          61
+        ],
+        "total_solve_sec": 14.412852309003938,
+        "total_setup_sec": 1.8785424849484116,
+        "total_wall_sec": 16.29139479395235,
+        "mean_solve_sec": 2.402142051500656,
+        "mean_setup_sec": 0.3130904141580686,
+        "max_rel_res": 1.2591470594995618e-09
+      }
+    },
+    "iter_bifurcation_ratio": 1.3099730458221024,
+    "solve_bifurcation_ratio": 1.2620915526727725
+  }
+]
