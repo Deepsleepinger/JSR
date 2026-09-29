@@ -62,6 +62,8 @@ results/*
 !results/case_b_starvation_heatmap.pdf
 !results/monitor_family_50steps_n28.json
 !results/monitor_family_case_b_n28.json
+!results/repeated_timing_case_b_n28.json
+!results/repeated_timing_50steps_n28.json
 data/
 logs/
 
