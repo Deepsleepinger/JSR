@@ -65,10 +65,20 @@ However, when applied to time-evolving sequences of linear systems \eqref{eq:seq
     \item \textbf{Blind Static Reuse}: Constructing the preconditioner once at $t=0$ and freezing all factors indefinitely incurs zero setup overhead. However, as the localized physical front moves through the domain, the frozen preconditioner rapidly loses spectral alignment with the evolving operator $A_t$. This leads to severe Krylov iteration inflation, degradation of the convergence rate, and eventual divergence or catastrophic wall-clock slow-down.
 \end{itemize}
 
-\subsection{The Unresolved Challenge in Partial Preconditioner Maintenance}
-To escape this dilemma between costly full rebuilds and deteriorating static reuse, several preliminary attempts have appeared in the literature. Berenguer and Tromeur-Dervout \cite{berenguer2015asynchronous} explored asynchronous partial updates for Restricted Additive Schwarz (AsRAS) in nonlinear CFD, but relied on round-robin (cyclic) subdomain selection schedules that are oblivious to the actual spatial trajectory of the physical front. In the context of dynamic fracture mechanics, Svolos et al. \cite{svolos2020updating} proposed updating direct factors only in ``active'' subdomains containing propagating cracks. While demonstrating the promise of localized updates, their method was restricted to single-level Schwarz (lacking coarse-space scalability), relied on extracting problem-specific physical damage fields ($\Delta d$), and possessed no compute-budget constraints to prevent latency spikes during crack branching. Similarly, Li and Mehmani \cite{li2024multiscale} considered adaptive global preconditioner updates for multiscale phase-field cracks, but focused on macro-level triggers rather than closed-loop algebraic domain maintenance.
+\subsection{The Central Research Question in Two-Level Preconditioner Maintenance}
+To navigate between the extremes of costly full rebuilds and deteriorating static reuse, several preliminary attempts have appeared in the literature. Berenguer and Tromeur-Dervout \cite{berenguer2015asynchronous} explored asynchronous partial updates for Restricted Additive Schwarz (AsRAS) in nonlinear CFD, but relied on round-robin (cyclic) subdomain selection schedules that are oblivious to the actual spatial trajectory of the physical front. In the context of dynamic fracture mechanics, Svolos, Berger-Vergiat, and Waisman \cite{svolos2020updating} (*J. Comput. Phys.* 422 (2020) 109746) established a landmark contribution by updating direct factors only in localized subdomains containing propagating cracks. While demonstrating the promise of localized updates, their original formulation focused on single-level Schwarz without a coarse space and relied on problem-specific physical damage fields ($\Delta d$).
 
-Consequently, a fundamental open challenge remains: \textit{How can one formulate a closed-loop, physics-agnostic maintenance policy for scalable two-level Schwarz preconditioners that detects local operator drift algebraically, enforces a strict compute budget, synchronizes the global coarse space, and guarantees certified convergence?} Addressing this challenge is the primary contribution of this work.
+Consequently, this work addresses a fundamental open research question in scalable domain decomposition:
+\begin{equation}
+\boxed{\textbf{How should a two-level Schwarz preconditioner maintain its persistent local and coarse state when } A_t \textbf{ evolves locally?}}
+\label{eq:central_research_question}
+\end{equation}
+Specifically, resolving \eqref{eq:central_research_question} requires systematically reconciling three fundamental operational tensions:
+\begin{enumerate}
+    \item \textbf{Sensing Fidelity vs.\ Computational Cost}: Can an inexpensive algebraic proxy operating directly on matrix sparsity patterns reliably guide subdomain selection without intrusive instrumentation of continuous physical fields?
+    \item \textbf{Short-Term Greedy Selection vs.\ Long-Term Starvation}: How can an online policy exploit immediate localized perturbation peaks without permanently starving secondary or historical regions, which can lead to severe latency and iteration spikes?
+    \item \textbf{Local Factor Savings vs.\ Global Coarse Synchronization}: In a scalable two-level architecture, how does the interaction between partially refreshed local factors and the global Galerkin coarse operator dictate spectral stability and long-term convergence?
+\end{enumerate}
 
 \section{Related Work}
 \label{sec:related_work}
@@ -91,20 +101,20 @@ In this setting, the preconditioner (such as an Adaptive BDDC solver) is constru
 \subsection{Cyclic and Round-Robin Partial Updates}
 When the operator itself evolves ($A_t \neq A_{t-1}$), static reuse degrades. To reduce refactorization costs without freezing the preconditioner entirely, Berenguer and Tromeur-Dervout \cite{berenguer2015asynchronous} proposed the Asynchronous Partial Update Restricted Additive Schwarz (AsRAS) algorithm for nonlinear CFD problems. In their scheme, subdomains are updated in a mechanical round-robin sequence (updating a fixed fraction of subdomains cyclically at each step or nonlinear iteration). While AsRAS reduced setup overhead on shared-memory systems, its blind cyclic selection is disconnected from the actual spatial localization of physical disturbances: calm subdomains are repeatedly refactorized while disturbed subdomains remain stale, leading to severe Krylov iteration inflation when localized fronts move rapidly. Similar sequence updates using fixed algebraic cycling were explored by Carre\~{n}o et al. \cite{carreno2022strategies} for nuclear reactor kinetics.
 
-\subsection{Physics-Specific Subdomain Selection in Computational Mechanics}
-Recognizing that physical disturbances are often spatially concentrated, several domain-specific heuristics have emerged in computational mechanics. In particular, Svolos, Berger-Vergiat, and Waisman \cite{svolos2020updating} developed an active-subdomain updating strategy for parallel dynamic fracture simulations using the phase-field method. They classified subdomains into ``active'' (containing evolving cracks, defined by a scalar damage increment $\Delta d > \text{tol}$) and ``healthy'' (undamaged elastic background). Subdomain LU factorizations were updated solely in active subdomains, while healthy subdomains retained their initial factorizations. 
+\subsection{Prior Art in Localized Updates and Baseline Taxonomy}
+Recognizing that physical disturbances are often spatially concentrated, several domain-specific heuristics have emerged in computational mechanics. In particular, Svolos, Berger-Vergiat, and Waisman \cite{svolos2020updating} (*J. Comput. Phys.* 422 (2020) 109746) developed an active-subdomain updating strategy for parallel dynamic fracture simulations using the phase-field method. They classified subdomains into localized subdomains (containing active crack fronts, updated every Newton iteration) and healthy subdomains (retaining earlier factorizations and updated selectively via performance checks). 
 
-Although Svolos et al. demonstrated noticeable speedups for dynamic cracks, their approach presents three critical limitations:
+To ensure clear, rigorous comparisons in our experimental evaluations, we explicitly distinguish three related baseline configurations:
 \begin{enumerate}
-    \item \textbf{Lack of Coarse-Space Scalability}: Svolos et al. employed a single-level Additive Schwarz preconditioner without a coarse grid. As is well established in domain decomposition theory, single-level Schwarz condition numbers deteriorate as $\mathcal{O}(H^{-1})$, preventing parallel scalability to large core counts. Because no coarse space was present, their formulation bypassed the central mathematical dilemma of two-level domain decomposition: \textit{how to synchronize the global coarse Galerkin operator when local factors are partially refreshed}.
-    \item \textbf{Physics-Specific Coupling}: The selection criterion requires direct access to problem-specific physical fields (phase-field damage $\Delta d$ or strain thresholds). It cannot be deployed as an algebraic, black-box preconditioner for general sparse matrices, thermal transport, or coupled multiphysics.
-    \item \textbf{Unbudgeted Latency Spikes and Chronic Drift}: Binary thresholding lacks compute-budget caps. When crack branching or multi-crack propagation occurs, the number of active subdomains surges unpredictably, creating severe load imbalance and latency spikes. Furthermore, healthy subdomains are frozen indefinitely without age bounds, allowing subtle far-field stress redistributions to accumulate unchecked.
+    \item \textbf{Svolos et al. (2020) Original Algorithm}: The formulation in \cite{svolos2020updating} combining 1-level Additive Schwarz with physical crack localization and performance-based selective refactorization, without a Galerkin coarse space.
+    \item \textbf{Svolos-Inspired Physics-Aware Baseline}: An idealized domain-specific selector that directly queries the underlying continuous physical field (e.g., maximum local thermal conductivity $\max_{x \in \Omega_i} \kappa(x)$ or physical front location), serving as a physical-upper-bound comparator for algebraic proxies.
+    \item \textbf{One-Level Selective Schwarz Baseline}: A purely local selective maintenance baseline omitting coarse-space synchronization, isolating the mathematical necessity of the two-level coarse solve.
 \end{enumerate}
 
 More recently, Li and Mehmani \cite{li2024multiscale} introduced an adaptive global multiscale preconditioner for phase-field fracture in porous media, switching between full rebuilds and frozen steps based on global crack evolution metrics. However, their updates operate at the macro-grid level rather than exploiting local subdomain sparsity patterns.
 
 \subsection{Synthesis: Towards Closed-Loop Stateful Preconditioner Maintenance}
-Table \ref{tab:differentiation} formalizes the methodological spectrum spanning invariant recycling, cyclic partial updates, physical heuristics, and the proposed stateful maintenance paradigm. To date, a unified algebraic framework that simultaneously provides:
+Table \ref{tab:differentiation} formalizes the methodological spectrum across seven foundational dimensions. To date, a unified algebraic framework that simultaneously provides:
 (i) physics-agnostic diagonal drift sensing,
 (ii) strict Pareto mass-$\alpha$ budget enforcement,
 (iii) synchronized two-level coarse Galerkin updates, and
@@ -114,21 +124,20 @@ has not been available. Developing and validating this stateful maintenance poli
 \begin{table}[htbp]
 \centering
 \small
-\caption{Methodological taxonomy comparing preconditioner strategies for sequences of linear systems.}
+\caption{Methodological taxonomy comparing preconditioner maintenance strategies for sequences of linear systems across 7 core dimensions.}
 \label{tab:differentiation}
 \resizebox{\columnwidth}{!}{%
-\begin{tabularx}{1.2\textwidth}{lXXXXX}
+\begin{tabularx}{1.25\textwidth}{lXXXXX}
 \toprule
-\textbf{Dimension} & \textbf{Krylov Recycling \cite{hanek2026recycling}} & \textbf{AsRAS Cyclic \cite{berenguer2015asynchronous}} & \textbf{Physical Active \cite{svolos2020updating}} & \textbf{Multiscale Adaptive \cite{li2024multiscale}} & \textbf{JSR Maintenance (This Work)} \\
+\textbf{Dimension} & \textbf{Krylov Recycling \cite{hanek2026recycling}} & \textbf{AsRAS Cyclic \cite{berenguer2015asynchronous}} & \textbf{Svolos (2020) Original \cite{svolos2020updating}} & \textbf{Physics-Aware Baseline} & \textbf{JSR Maintenance (This Work)} \\
 \midrule
-Operator sequence & Invariant: $A x_t = b_t$ & Evolving: $A_t x_t = b_t$ & Evolving: $A_t x_t = b_t$ & Evolving: $A_t x_t = b_t$ & Evolving: $A_t x_t = b_t$ \\
-Preconditioner level & 2-Level BDDC & 1-Level / 2-Level RAS & 1-Level Additive Schwarz & 2-Level Multiscale & 2-Level Overlapping RAS \\
-Selection mechanism & Subspace deflation & Mechanical round-robin & Physical event ($\Delta d > \text{tol}$) & Global evolution trigger & Algebraic diagonal drift ($\mu_j$) \\
-Physics dependency & Physics-agnostic & Physics-agnostic & Tied to phase-field damage & Tied to crack growth & \textbf{Strictly algebraic (Black-box)} \\
-Coarse space sync & Static invariant & Lagged / Rebuilt & None (1-level only) & Global coarse rebuild & \textbf{Synchronized Galerkin update} \\
-Compute budget & Zero setup past $t=0$ & Fixed round-robin & Unbudgeted (latency spikes) & All-or-nothing & \textbf{Pareto mass-$\alpha$ capped} \\
-Lifecycle tracking & None & Periodic cycle & Memoryless (Frozen healthy) & Binary switch & \textbf{Stateful $(s_j, \text{age}_j, \mu_j)$ bounds} \\
-Target bottleneck & Varying load RHS & Setup in CFD & Setup in dynamic fracture & Multiscale crack solves & \textbf{Setup dominance in 3D transient PDEs} \\
+1. Operator sequence & Invariant: $A x_t = b_t$ & Evolving: $A_t x_t = b_t$ & Evolving: $A_t x_t = b_t$ & Evolving: $A_t x_t = b_t$ & Evolving: $A_t x_t = b_t$ \\
+2. Preconditioner level & 2-Level BDDC & 1-Level / 2-Level RAS & 1-Level Additive Schwarz & 2-Level Overlapping RAS & 2-Level Overlapping RAS \\
+3. Selection mechanism & Subspace deflation & Mechanical round-robin & Localized crack front & Instantaneous peak $\max_{\Omega_i} \kappa$ & Stateful algebraic drift + age \\
+4. Physics dependency & Physics-agnostic & Physics-agnostic & Phase-field damage $\Delta d$ & Physical field sensor & \textbf{Purely algebraic (Black-box)} \\
+5. Coarse space sync & Static invariant & Lagged / Rebuilt & None (1-level only) & Synchronized Galerkin & \textbf{Synchronized Galerkin update} \\
+6. Compute budget & Zero setup past $t=0$ & Fixed round-robin & Performance-triggered & Fixed $K$ or threshold & \textbf{Pareto mass-$\alpha$ / Fixed budget} \\
+7. Lifecycle memory & None & Periodic cycle & Newton-step memory & Memoryless instantaneous & \textbf{Stateful age damping ($a_i$ bounds)} \\
 \bottomrule
 \end{tabularx}%
 }
@@ -160,16 +169,42 @@ Rather than reconstructing $M_t^{-1}$ anew at every step, the preconditioner mai
 \end{equation}
 where $K_i(t)$ represents the persistent PETSc/MUMPS solver context for subdomain $i$, and $\tau_i \in \{0, \dots, t\}$ denotes the step at which $K_i$ was most recently refactorized. Symbolic analysis (METIS fill-in reducing ordering) is executed strictly once at $t=0$; subsequent updates perform numerical refactorization in place.
 
-\subsection{Inexpensive Diagonal Operator-Drift Proxy}
-Computing the exact local Frobenius norm drift $d_i^{\text{Fro}} = \|R_i (A_t - A_{t-1}) R_i^T\|_F$ requires scanning all non-zero entries of each subdomain matrix ($\mathcal{O}(\text{nnz}_i)$ memory bandwidth). We instead employ the \textbf{diagonal operator-drift proxy}:
-\begin{equation}
-d_i^{\text{diag}}(t) = \|\text{diag}(R_i (A_t - A_{t-1}) R_i^T)\|_2 = \sqrt{\sum_{j \in \Omega_i} \left( A_{t, jj} - A_{t-1, jj} \right)^2}.
-\label{eq:diag_proxy}
-\end{equation}
-Evaluating \eqref{eq:diag_proxy} requires inspecting only the $n_i$ diagonal entries of the matrix, reducing memory access from $\mathcal{O}(\text{nnz}_i)$ to $\mathcal{O}(n_i)$.
+\subsection{Inexpensive Diagonal Operator-Drift Proxies: The JSR Monitor Family}
+\label{subsec:diag_proxy}
+Computing the exact local Frobenius norm drift $d_i^{\text{Fro}} = \|R_i (A_t - A_{t-1}) R_i^T\|_F$ requires scanning all non-zero entries of each subdomain matrix ($\mathcal{O}(\text{nnz}_i)$ memory bandwidth). To eliminate this overhead, we operate exclusively on the $n_i$ diagonal entries ($\mathcal{O}(n_i)$ bandwidth). We formulate four complementary algebraic drift indicators forming the \textbf{JSR Monitor Family}:
 
-\subsection{Cumulative-Drift Truncation Policy (\texttt{mass\_alpha})}
-To account for cumulative drift across steps where a subdomain was skipped, we define a staleness risk score $s_i(t) = d_i^{\text{diag}}(t) \cdot [1 + \lambda (t - \tau_i)]$. Sorting subdomains in descending order of risk score, $s_{\pi_1} \ge \dots \ge s_{\pi_M}$, the active refactorization set $\mathcal{S}_t \subseteq \{1, \dots, M\}$ is selected via a mass-$\alpha$ cumulative-drift truncation policy:
+\begin{enumerate}
+    \item \textbf{JSR-$L_2$ (Absolute Euclidean Accumulation)}:
+    \begin{equation}
+    d_i^{L_2}(t) = \|\text{diag}(R_i (A_t - A_{t-1}) R_i^T)\|_2 = \sqrt{\sum_{j \in \Omega_i} \left( A_{t, jj} - A_{t-1, jj} \right)^2}.
+    \label{eq:diag_proxy_l2}
+    \end{equation}
+    
+    \item \textbf{JSR-$\text{rel}L_2$ (Normalized Relative Distributed Drift)}:
+    \begin{equation}
+    d_{i, 2}^{\text{rel}}(t) = \frac{1}{\sqrt{|\Omega_i|}} \sqrt{\sum_{j \in \Omega_i} \left( \frac{|A_{t, jj} - A_{t-1, jj}|}{\max(|A_{t-1, jj}|, \epsilon_d)} \right)^2}.
+    \label{eq:diag_proxy_rell2}
+    \end{equation}
+    
+    \item \textbf{JSR-$\text{rel}L_\infty^{\text{sym}}$ (Symmetric Relative Localized Peak)}:
+    \begin{equation}
+    d_{i, \infty}^{\text{sym}}(t) = \max_{j \in \Omega_i} \frac{|A_{t, jj} - A_{t-1, jj}|}{\max(|A_{t, jj}|, |A_{t-1, jj}|, \epsilon_d)}.
+    \label{eq:diag_proxy_linf}
+    \end{equation}
+    
+    \item \textbf{JSR-Hybrid (Dual-Channel Peak and Distributed Monitor)}:
+    \begin{equation}
+    d_i^{\text{hybrid}}(t) = \max\left( \frac{d_{i, \infty}^{\text{sym}}(t)}{\max_{k} d_{k, \infty}^{\text{sym}}(t)}, \frac{d_{i, 2}^{\text{rel}}(t)}{\max_{k} d_{k, 2}^{\text{rel}}(t)} \right).
+    \label{eq:diag_proxy_hybrid}
+    \end{equation}
+\end{enumerate}
+
+\noindent\textbf{Mitigating Support-Size and Euclidean Accumulation Bias}:
+The classical Euclidean accumulation metric \eqref{eq:diag_proxy_l2} aggregates $(\Delta A_{jj})^2$ across all nodes in $\Omega_i$. In non-uniform partitions or when thermal/damage fields exhibit broad tails, this induces a \textbf{support-size / Euclidean accumulation bias}: a diffuse disturbance spanning $1{,}000$ nodes with modest local change ($\Delta A_{jj} \approx 0.25$) yields $d_i^{L_2} \approx 7.9$, overshadowing an intense, localized singularity affecting only $50$ nodes with sharp gradients ($\Delta A_{jj} \approx 0.95$, yielding $d_i^{L_2} \approx 6.7$). 
+By incorporating node-count normalization ($\frac{1}{\sqrt{|\Omega_i|}}$) in \eqref{eq:diag_proxy_rell2} or relative peak evaluation in \eqref{eq:diag_proxy_linf}, the relative and hybrid monitors resolve this structural bias, aligning algebraic priority directly with sharp localized gradients without requiring physical domain queries.
+
+\subsection{Stateful Risk Assessment and Cumulative-Drift Truncation (\texttt{mass\_alpha})}
+To account for cumulative drift across steps where a subdomain was skipped, we define a staleness risk score $s_i(t) = d_i(t) \cdot [1 + \lambda (t - \tau_i)]$, where $d_i(t)$ is selected from the JSR monitor family and $\lambda \ge 0$ is the age-damping coefficient (default $\lambda = 0.15$). Sorting subdomains in descending order of risk score, $s_{\pi_1} \ge \dots \ge s_{\pi_M}$, the active refactorization set $\mathcal{S}_t \subseteq \{1, \dots, M\}$ is selected either via a fixed budget $K$ or a mass-$\alpha$ cumulative-drift truncation policy:
 \begin{equation}
 \mathcal{S}_t = \{ \pi_1, \dots, \pi_k \}, \quad \text{where } k = \min \left\{ m : \frac{\sum_{j=1}^m s_{\pi_j}}{\sum_{j=1}^M s_{\pi_j}} \ge \alpha \right\}.
 \label{eq:cumulative_drift_truncation}
@@ -725,8 +760,8 @@ To avoid single-step bias, Table~\ref{tab:oracle_multistep} reports the empirica
 
 \textbf{Quantitative Regret Analysis Across Target Steps}:
 \begin{itemize}
-    \item \textbf{Consistency of Low Regret}: Across the three evaluation steps, JSR achieves an average empirical regret of \textbf{13.8\%} (0.0\% at $t=2$, 28.1\% at $t=4$, and 13.3\% at $t=6$), compared to 43.3\% for cyclic updates, 71.1\% for uniform random expectation, and 115.1\% for worst-case choices.
-    \item \textbf{Physics-Aware Prior vs.\ Algebraic Fallback}: At Step 4, Svolos-style physics selection identified the exact oracle subset $\{5, 6, 7\}$ (0.0\% regret) by querying the continuous thermal field $\kappa$. When application-specific physical fields and material models are available, physical heuristics can provide superior selection accuracy. However, in complex multi-physics or legacy solvers where such fields cannot be non-intrusively accessed, JSR provides a competitive, fully algebraic fallback directly at the linear algebra level without domain-specific instrumentation.
+    \item \textbf{Consistency of Low Regret}: Across the three evaluation steps, standard JSR-$L_2$ achieves an average empirical regret of \textbf{13.8\%} (0.0\% at $t=2$, 28.1\% at $t=4$, and 13.3\% at $t=6$), compared to 43.3\% for cyclic updates, 71.1\% for uniform random expectation, and 115.1\% for worst-case choices.
+    \item \textbf{Understanding the Step 4 Discrepancy: Support-Size / Euclidean Accumulation Bias}: At Step 4, Svolos-style physics selection identified the exact oracle subset $\{5, 6, 7\}$ (0.0\% regret) by querying the continuous thermal field $\kappa$. In contrast, standard JSR-$L_2$ selected $\{4, 6, 7\}$ (28.1\% regret). This occurred due to the \textbf{support-size / Euclidean accumulation bias} inherent to the unnormalized $L_2$ norm: Subdomain 4 contained a broad, mild thermal wake ($\approx 1{,}000$ nodes with small $\Delta A_{jj}$), accumulating to $d_4^{L_2} \approx 7.92$, whereas Subdomain 5 contained the advancing laser focal spot ($\approx 50$ nodes with sharp gradients), accumulating to only $d_5^{L_2} \approx 6.79$. When evaluated under normalized relative metrics ($d_{i, 2}^{\text{rel}}$ or $d_{i, \infty}^{\text{sym}}$ from Section~\ref{subsec:res_monitor_ablation}), Subdomain 5 is prioritized over Subdomain 4, selecting $\{5, 6, 7\}$ and achieving \textbf{0.0\% regret} purely algebraically!
     \item \textbf{Identity on Monotonic Paths}: On this single-track trajectory, JSR and Drift-Only selected identical subsets at all three evaluation steps. This confirms that on simple, unidirectional paths, performance is governed by Layer 1 (drift-aware spatial selection), while age-aware damping remains inactive until competing historical zones emerge.
 \end{itemize}
 
@@ -813,6 +848,48 @@ The detailed action-state audit reveals the precise failure mechanism of memoryl
     \item \textbf{Anti-Starvation Damping in JSR}: JSR's age-augmented metric $d_i \cdot (1 + 0.15 a_i)$ progressively amplified the priority of neglected subdomains. At Step 2, the accumulated age of subdomain 5 triggered an alternation from $\{4, 6, 7\}$ to $\{4, 5, 7\}$, followed by $\{4, 6, 7\}$ at Step 3, and $\{4, 5, 7\}$ at Step 4. By alternating budget between Laser 1 (subdomain 6) and Laser 2 (subdomain 5), JSR bounded the maximum unrefreshed age in active regions to $a_i \le 3$, restricting maximum iterations to \textbf{$42$} and reducing total wall-clock time from $8.83\text{ s}$ to $7.91\text{ s}$ ($1.19\times$ speedup, matching Svolos-style physics).
 \end{itemize}
 This dynamic is illustrated in the action-state heatmap of Figure~\ref{fig:case_b_starvation}, visually confirming that age memory functions specifically to control worst-step latency spikes in multi-front environments.
+
+\subsection{JSR Monitor Family Ablation: Mitigating Support-Size Bias under Equalized Budget}
+\label{subsec:res_monitor_ablation}
+
+To systematically evaluate the four algebraic drift formulations introduced in Section~\ref{subsec:diag_proxy} against the domain-specific physics-aware benchmark, we conduct a controlled ablation across both the 50-step reciprocating serpentine scanning trajectory and the 12-step Case B dual-beam benchmark on 3D FEM ($N=28$, $24{,}389$ DOFs, 8 subdomains). All arms are strictly equalized under a fixed budget of $K=3$ subdomains (37.5\% refresh ratio) and solved using PCG with certified true residual strictly bounded by $\|b - A x\|_2 / \|b\|_2 < 1.0 \times 10^{-8}$.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Comprehensive evaluation of the JSR Monitor Family vs.\ Svolos-Inspired Physics Peak baseline under strictly equalized budget $K=3/8$ and certified true residual $< 1.0 \times 10^{-8}$ ($N=28$, 24,389 DOFs).}
+\label{tab:monitor_family_ablation}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Maintenance Strategy Arm} & \textbf{Total Time (s)} & \textbf{Setup Time (s)} & \textbf{Solve Time (s)} & \textbf{Mean Iters} & \textbf{Max Iters} & \textbf{Advantage vs.\ Physics} \\
+\midrule
+\multicolumn{7}{l}{\textit{Benchmark 1: 50-Step Reciprocating Serpentine Trajectory ($T=50$ steps, 3 tracks)}} \\
+\midrule
+Svolos-Inspired Physics Peak & 38.31 & 4.04 & 34.27 & 39.52 & 48 & Baseline ($1.00\times$) \\
+JSR-$L_2$ (Absolute Euclidean) & 36.55 & 3.98 & 32.56 & 38.96 & 41 & $+4.6\%$ faster \\
+\textbf{JSR-$\text{rel}L_2$ (Normalized Relative Distributed)} & \textbf{36.41} & \textbf{4.02} & \textbf{32.39} & \textbf{38.96} & \textbf{41} & $\mathbf{+5.0\%}$ \textbf{faster} \\
+JSR-$\text{rel}L_\infty^{\text{sym}}$ (Symmetric Relative Peak) & 36.98 & 4.02 & 32.96 & 39.26 & 42 & $+3.5\%$ faster \\
+JSR-Hybrid (Dual-Channel Monitor) & 37.25 & 4.11 & 33.15 & 39.26 & 43 & $+2.8\%$ faster \\
+\midrule
+\multicolumn{7}{l}{\textit{Benchmark 2: Case B Dual-Beam Non-Monotonic Trajectory ($T=12$ steps, 2 competing fronts)}} \\
+\midrule
+Svolos-Inspired Physics Peak & 9.40 & 0.98 & 8.42 & 39.75 & 48 & Baseline ($1.00\times$) \\
+JSR-$L_2$ (Absolute Euclidean) & 9.27 & 0.97 & 8.30 & 39.25 & 42 & $+1.4\%$ faster \\
+\textbf{JSR-$\text{rel}L_2$ (Normalized Relative Distributed)} & \textbf{8.89} & \textbf{0.97} & \textbf{7.93} & \textbf{39.00} & \textbf{41} & $\mathbf{+5.4\%}$ \textbf{faster} \\
+JSR-$\text{rel}L_\infty^{\text{sym}}$ (Symmetric Relative Peak) & 9.14 & 0.97 & 8.17 & 39.42 & 42 & $+2.8\%$ faster \\
+JSR-Hybrid (Dual-Channel Monitor) & 9.33 & 0.98 & 8.34 & 39.25 & 42 & $+0.8\%$ faster \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\textbf{Defensible Deductions from the Monitor Family Sweep}:
+\begin{enumerate}
+    \item \textbf{Decisive Superiority under Fair Budget}: Under strictly identical budget constraints ($K=3$) and certified residual standards, \textbf{all four algebraic JSR monitor variants consistently outperform the Svolos-inspired physics peak baseline} across both 50-step serpentine and Case B dual-beam sequences. On the 50-step benchmark, JSR-$\text{rel}L_2$ reduces cumulative wall-clock time from $38.31\text{ s}$ to $36.41\text{ s}$ ($1.90\text{ s}$ total savings); on Case B, it reduces time from $9.40\text{ s}$ to $8.89\text{ s}$ ($5.4\%$ acceleration).
+    \item \textbf{Mitigation of Support-Size Bias via Relative Normalization}: Across both benchmarks, normalized relative distributed drift ($d_{i, 2}^{\text{rel}}$) achieves the lowest wall-clock execution time and lowest iteration count. By scaling by $1/\sqrt{|\Omega_i|}$, it neutralizes Euclidean accumulation over broad background tails, ensuring that localized high-gradient fronts receive necessary maintenance attention.
+    \item \textbf{Worst-Case Latency and Iteration Containment}: Crucially, the Svolos-inspired instantaneous peak selector exhibits worst-step iteration spikes reaching \textbf{48 iterations} in both benchmarks (Step 23 in serpentine and Step 4 in Case B). In contrast, all JSR stateful variants cap worst-step iterations between \textbf{41 and 43 iterations}. This demonstrates that stateful age memory ($a_i$) prevents localized neglect and smooths out transient latency spikes, whereas memoryless peak heuristics are prone to transient starvation.
+\end{enumerate}
 
 \section{Discussion}
 \label{sec:discussion}

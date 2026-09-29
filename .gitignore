@@ -60,6 +60,8 @@ results/*
 !results/case_b_starvation_audit.json
 !results/case_b_starvation_heatmap.png
 !results/case_b_starvation_heatmap.pdf
+!results/monitor_family_50steps_n28.json
+!results/monitor_family_case_b_n28.json
 data/
 logs/
 
