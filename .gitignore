@@ -66,6 +66,20 @@ results/*
 !results/repeated_timing_50steps_n28.json
 !results/subdomain_scaling_pressure.json
 !results/multi_front_starvation_stress.json
+!results/four_regime_budget_response.json
+!results/budget_response_surface_multifront.json
+!results/ab_jsr_controller_evaluation.json
+!results/compound_regime_shift_stress.json
+!results/stepwise_oracle_regret_study.json
+!results/held_out_generalization_suite.json
+!results/figure_four_regime_budget_response.png
+!results/figure_four_regime_budget_response.pdf
+!results/figure_compound_stress_controller.png
+!results/figure_compound_stress_controller.pdf
+!results/figure_stepwise_oracle_and_correlation.png
+!results/figure_stepwise_oracle_and_correlation.pdf
+!results/figure_held_out_generalization.png
+!results/figure_held_out_generalization.pdf
 data/
 logs/
 

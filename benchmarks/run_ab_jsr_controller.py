@@ -50,13 +50,16 @@ from benchmarks.run_four_regime_budget_response import assemble_regime_trajector
 
 class AdaptiveBudgetController:
     """
-    Causal controller for dynamically selecting subdomain maintenance budget K_t.
+    Causal controller for dynamically adapting subdomain maintenance budget K_t
+    to the detected operator evolution regime, equipped with hysteresis and cooldown.
     """
     def __init__(
         self,
         n_sub: int = 8,
         alpha_catchment: float = 0.80,
-        tau_rebuild: float = 0.22,
+        tau_up: float = 0.22,
+        tau_down: float = 0.15,
+        cooldown_steps: int = 2,
         tau_quiesce: float = 1.0e-4,
         n_panic: int = 70,
         beta_age: float = 0.15,
@@ -64,11 +67,21 @@ class AdaptiveBudgetController:
     ):
         self.n_sub = n_sub
         self.alpha_catchment = alpha_catchment
-        self.tau_rebuild = tau_rebuild
+        self.tau_up = tau_up
+        self.tau_down = tau_down
+        self.cooldown_steps = cooldown_steps
         self.tau_quiesce = tau_quiesce
         self.n_panic = n_panic
         self.beta_age = beta_age
         self.k_min = k_min
+
+        # Internal state for hysteresis
+        self.is_escalated = False
+        self.cooldown_remaining = 0
+
+    def reset(self):
+        self.is_escalated = False
+        self.cooldown_remaining = 0
 
     def decide_budget_and_subdomains(
         self,
@@ -79,7 +92,7 @@ class AdaptiveBudgetController:
     ) -> Tuple[int, List[int], str, Dict[str, float]]:
         """
         Decides K_t and returns (K_t, selected_subdomains, decision_reason, metrics).
-        Strictly causal: uses pre-solve drifts and previous step's iteration count.
+        Strictly causal: uses pre-solve drifts, previous step's iteration count, and controller state.
         """
         M = self.n_sub
         stateful_scores = [raw_scores[i] * (1.0 + self.beta_age * ages[i]) for i in range(M)]
@@ -95,21 +108,40 @@ class AdaptiveBudgetController:
             "G_t": g_t,
             "top1_score": sorted_scores[0],
             "top2_score": sorted_scores[1] if M > 1 else 0.0,
+            "cooldown_remaining": float(self.cooldown_remaining),
+            "is_escalated": 1.0 if self.is_escalated else 0.0,
         }
 
-        # Case 1: Quiescence -> Frozen Reuse
+        # Case 1: Quiescence -> Frozen Local Factors
         if s_tot <= self.tau_quiesce:
+            self.is_escalated = False
+            self.cooldown_remaining = 0
             return 0, [], "quiescent_reuse", metrics
 
-        # Case 2: Severe global churn -> Full Rebuild
-        if g_t >= self.tau_rebuild:
-            metrics["q_val"] = 1.0
-            return M, list(range(M)), f"global_churn_escalation (G_t={g_t:.3f}>={self.tau_rebuild})", metrics
+        # Case 2: Escalation trigger (Fast escalation on high risk)
+        trigger_churn = (g_t >= self.tau_up)
+        trigger_distress = (prev_iters is not None and prev_iters >= self.n_panic)
 
-        # Case 3: Solver distress feedback from step t-1 -> Full Rebuild or Boost
-        if prev_iters is not None and prev_iters >= self.n_panic:
+        if trigger_churn or trigger_distress:
+            self.is_escalated = True
+            self.cooldown_remaining = self.cooldown_steps
             metrics["q_val"] = 1.0
-            return M, list(range(M)), f"solver_distress_escalation (iter_prev={prev_iters}>={self.n_panic})", metrics
+            reason = f"escalation_trigger (G_t={g_t:.3f}>={self.tau_up})" if trigger_churn else f"solver_distress_escalation (iter_prev={prev_iters}>={self.n_panic})"
+            return M, list(range(M)), reason, metrics
+
+        # Case 3: Hysteresis / Cooldown (Slow de-escalation)
+        if self.is_escalated:
+            if g_t >= self.tau_down:
+                self.cooldown_remaining = self.cooldown_steps
+                metrics["q_val"] = 1.0
+                return M, list(range(M)), f"sustained_escalation (G_t={g_t:.3f}>={self.tau_down})", metrics
+            else:
+                if self.cooldown_remaining > 0:
+                    self.cooldown_remaining -= 1
+                    metrics["q_val"] = 1.0
+                    return M, list(range(M)), f"cooldown_holding (remaining={self.cooldown_remaining})", metrics
+                else:
+                    self.is_escalated = False
 
         # Case 4: Risk concentration catchment Q_k >= alpha
         cum_s = np.cumsum(sorted_scores)
@@ -153,7 +185,9 @@ def run_adaptive_budget_regime(
 
     c_params = {
         "alpha_catchment": 0.80,
-        "tau_rebuild": 0.22,
+        "tau_up": 0.22,
+        "tau_down": 0.15,
+        "cooldown_steps": 2,
         "tau_quiesce": 1.0e-4,
         "n_panic": 70,
         "beta_age": 0.15,
@@ -165,7 +199,7 @@ def run_adaptive_budget_regime(
     print("=" * 115)
     print(f"   AB-JSR CAUSAL CONTROLLER EVALUATION: {desc.upper()}")
     print(f"   Mesh: UnitCubeMesh({mesh_n}) | Steps: {total_steps} | dt: {dt}")
-    print(f"   Controller: alpha={c_params['alpha_catchment']} | tau_rebuild={c_params['tau_rebuild']} | n_panic={c_params['n_panic']}")
+    print(f"   Controller: alpha={c_params['alpha_catchment']} | tau_up={c_params['tau_up']} | tau_down={c_params['tau_down']} | cooldown={c_params['cooldown_steps']}")
     print(f"   Certified PCG Residual < 1.0e-8")
     print("=" * 115)
 
@@ -186,7 +220,9 @@ def run_adaptive_budget_regime(
     controller = AdaptiveBudgetController(
         n_sub=n_sub,
         alpha_catchment=c_params["alpha_catchment"],
-        tau_rebuild=c_params["tau_rebuild"],
+        tau_up=c_params["tau_up"],
+        tau_down=c_params["tau_down"],
+        cooldown_steps=c_params["cooldown_steps"],
         tau_quiesce=c_params["tau_quiesce"],
         n_panic=c_params["n_panic"],
         beta_age=c_params["beta_age"],
@@ -331,14 +367,18 @@ def main():
                         choices=["gentle_single_front", "case_b_dual_beam", "serpentine_50", "multi_front_churn", "all"])
     parser.add_argument("--mesh-n", type=int, default=24)
     parser.add_argument("--alpha", type=float, default=0.80)
-    parser.add_argument("--tau-rebuild", type=float, default=0.22)
+    parser.add_argument("--tau-up", type=float, default=0.22)
+    parser.add_argument("--tau-down", type=float, default=0.15)
+    parser.add_argument("--cooldown-steps", type=int, default=2)
     parser.add_argument("--n-panic", type=int, default=70)
     parser.add_argument("--out", type=str, default="results/ab_jsr_controller_evaluation.json")
     args = parser.parse_args()
 
     c_params = {
         "alpha_catchment": args.alpha,
-        "tau_rebuild": args.tau_rebuild,
+        "tau_up": args.tau_up,
+        "tau_down": args.tau_down,
+        "cooldown_steps": args.cooldown_steps,
         "tau_quiesce": 1.0e-4,
         "n_panic": args.n_panic,
         "beta_age": 0.15,

@@ -223,7 +223,7 @@ def run_compound_benchmark(
     ]
 
     arm_labels = {
-        "frozen_reuse_k0": "Frozen Static Reuse (K=0)",
+        "frozen_reuse_k0": "Frozen Local Factors (Sync Coarse, K=0)",
         "fixed_budget_k1": "Low Budget JSR (Fixed K=1)",
         "fixed_budget_k2": "Mid-Low Budget JSR (Fixed K=2)",
         "fixed_budget_k3": "Conventional JSR (Fixed K=3)",
@@ -237,7 +237,9 @@ def run_compound_benchmark(
     controller = AdaptiveBudgetController(
         n_sub=n_sub,
         alpha_catchment=0.80,
-        tau_rebuild=0.22,
+        tau_up=0.22,
+        tau_down=0.15,
+        cooldown_steps=2,
         tau_quiesce=1.0e-4,
         n_panic=70,
         beta_age=0.15,
