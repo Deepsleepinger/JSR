@@ -652,55 +652,89 @@ To rigorously answer why statefulness, age memory, and coarse synchronization ar
 2. **Why Svolos-style Physical Detection Lags**: Under certified residual convergence, Svolos-style physics selection suffered an acute iteration spike to 85 iterations ($T_{\text{solve}} = 6.03\text{ s}$) at Step 3. Because it relies on absolute thermal intensity ($\kappa > \kappa_{\text{tol}}$), it repeatedly refactored the previously heated zone and missed the newly advancing wavefront into subdomain 7. JSR's algebraic rate of change captured subdomain 7 immediately, maintaining $45.5$ mean iterations and a $1.28\times \sim 1.30\times$ speedup (12 percentage points faster than Svolos-style).
 3. **Short-Horizon Coarse Impact**: On a small 8-subdomain partition over 6 steps, the difference between refreshed coarse vs. stale coarse is modest ($45.5$ vs. $45.7$ iterations), confirming that local direct factors dominate high-frequency correction in short bursts, while coarse synchronization acts as an insurance policy against long-horizon drift.
 
-### 4.10 Combinatorial Fixed-Budget and Unconstrained Oracle Analysis
-To establish rigorous combinatorial ground truth, we formulate two distinct oracle problems on the 8-subdomain partition ($N=24$, $15,625$ DOFs) with certified residual $< 1.0 \times 10^{-8}$:
-1. **Unconstrained Oracle**: Evaluates all $2^8 = 256$ subsets across all cardinalities $K \in \{0, \dots, 8\}$:
-   $$S^* = \arg\min_{S \subseteq \{0, \dots, 7\}} T(S), \quad T^* = \min_{S \subseteq \{0, \dots, 7\}} T(S).$$
-2. **Fixed-Budget Oracle ($K=3$)**: Evaluates all $\binom{8}{3} = 56$ subsets of exact cardinality $K = 3$, providing a strictly fair constrained ground truth:
-   $$S_3^* = \arg\min_{|S|=3} T(S), \quad T_3^* = \min_{|S|=3} T(S).$$
+### 4.10 Multi-Step Fixed-Budget Combinatorial Empirical Oracle Analysis
+To evaluate online selection quality against combinatorial ground truth, we define the **Fixed-Budget Empirical Oracle** on the 8-subdomain partition ($N=24$, $15,625$ DOFs) with certified true PCG residual strictly bounded by $\|b - A x\|_2 / \|b\|_2 < 1.0 \times 10^{-8}$. At any target step $t$, the empirical oracle evaluates all $\binom{8}{3} = 56$ subsets of cardinality $K=3$:
+$$S_3^*(t) = \arg\min_{|S|=3} T_{\text{total}}(S, t), \quad T_3^*(t) = \min_{|S|=3} T_{\text{total}}(S, t).$$
+The algorithmic regret of an online selector $P$ choosing subset $S_P(t)$ is defined as:
+$$\text{Regret}_P(t) = \frac{T_{\text{total}}(S_P(t), t) - T_3^*(t)}{T_3^*(t)} \times 100\%.$$
 
-| Strategy Policy ($K=3$ Budget) | Selected Mask | Setup (s) | Solve (s) | Total (s) | Iters | Regret vs. $S_3^*$ |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **FIXED-BUDGET ORACLE ($K=3$)** | **[5, 6, 7]** | **0.0402** | **0.4424** | **0.4826** | **50** | **0.0%** |
-| **JSR Stateful Selector ($K=3$)** | **[4, 5, 7]** | **0.0400** | **0.5209** | **0.5609** | **59** | **16.2%** |
-| Drift-Only Selector ($K=3$) | [4, 5, 7] | 0.0400 | 0.5209 | 0.5609 | 59 | 16.2% |
-| Physics-Aware (Svolos-style, $K=3$) | [4, 5, 6] | 0.0401 | 0.5431 | 0.5832 | 59 | 20.8% |
-| Age-Only Selector ($K=3$) | [0, 1, 2] | 0.0408 | 0.5455 | 0.5863 | 63 | 21.5% |
-| Cyclic (AsRAS-style, $K=3$) | [3, 4, 5] | 0.0379 | 0.5738 | 0.6117 | 64 | 26.8% |
-| Random Expectation (All 56 Subsets) | $\mathbb{E}[S \in \binom{8}{3}]$ | --- | --- | 0.6204 | 62.1 | 28.6% |
-| Worst Achievable Subset ($K=3$) | [1, 2, 4] | 0.0460 | 0.8306 | 0.8766 | 64 | 81.6% |
+To avoid single-step bias, the table below reports empirical oracle evaluations across three representative time steps: $t=2$ (early penetration), $t=4$ (mid-trajectory steady state), and $t=6$ (exit boundary).
 
-Out of all 56 possible 3-subdomain combinations, the theoretical optimum is $S_3^* = \{5, 6, 7\}$ ($0.4826\text{ s}$). Operating purely online without combinatorial search, JSR selected $\{4, 5, 7\}$, incurring an algorithmic regret of **16.2%**. By comparison, Svolos-style physics selection chose $\{4, 5, 6\}$ (incurring **20.8% regret**) because it was blinded by the peak heat in subdomain 4 and missed the advancing wavefront into subdomain 7. Cyclic updates suffered 26.8% regret, and the worst achievable subset incurred 81.6% regret. Thus, under strictly equalized constraints, JSR's algebraic proxy approaches the combinatorial optimum more closely than domain-specific physical detection.
+| Target Step | Policy | Chosen Subset | Setup (s) | Solve (s) | Total (s) | Iters | Regret vs. $S_3^*$ |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Step $t=2$** | **Empirical Oracle $S_3^*$** | **[4, 5, 6]** | **0.0381** | **0.3446** | **0.3827** | **40** | **0.0%** |
+| | **JSR Stateful Policy** | **[4, 5, 6]** | **0.0381** | **0.3446** | **0.3827** | **40** | **0.0%** |
+| | Drift-Only Selector | [4, 5, 6] | 0.0381 | 0.3446 | 0.3827 | 40 | 0.0% |
+| | Physics-Aware (Svolos-style) | [4, 5, 6] | 0.0381 | 0.3446 | 0.3827 | 40 | 0.0% |
+| | Cyclic (AsRAS-style) | [3, 4, 5] | 0.0369 | 0.4543 | 0.4912 | 52 | 28.4% |
+| | Random Expectation (56 subsets) | $\mathbb{E}[S \in \binom{8}{3}]$ | --- | --- | $0.5862 \pm 0.07$ | 60.3 | 53.2% |
+| | Worst Combinatorial Choice | [0, 1, 7] | 0.0378 | 0.6636 | 0.7014 | 66 | 83.3% |
+| **Step $t=4$** | **Empirical Oracle $S_3^*$** | **[5, 6, 7]** | **0.0392** | **0.3494** | **0.3886** | **38** | **0.0%** |
+| | Physics-Aware (Svolos-style) | [5, 6, 7] | 0.0392 | 0.3494 | 0.3886 | 38 | 0.0% |
+| | **JSR Stateful Policy** | **[4, 6, 7]** | **0.0401** | **0.4575** | **0.4976** | **51** | **28.1%** |
+| | Drift-Only Selector | [4, 6, 7] | 0.0401 | 0.4575 | 0.4976 | 51 | 28.1% |
+| | Random Expectation (56 subsets) | $\mathbb{E}[S \in \binom{8}{3}]$ | --- | --- | $0.6740 \pm 0.14$ | 70.7 | 73.5% |
+| | Cyclic (AsRAS-style) | [1, 2, 3] | 0.0398 | 0.7163 | 0.7561 | 81 | 94.6% |
+| | Worst Combinatorial Choice | [4, 5, 6] | 0.0412 | 0.7744 | 0.8156 | 82 | 109.9% |
+| **Step $t=6$** | **Empirical Oracle $S_3^*$** | **[0, 3, 7]** | **0.0408** | **0.2984** | **0.3392** | **34** | **0.0%** |
+| | Cyclic (AsRAS-style) | [0, 1, 7] | 0.0410 | 0.3217 | 0.3627 | 36 | 6.9% |
+| | **JSR Stateful Policy** | **[5, 6, 7]** | **0.0412** | **0.3430** | **0.3842** | **35** | **13.3%** |
+| | Drift-Only Selector | [5, 6, 7] | 0.0412 | 0.3430 | 0.3842 | 35 | 13.3% |
+| | Physics-Aware (Svolos-style) | [5, 6, 7] | 0.0412 | 0.3430 | 0.3842 | 35 | 13.3% |
+| | Random Expectation (56 subsets) | $\mathbb{E}[S \in \binom{8}{3}]$ | --- | --- | $0.6329 \pm 0.20$ | 63.6 | 86.6% |
+| | Worst Combinatorial Choice | [3, 4, 6] | 0.0399 | 0.8155 | 0.8554 | 80 | 152.2% |
 
-### 4.11 Long-Horizon Multi-Track Serpentine Trajectory Benchmark ($T=50$ Steps)
+**Key Regret Findings Across Steps**:
+- **Consistency of Low Regret**: Across the three evaluation steps, JSR achieves an average empirical regret of **13.8%** (0.0% at $t=2$, 28.1% at $t=4$, and 13.3% at $t=6$), compared to 43.3% for cyclic updates, 71.1% for uniform random expectation, and 115.1% for worst-case choices.
+- **Physics Prior vs. Algebraic Fallback**: At Step 4, Svolos-style physics selection identified the exact oracle subset $\{5, 6, 7\}$ (0.0% regret) by querying the continuous thermal field $\kappa$. When application-specific physical fields and material models are available, physical heuristics can provide superior selection accuracy. However, in complex multi-physics or legacy solvers where such fields cannot be non-intrusively accessed, JSR provides a competitive, fully algebraic fallback directly at the linear algebra level without domain-specific instrumentation.
+- **Identity on Monotonic Paths**: On this single-track trajectory, JSR and Drift-Only selected identical subsets at all three evaluation steps. This confirms that on simple, unidirectional paths, performance is governed by Layer 1 (drift-aware spatial selection), while age-aware damping remains inactive until competing historical zones emerge.
+
+### 4.11 Long-Horizon Trajectory ($T=50$) and Controlled Coarse Space Ablation
 To investigate long-term temporal stability, we conduct a 50-step benchmark simulating a 3-track reciprocating laser scan path on 3D FEM ($N=28$, $24,389$ DOFs, 8 subdomains): Track 1 ($t \in [1, 16]$, forward along $y=0.25$), Track 2 ($t \in [17, 33]$, backward along $y=0.50$), and Track 3 ($t \in [34, 50]$, forward along $y=0.75$).
 
 | Strategy Policy | Total Wall-Clock (s) | Mean Step Time (s) | Mean Iters | Max Iters | Speedup vs. Full |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Full Rebuild (100\%) | 32.05 | 0.6411 | 32.2 | 35 | $1.00\times$ |
-| Frozen Static Reuse (0\%) | 46.19 | 0.9238 | 63.1 | 71 | $0.69\times$ ($-44\%$) |
+| Full Rebuild (100%) | 32.05 | 0.6411 | 32.2 | 35 | $1.00\times$ |
+| Frozen Static Reuse (0%) | 46.19 | 0.9238 | 63.1 | 71 | $0.69\times$ ($-44\%$) |
 | Cyclic (AsRAS-style, $K=3$) | 29.83 | 0.5966 | 35.9 | 63 | $1.07\times$ |
 | Physics-Aware (Svolos-style) | 26.68 | 0.5337 | 32.9 | 35 | $1.20\times$ |
 | **JSR Stateful Maintenance** | **28.15** | **0.5631** | **32.4** | **35** | **$1.14\times$** |
 
-The long-horizon results prove that Frozen Reuse experiences acute spectral breakdown (mean 63.1 iters, 44\% slower than Full Rebuild), demonstrating that stateful maintenance is mandatory. Crucially, Svolos-style physics selection achieves $26.68\text{ s}$ by directly querying the underlying thermal field $k$; JSR achieves comparable performance ($28.15\text{ s}$, a difference of only $0.029\text{ s}$ per step) while operating purely on matrix entries, with iteration counts matching Full Rebuild ($32.4$ vs. $32.2$).
+Frozen Static Reuse exhibited substantial iteration inflation (mean 63.1 iters, maximum 71 iters, 44% higher cumulative cost than Full Rebuild), demonstrating that indefinite factor reuse is computationally untenable. Svolos-style physics selection achieved $26.68\text{ s}$ ($1.20\times$) using domain material sensors, while JSR achieved $28.15\text{ s}$ ($1.14\times$, a difference of only $0.029\text{ s}$ per step) with Krylov iteration counts matching Full Rebuild ($32.4$ vs. $32.2$).
 
-### 4.12 Case B: Complex Dual-Beam Non-Monotonic Trajectory Benchmark
-To test performance when physical assumptions are perturbed, we construct Case B: a dual-beam laser process with two simultaneous advancing wavefronts moving in opposite directions ($y=0.25$ forward, $y=0.75$ backward) on 3D FEM ($N=28$, $24,389$ DOFs, 12 steps). Laser 1 has slightly higher peak intensity ($q_1 = 55$) than Laser 2 ($q_2 = 45$).
+#### Controlled 50-Step Coarse Space Ablation
+To rigorously assess the role of coarse-space synchronization, we perform a controlled ablation across all 50 steps using **identical local refresh masks** $\{S_t\}_{t=1}^{50}$ (averaging 3.42 refreshed subdomains per step), isolating the coarse space as the sole independent variable.
+
+| Coarse Strategy | Setup Time (s) | Solve Time (s) | Total Time (s) | Mean Iters | Max Iters | Delta vs. Fresh |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Fresh Coarse (every step)** | 4.0786 | 28.3959 | **32.4745** | 38.9 | 41 | --- |
+| **Stale Coarse (frozen $t=0$)** | 3.9726 | 28.7882 | **32.7608** | 39.0 | 41 | $+0.04\text{ iters}$ ($+0.88\%$) |
+| **Periodic Coarse (every 10 steps)** | 4.2823 | 31.0184 | **35.3007** | 38.8 | 41 | $-0.10\text{ iters}$ ($+8.70\%$) |
+
+Freezing the coarse operator $A_0(0)$ across all 50 steps resulted in an iteration delta of only **$+0.04$ iterations** (39.0 vs. 38.9) and a wall-clock difference of **$+0.88\%$**. In low-dimensional partitions ($N_{\text{sub}}=8$), the coarse space is spectrally resilient. Consequently, coarse synchronization should be understood not as a primary driver of runtime acceleration, but rather as an algebraic safeguard guaranteeing theoretical asymptotic consistency across indefinite horizons.
+
+### 4.12 Case B: Complex Dual-Beam Non-Monotonic Trajectory and Starvation Audit
+To evaluate maintenance behavior when multiple competing active zones are present, we construct Case B: a dual-beam laser process with two simultaneous advancing wavefronts moving in opposite directions ($y=0.25$ forward, $y=0.75$ backward) on 3D FEM ($N=28$, $24,389$ DOFs, 12 steps). Laser 1 has higher peak intensity ($q_1 = 55$) than Laser 2 ($q_2 = 45$).
 
 | Strategy Policy | Mean Setup (s) | Mean Solve (s) | Total Wall-Clock (s) | Mean Iters | Max Iters | Speedup vs. Full |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| Full Rebuild (100\%) | 0.1947 | 0.5885 | 9.40 | 38.1 | 41 | $1.00\times$ |
-| Frozen Static Reuse (0\%) | 0.0000 | 1.1003 | 13.20 | 73.6 | 87 | $0.71\times$ ($-29\%$) |
+| Full Rebuild (100%) | 0.1947 | 0.5885 | 9.40 | 38.1 | 41 | $1.00\times$ |
+| Frozen Static Reuse (0%) | 0.0000 | 1.1003 | 13.20 | 73.6 | 87 | $0.71\times$ ($-29\%$) |
 | Cyclic (AsRAS-style, $K=3$) | 0.0787 | 0.6576 | 8.83 | 43.8 | 51 | $1.06\times$ |
-| Drift-Only ($K=3$) | 0.0801 | 0.6557 | 8.83 | 45.0 | 76 | $1.06\times$ |
+| Drift-Only Selector ($K=3$) | 0.0801 | 0.6557 | 8.83 | 45.0 | 76 | $1.06\times$ |
 | Physics-Aware (Svolos-style, $K=3$) | 0.0720 | 0.5857 | 7.89 | 39.8 | 48 | $1.19\times$ |
-| **JSR Stateful Maintenance** | **0.0746** | **0.5849** | **7.91** | **39.2** | **42** | **$1.19\times$** |
+| **JSR Stateful Policy** | **0.0746** | **0.5849** | **7.91** | **39.2** | **42** | **$1.19\times$** |
 
-**Why Age Memory Matters in Case B**:
-Case B exposes the critical difference between stateless drift tracking and stateful maintenance:
-- **The Starvation Failure of Drift-Only**: Because Laser 1 and Laser 2 competed for the $K=3$ budget, memoryless Drift-Only locked onto subdomains $\{4, 6, 7\}$ across Steps 1--6. Subdomain 5, which contained the advancing wavefront of Laser 2, was completely starved of maintenance. By Steps 5 and 6, unrefreshed error accumulation caused PCG iterations for Drift-Only to blow up to 64 and 76 iterations ($T_{\text{solve}} = 1.17\text{ s}$).
-- **Stateful Alternation in JSR**: JSR's persistent age factor $(1 + 0.15 \times \text{age})$ detected the aging penalty of subdomain 5 and dynamically alternated between $\{4, 6, 7\}$ and $\{4, 5, 7\}$, completely suppressing the starvation spike. JSR restricted maximum iterations to 42, cutting total runtime from $8.83\text{ s}$ down to $7.91\text{ s}$ ($1.19\times$ speedup, matching the best domain-specific physics detector).
+#### Auditing the Starvation Failure of Stateless Selection
+To measure starvation directly, we define the **subdomain unrefreshed age metric**:
+$$a_i(t) = t - \tau_i(t), \quad \text{where } \tau_i(t) = \max \{s \le t : i \in S_s\},$$
+and track the maximum unrefreshed age $\max_i a_i(t)$ alongside the selection mask $S_t$.
+
+The detailed action-state audit reveals the precise failure mechanism of memoryless selection:
+- **Sustained Starvation in Drift-Only**: Because Laser 1 produced marginally higher local intensity than Laser 2, Drift-Only locked onto subdomains $\{4, 6, 7\}$ continuously across Steps 1 through 6. Subdomain 5, containing the advancing wavefront of Laser 2, went unrefreshed for 6 consecutive steps ($\max a_i$ grew to 11 by Step 12). By Steps 5 and 6, unrefreshed error accumulation caused PCG iterations to surge to **$K_5 = 64$** and **$K_6 = 76$**, with solve time nearly doubling to $1.18\text{ s}$.
+- **Anti-Starvation Damping in JSR**: JSR's age-augmented metric $d_i \cdot (1 + 0.15 a_i)$ progressively amplified the priority of neglected subdomains. At Step 2, the accumulated age of subdomain 5 triggered an alternation from $\{4, 6, 7\}$ to $\{4, 5, 7\}$, followed by $\{4, 6, 7\}$ at Step 3, and $\{4, 5, 7\}$ at Step 4. By alternating budget between Laser 1 (subdomain 6) and Laser 2 (subdomain 5), JSR bounded the maximum unrefreshed age in active regions to $a_i \le 3$, restricting maximum iterations to **$42$** and reducing total wall-clock time from $8.83\text{ s}$ to $7.91\text{ s}$ ($1.19\times$ speedup, matching Svolos-style physics).
+
+This dynamic is captured in the publication heatmap (`results/case_b_starvation_heatmap.png`), visually confirming that age memory functions specifically to control worst-step latency spikes in multi-front environments.
 
 ---
 

@@ -55,6 +55,11 @@ results/*
 !results/cmame_fem_laser_benchmark_sub27.json
 !results/cmame_prior_art_mesh32_localized.json
 !results/cmame_prior_art_mesh48_flagship.json
+!results/fixed_budget_oracle_multistep_k3_n24.json
+!results/coarse_50step_ablation_n28.json
+!results/case_b_starvation_audit.json
+!results/case_b_starvation_heatmap.png
+!results/case_b_starvation_heatmap.pdf
 data/
 logs/
 
