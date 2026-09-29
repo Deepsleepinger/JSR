@@ -45,6 +45,16 @@ wheels/
 results/*
 !results/cmame_3d_five_pillars_v1/
 !results/cmame_3d_five_pillars_v1/**
+!results/fixed_budget_oracle_k3_n24.json
+!results/component_mechanism_ablation_n48.json
+!results/dual_beam_case_b_n28.json
+!results/long_horizon_50steps_n28.json
+!results/oracle_256_regret_study_n24.json
+!results/same_budget_selector_ablation_n48.json
+!results/cmame_fem_laser_benchmark_n48.json
+!results/cmame_fem_laser_benchmark_sub27.json
+!results/cmame_prior_art_mesh32_localized.json
+!results/cmame_prior_art_mesh48_flagship.json
 data/
 logs/
 

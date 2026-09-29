@@ -1,0 +1,131 @@
+{
+  "mesh_n": 48,
+  "total_dofs": 117649,
+  "n_steps": 6,
+  "budget_k": 3,
+  "arms": {
+    "full_rebuild": {
+      "description": "Full Rebuild (100% update, refreshed coarse)",
+      "mean_setup": 2.2221317173486264,
+      "mean_solve": 3.1012501859998642,
+      "mean_total": 5.323381903348491,
+      "mean_iters": 42.0,
+      "max_iters": 45,
+      "max_relres": 6.465402870901756e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.0
+    },
+    "frozen_reuse": {
+      "description": "Frozen Static Reuse (0% update, frozen coarse)",
+      "mean_setup": 5.080820604537924e-06,
+      "mean_solve": 6.490861225349363,
+      "mean_total": 6.490866306169967,
+      "mean_iters": 82.5,
+      "max_iters": 93,
+      "max_relres": 8.411764431573891e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 0.8201342705654389
+    },
+    "cyclic_asras_style": {
+      "description": "Cyclic Partial Update (AsRAS-style, K=3)",
+      "mean_setup": 0.881328568328172,
+      "mean_solve": 4.88563496999753,
+      "mean_total": 5.766963538325702,
+      "mean_iters": 63.0,
+      "max_iters": 91,
+      "max_relres": 6.891896200666042e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 0.9230822889672726
+    },
+    "age_only": {
+      "description": "Age-Only Selector (Oldest unrefreshed, K=3)",
+      "mean_setup": 0.799460403349561,
+      "mean_solve": 4.553093190508662,
+      "mean_total": 5.3525535938582225,
+      "mean_iters": 64.16666666666667,
+      "max_iters": 98,
+      "max_relres": 9.361602014947061e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 0.9945499489172411
+    },
+    "drift_only": {
+      "description": "Drift-Only Selector (Instantaneous ||Delta diag||, K=3)",
+      "mean_setup": 0.8354922695046602,
+      "mean_solve": 3.325144980995295,
+      "mean_total": 4.160637250499955,
+      "mean_iters": 45.5,
+      "max_iters": 52,
+      "max_relres": 6.553114583237597e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.2794631165475472
+    },
+    "drift_plus_age": {
+      "description": "Drift + Age Selector (Stateful ranking, K=3)",
+      "mean_setup": 0.790090342333618,
+      "mean_solve": 3.3102897000014004,
+      "mean_total": 4.1003800423350185,
+      "mean_iters": 45.5,
+      "max_iters": 52,
+      "max_relres": 6.553114583237597e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.2982654896342283
+    },
+    "jsr_full": {
+      "description": "Full JSR (Drift + Age + Mass-alpha budget + Joint coarse, K=3)",
+      "mean_setup": 0.8022789433501506,
+      "mean_solve": 3.3621302616763082,
+      "mean_total": 4.164409205026459,
+      "mean_iters": 45.5,
+      "max_iters": 52,
+      "max_relres": 6.553114583237597e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.2783042302670802
+    },
+    "drift_stale_coarse": {
+      "description": "Drift-Only + Stale Coarse (No coarse refresh, K=3)",
+      "mean_setup": 0.7960876405025678,
+      "mean_solve": 3.348315784659159,
+      "mean_total": 4.144403425161727,
+      "mean_iters": 45.666666666666664,
+      "max_iters": 52,
+      "max_relres": 4.593991118417337e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.2844748344306651
+    },
+    "jsr_stale_coarse": {
+      "description": "JSR + Stale Coarse (No coarse refresh, K=3)",
+      "mean_setup": 0.7881823710146515,
+      "mean_solve": 3.3008219276574287,
+      "mean_total": 4.08900429867208,
+      "mean_iters": 45.666666666666664,
+      "max_iters": 52,
+      "max_relres": 4.593991118417337e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.3018773066776377
+    },
+    "physics_svolos_style": {
+      "description": "Physics-Aware Selector (Svolos-style max kappa, K=3)",
+      "mean_setup": 0.8043692405044567,
+      "mean_solve": 3.7033071511541493,
+      "mean_total": 4.507676391658606,
+      "mean_iters": 51.5,
+      "max_iters": 85,
+      "max_relres": 7.191427982659266e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.1809591995555264
+    },
+    "random_multi_seed": {
+      "description": "Random Selector (5 Monte Carlo seeds, K=3)",
+      "mean_setup": 0.77,
+      "mean_solve": 5.181779125440711,
+      "mean_total": 5.95177912544071,
+      "std_total": 0.518365865577401,
+      "mean_iters": 71.1,
+      "std_iters": 8.183044801430714,
+      "max_iters": 83,
+      "max_relres": 1e-08,
+      "all_relres_pass_1e8": true,
+      "speedup": 0.8944185916768729
+    }
+  }
+}

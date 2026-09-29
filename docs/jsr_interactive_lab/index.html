@@ -7,7 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" href="style.css?v=20260928_v2">
 </head>
 <body>
   <!-- 背景动态科技光效 -->
@@ -290,6 +293,89 @@
       </div>
     </div>
 
+    <!-- 动态时间步实战精讲与算法深度剖析面板 (Live Step-by-Step Walkthrough Panel) -->
+    <section class="live-explanation-section glass-card" id="liveExplanationSection">
+      <div class="explanation-header">
+        <div class="exp-title-box">
+          <span class="badge-tag highlight">LIVE STEP COMMENTARY & WALKTHROUGH</span>
+          <h3 id="expStepTitle">【时间步 t = 0】初始基准状态：物理底板建立与两级缓存初始化</h3>
+          <span class="exp-subtitle" id="expStepSubtitle">初始时间步执行全量子域因子与粗网格的首次构建与哈希锚定</span>
+        </div>
+        <div class="exp-meta-pills">
+          <span class="exp-pill" id="expPillPhase">阶段：冷启动基准 (Cold Start)</span>
+          <span class="exp-pill success" id="expPillCost">JSR 决策：初始全量构建并建立状态锚点</span>
+        </div>
+      </div>
+
+      <div class="explanation-cards-grid">
+        <!-- 卡片 1: 物理场演化态势 -->
+        <div class="exp-card">
+          <div class="exp-card-header">
+            <span class="icon">🌋</span>
+            <h4>1. 物理场空间演化 (Physical Dynamics)</h4>
+          </div>
+          <div class="exp-card-body" id="expPhysicsContent">
+            <p><strong>坐标与波前</strong>：初始物理场建立在左上方网格区域 (X=0.15, Y=0.20)。</p>
+            <p><strong>离散算子特征</strong>：全局刚度矩阵 $A_0$ 首次装配，拥有 146,689 个自由度，稀疏拓扑与数值完全处于初始平衡态，不存在任何历史漂移。</p>
+          </div>
+        </div>
+
+        <!-- 卡片 2: JSR 态势感知与 mass95 决策 -->
+        <div class="exp-card">
+          <div class="exp-card-header">
+            <span class="icon">🎯</span>
+            <h4>2. JSR 感知与决策 (Perception & Selection)</h4>
+          </div>
+          <div class="exp-card-body" id="expDecisionContent">
+            <p><strong>有状态记忆初始化</strong>：全量 64 个局部子域执行密集求逆，生成不可变 <code>Factor</code> 缓存，打上身份证 <code>build_state=0, age=0</code>。</p>
+            <p><strong>因果快照</strong>：生成初始 <code>CacheSnapshot</code> 作为后续时间步状态回滚与可溯源审计的基准底板。</p>
+          </div>
+        </div>
+
+        <!-- 卡片 3: 粗空间联合维护数学机理 -->
+        <div class="exp-card">
+          <div class="exp-card-header">
+            <span class="icon">🔗</span>
+            <h4>3. 粗空间联合维护 (Joint Coarse Mechanics)</h4>
+          </div>
+          <div class="exp-card-body" id="expMechanicsContent">
+            <p><strong>Galerkin 投影</strong>：执行 $A_0 = R_0 A R_0^T$，装配 $64 \times 64$ 粗网格算子并求逆，作为跨子域宏观低频通信通道。</p>
+            <p><strong>两级对齐</strong>：初始时刻微观高频局部逆与宏观低频粗网格处于完美代数匹配状态，预条件子条件数达到最优。</p>
+          </div>
+        </div>
+
+        <!-- 卡片 4: 三策略横向成败复盘 -->
+        <div class="exp-card">
+          <div class="exp-card-header">
+            <span class="icon">⚖️</span>
+            <h4>4. 三策略算力复盘 (Cost & Convergence)</h4>
+          </div>
+          <div class="exp-card-body" id="expComparisonContent">
+            <p><strong>同一起跑线</strong>：在初始步 $t=0$，三条策略均执行首次构建，CG 迭代均为 14 步。</p>
+            <p><strong>后续分化伏笔</strong>：从 $t=1$ 开始，Reuse 策略彻底停止维护，Rebuild 策略开始无脑浪费，而 JSR 将展现出精准外科手术式的维护优势。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部微观执行链条步骤提示 -->
+      <div class="explanation-pipeline-flow">
+        <span class="flow-label">当前步代码调用流 (Execution Trace):</span>
+        <div class="flow-steps" id="expFlowSteps">
+          <span class="f-step active">1. load_state(0)</span>
+          <span class="f-arrow">→</span>
+          <span class="f-step active">2. build_factors(0..63)</span>
+          <span class="f-arrow">→</span>
+          <span class="f-step active">3. assemble_coarse(0)</span>
+          <span class="f-arrow">→</span>
+          <span class="f-step active">4. ksp.setUp()</span>
+          <span class="f-arrow">→</span>
+          <span class="f-step active">5. solve() [14 iters]</span>
+          <span class="f-arrow">→</span>
+          <span class="f-step active success">6. certificate <= 1e-8 (PASS)</span>
+        </div>
+      </div>
+    </section>
+
     <!-- 底部双图表区：Krylov 迭代收敛动态轨迹 + 算力成本分配柱状图 -->
     <section class="charts-section-grid">
       <!-- 图表 1: Krylov 残差动态收敛曲线 (CG Iteration Convergence) -->
@@ -418,6 +504,6 @@
     </footer>
   </main>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=20260928_v2"></script>
 </body>
 </html>

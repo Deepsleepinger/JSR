@@ -1,0 +1,80 @@
+{
+  "mesh_n": 28,
+  "total_dofs": 24389,
+  "total_steps": 12,
+  "budget_k": 3,
+  "arms": {
+    "full_rebuild": {
+      "description": "Full Rebuild (100% updates, reference baseline)",
+      "mean_setup": 0.1946732416690793,
+      "mean_solve": 0.5885417077467233,
+      "mean_total": 0.7832149494158026,
+      "total_wall_clock": 9.398579392989632,
+      "mean_iters": 38.083333333333336,
+      "max_iters": 40,
+      "max_relres": 7.376082781447115e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.0
+    },
+    "frozen_reuse": {
+      "description": "Frozen Static Reuse (0% updates)",
+      "mean_setup": 4.37133227630208e-06,
+      "mean_solve": 1.100294931505535,
+      "mean_total": 1.1002993028378114,
+      "total_wall_clock": 13.203591634053737,
+      "mean_iters": 73.58333333333333,
+      "max_iters": 87,
+      "max_relres": 3.959831866731085e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 0.7118199088155304
+    },
+    "cyclic_asras_style": {
+      "description": "Cyclic Partial Update (AsRAS-style, budget K=3)",
+      "mean_setup": 0.07868871234434967,
+      "mean_solve": 0.6575598025810905,
+      "mean_total": 0.7362485149254402,
+      "total_wall_clock": 8.834982179105282,
+      "mean_iters": 43.833333333333336,
+      "max_iters": 51,
+      "max_relres": 4.578269180493922e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.0637915507308273
+    },
+    "physics_svolos_style": {
+      "description": "Physics-Aware Selection (Svolos-style greedy max kappa, K=3)",
+      "mean_setup": 0.07202693058934528,
+      "mean_solve": 0.5856963246818244,
+      "mean_total": 0.6577232552711697,
+      "total_wall_clock": 7.892679063254036,
+      "mean_iters": 39.75,
+      "max_iters": 48,
+      "max_relres": 3.1097563366106668e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.1907971067449858
+    },
+    "drift_only": {
+      "description": "Drift-Only Selection (Pure algebraic rate of change, K=3)",
+      "mean_setup": 0.08009004817480066,
+      "mean_solve": 0.6556692665908486,
+      "mean_total": 0.7357593147656493,
+      "total_wall_clock": 8.82911177718779,
+      "mean_iters": 45.0,
+      "max_iters": 76,
+      "max_relres": 4.887791034383746e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.0644988567562597
+    },
+    "jsr_stateful": {
+      "description": "JSR Stateful Maintenance (Algebraic drift + Age damping, K=3)",
+      "mean_setup": 0.07457081608299632,
+      "mean_solve": 0.5849358627553253,
+      "mean_total": 0.6595066788383216,
+      "total_wall_clock": 7.9140801460598595,
+      "mean_iters": 39.25,
+      "max_iters": 42,
+      "max_relres": 3.759650622388085e-09,
+      "all_relres_pass_1e8": true,
+      "speedup": 1.187576979198126
+    }
+  }
+}
