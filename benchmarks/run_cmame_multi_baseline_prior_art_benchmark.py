@@ -84,13 +84,22 @@ def apply_moving_front(
     base_values: np.ndarray,
     t: float,
     amplitude: float = 8.0,
-    width: float = 0.12,
+    width: float = 0.10,
+    trajectory: str = "localized",
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Modulate diagonal entries based on a localized moving Gaussian thermal/conductivity front.
+    - 'localized': classic additive manufacturing laser melt pool / crack front (k_active = 25% of subdomains).
+    - 'diagonal': full-diagonal sweep across domain.
     Returns (perturbed_values, perturbation_field).
     """
-    center = np.array([0.20 + 0.60 * t, 0.20 + 0.60 * t, 0.20 + 0.60 * t], dtype=np.float64)
+    if trajectory == "localized":
+        base_center = np.array([0.50, 0.25, 0.25], dtype=np.float64)
+        velocity = np.array([0.00, 0.05, 0.05], dtype=np.float64)
+        center = base_center + velocity * t
+    else:
+        center = np.array([0.20 + 0.60 * t, 0.20 + 0.60 * t, 0.20 + 0.60 * t], dtype=np.float64)
+
     dist_sq = np.sum(((coords - center) / width) ** 2, axis=1)
     perturbation = amplitude * np.exp(-dist_sq)
 
