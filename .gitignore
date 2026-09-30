@@ -80,6 +80,7 @@ results/*
 !results/figure_stepwise_oracle_and_correlation.pdf
 !results/figure_held_out_generalization.png
 !results/figure_held_out_generalization.pdf
+!results/final_held_out_audit.json
 data/
 logs/
 

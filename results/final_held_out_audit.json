@@ -1,0 +1,110 @@
+{
+  "compound_shift": {
+    "label": "Trajectory 1 (Compound Shift, 18 steps)",
+    "T_AB_mean": 10.241602798943253,
+    "T_Full_mean": 10.929262281453703,
+    "T_K3_mean": 14.67062871173645,
+    "time_ratio_AB_to_Full": 0.937080887547427,
+    "paired_delta_full": {
+      "values": [
+        -0.6197990369400941,
+        -1.006803916359786,
+        -0.43637549423146993
+      ],
+      "mean": -0.68765948251045,
+      "std": 0.2377686918662835,
+      "wins": 3,
+      "total_repeats": 3
+    },
+    "paired_delta_k3": {
+      "values": [
+        -4.449406950036064,
+        -4.655229672847781,
+        -4.182441115495749
+      ],
+      "mean": -4.429025912793198,
+      "std": 0.19355239600699917,
+      "wins": 3,
+      "total_repeats": 3
+    },
+    "paired_delta_svolos": {
+      "values": [
+        -10.63108686596388,
+        -10.848517703241669,
+        -11.527848551108036
+      ],
+      "mean": -11.002484373437861,
+      "std": 0.3819464898247084,
+      "wins": 3,
+      "total_repeats": 3
+    },
+    "failure_gap_recovery_pct": 118.37990197764405,
+    "max_iteration_ratio": 1.0,
+    "max_iters_AB": 53,
+    "max_iters_Full": 53,
+    "max_iters_K3": 229,
+    "max_iters_Svolos": 290,
+    "monitor_overhead_pct": 0.06032648433004803,
+    "oracle_mae_k": 0.7777777777777778,
+    "oracle_exact_hits": 10,
+    "oracle_exact_hit_rate_pct": 55.55555555555556,
+    "oracle_regret_ab_pct": 8.060658223058166,
+    "oracle_regret_k3_pct": 100.55803961727254,
+    "pearson_r": 0.39648362180061836,
+    "pearson_p": 0.10332611201027334
+  },
+  "staccato_revisit": {
+    "label": "Trajectory 2 (Staccato Shock, 16 steps)",
+    "T_AB_mean": 8.521417815587483,
+    "T_Full_mean": 9.034312729568532,
+    "T_K3_mean": 10.868647043011151,
+    "time_ratio_AB_to_Full": 0.9432281204631773,
+    "paired_delta_full": {
+      "values": [
+        0.12172280391678214,
+        -0.7312712032580748,
+        -0.9291363426018506
+      ],
+      "mean": -0.5128949139810478,
+      "std": 0.455954960673581,
+      "wins": 2,
+      "total_repeats": 3
+    },
+    "paired_delta_k3": {
+      "values": [
+        -2.052062070230022,
+        -2.5293053861823864,
+        -2.4603202258585952
+      ],
+      "mean": -2.347229227423668,
+      "std": 0.21060622988658023,
+      "wins": 3,
+      "total_repeats": 3
+    },
+    "paired_delta_svolos": {
+      "values": [
+        -4.3043162998510525,
+        -5.2548818262293935,
+        -3.9145668778801337
+      ],
+      "mean": -4.4912550013201935,
+      "std": 0.5629213081608868,
+      "wins": 3,
+      "total_repeats": 3
+    },
+    "failure_gap_recovery_pct": 127.96081991283606,
+    "max_iteration_ratio": 1.0,
+    "max_iters_AB": 55,
+    "max_iters_Full": 55,
+    "max_iters_K3": 156,
+    "max_iters_Svolos": 181,
+    "monitor_overhead_pct": 0.05872719067936766,
+    "oracle_mae_k": 2.75,
+    "oracle_exact_hits": 5,
+    "oracle_exact_hit_rate_pct": 31.25,
+    "oracle_regret_ab_pct": 6.6844843648330325,
+    "oracle_regret_k3_pct": 39.695740359610326,
+    "pearson_r": -0.22046775161027524,
+    "pearson_p": 0.4119322232564379
+  }
+}
