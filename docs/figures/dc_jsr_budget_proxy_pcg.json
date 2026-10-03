@@ -1,0 +1,8 @@
+{
+  "source": "results/dc_jsr_certification_audit_n24.json",
+  "source_sha256": "a48f3ef6a4eb81aa72f9e1a019ab50d91bde346333bca1a3780df4eb735cf93a",
+  "repeat_shown": 0,
+  "epsilon": 0.08,
+  "residual_definition": "max_i V_i after refresh, equal to R_t(S_t)",
+  "iteration_histories_identical_across_repeats": true
+}

@@ -1,0 +1,2424 @@
+{
+  "status": "complete",
+  "started_utc": "2026-10-03T06:37:46.639477+00:00",
+  "configuration": {
+    "mesh_n": 24,
+    "repeats": 1,
+    "epsilon": 0.05,
+    "regimes": [
+      "compound_shift"
+    ],
+    "arms": [
+      "full",
+      "dc_jsr"
+    ],
+    "dt": 0.05,
+    "subdomain_grid": [
+      2,
+      2,
+      2
+    ]
+  },
+  "protocol": {
+    "timing": "monitor + local + coarse + CG + PETSc certification; excludes assembly, initialization and extra audit",
+    "ordering": "cyclic arm rotation across repeats; four repeats balance four positions",
+    "target": 1e-08,
+    "fixed_k3_selector": "instantaneous relative diagonal l2 drift, no age",
+    "claim_scope": "preassembled evolving FEM operator sequences; u_prev remains zero; not a coupled SLM time integration",
+    "epsilon_status": "frozen at handoff value; previously inspected trajectories are replication, not DC blind tests"
+  },
+  "environment": {
+    "python": "/mnt/h/CodexLinux/stokes-r3/envs/stokes-fenics-2020-abi6-r3/bin/python",
+    "python_version": "3.8.2 | packaged by conda-forge | (default, Mar  5 2020, 17:11:00) \n[GCC 7.3.0]",
+    "platform": "Linux-6.18.40.1-microsoft-standard-WSL2-x86_64-with-glibc2.10",
+    "numpy": "1.18.1",
+    "dolfin": "2019.1.0",
+    "petsc": [
+      3,
+      12,
+      4
+    ],
+    "thread_environment": {
+      "OMP_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null,
+      "LD_PRELOAD": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6",
+      "PKG_CONFIG_PATH": "/mnt/h/CodexLinux/stokes-r3/envs/stokes-fenics-2020-abi6-r3/lib/pkgconfig"
+    },
+    "git_head": "858309bc4403b8136a623a7369caafde0305ef50",
+    "git_status": "?? benchmarks/run_dc_jsr_certification_audit.py\n?? benchmarks/run_dc_jsr_shadow_prototype.py\n?? docs/DC_JSR_HANDOFF_AUDIT_2026-10-03.md\n?? tests/test_dc_jsr_policy.py\n"
+  },
+  "source_sha256": {
+    "benchmarks/plot_adaptive_budget_four_regimes.py": "1ddf001e02d200dd26ca39d68b452d85e5df7cad06b3114bef2548a9d4668bf8",
+    "benchmarks/plot_held_out_generalization.py": "bb7a427c65e27ed7c59479fa148bf1372a10662c35b306a574d84b886bc70bdc",
+    "benchmarks/run_256_oracle_regret_study.py": "d80d85fa6f4e7a2ad148c7c684057d34e4303284bf17a3c4dcee9cee864920c9",
+    "benchmarks/run_ab_jsr_controller.py": "db17d7273eb99eea387716172de1535fd4996c7004217b93c7f1ce7e7d734f5f",
+    "benchmarks/run_budget_response_surface.py": "87f5711c138f6ff0cbf589e1f49b85a296d005084193b06311aa613e062a4f73",
+    "benchmarks/run_case_b_action_state_audit.py": "31375483bb195cbda08ffaee6fb863fb29d5fb0beba31e9e1c201c50b938a8eb",
+    "benchmarks/run_case_b_complex_trajectory.py": "a1d97082cf3379e9caf0fb8788f1a68ed5bec503e4d74e522f838c804ffaa8fa",
+    "benchmarks/run_cmame_3d_ras_mumps.py": "616bebb2bcf257934e9a06a5dd98a1f1700ce2b101a6bb93cd3bb9cfe7c3b42e",
+    "benchmarks/run_cmame_5pillars.py": "ca339f024dff7bdc21a9f966282c82f77591373ac1123dcd0103b4be70dc0350",
+    "benchmarks/run_cmame_fem_moving_laser_benchmark.py": "3a07944c6df30e0151972b120de86bca6471005778962703ba02afb012d0d1c5",
+    "benchmarks/run_cmame_flagship_48.py": "8e2b2dcdd5725515ef475cfeafc8342bee82c340f3f2b88649706dceb30f1130",
+    "benchmarks/run_cmame_multi_baseline_prior_art_benchmark.py": "72fc9436cd663d7f9744d048d3af9ab8bf3154b872701b221f1e5f6dee114fb9",
+    "benchmarks/run_cmame_subdomain_scaling.py": "9b83bbbad2735486954341c14c791f842bfc56670c66a184023d12a40a22c355",
+    "benchmarks/run_coarse_50step_ablation.py": "c9f7c4cd1a5159325cebf903b58ccc0aa88061fa5141ca5989155f3b4822dc8b",
+    "benchmarks/run_compound_regime_shift_stress.py": "959b971538222658e6f67bc562d7f2ca941c8f4006eee970a197ae86099cb92a",
+    "benchmarks/run_dc_jsr_certification_audit.py": "f265744b9a315f9ec53d0341a7a92db30792acd091b97d7cf9387d4d2cf161f8",
+    "benchmarks/run_dc_jsr_shadow_prototype.py": "9ed2e634db3f87b381332968cb78637749a7c611293a5036bb3017fccc55d94c",
+    "benchmarks/run_final_held_out_audit.py": "a1d4e0a300a9c743c9b45b71e4c99cc923e567e3ce0b8216e5f5460a229aceb5",
+    "benchmarks/run_fixed_budget_oracle_and_component_ablation.py": "d098bcdc54e88dfde63057a1ea990650dc0ce0982c30893594ffe94e270a1aa6",
+    "benchmarks/run_four_regime_budget_response.py": "a546f616b5deb3bee0969eb89e1e7d3674db641572e1d8f82431e8cd6bfda689",
+    "benchmarks/run_held_out_generalization_suite.py": "8a1152ccdcad650bbf8948073abe83f677190bba57a607b240b2f731cb042c36",
+    "benchmarks/run_long_horizon_sequence.py": "52fda4addf592b76f6f44845c5fa69ccf2b11e49285abcbfae2def9a424f46f5",
+    "benchmarks/run_monitor_family_ablation.py": "e7819adb08a04f3488139abd9b3ce03e8edef603136af44fbf31a4b224e43f51",
+    "benchmarks/run_multi_front_starvation_stress.py": "3276e439dd1deb759c966e4ec214cd0f31625ef1af8aae74abacb454f72a0a90",
+    "benchmarks/run_phase2_2_comparative.py": "7fc07ec9a4c69d1a030be2cfc439f0e49a96ed121f16f00876bfb0718c0ad00f",
+    "benchmarks/run_phase4_fixed_basis.py": "9eb936ecdc655bed7c8315c70bcd6ecd0b95d9e0f8456e7c895ec585d5ae27a4",
+    "benchmarks/run_phase5a_sparse_backend.py": "47b29e634173c1ed04bdeebb90777423ae730c87f7b6ed2355bb33a0917a4c45",
+    "benchmarks/run_repeated_timing_benchmark.py": "112cbe73d05c15e873fc199a00eeabdf8313bfaa336a6750c1eb066d9eff609e",
+    "benchmarks/run_same_budget_selector_ablation.py": "1c6e288d545cfcb6e3e9cd3587f43f287b6c2f3707f6ac6a49cddecd6256d62c",
+    "benchmarks/run_stepwise_oracle_and_regret_study.py": "b88033e2ca78ccc9e1cfa6f71652b0fc204abac74a80e4b4700f13d16883cdf7",
+    "benchmarks/run_subdomain_scaling_pressure.py": "814f1ca1bc4f84d2ecaa67b6dfd90b929badbe1083e872b9b20006bc3e9d3ebe",
+    "benchmarks/run_three_step_oracle_study.py": "c3e1f20ab80058f54ca26dabc80f9862b60922b80970f89ce811f08ac684b69f",
+    "jsr/__init__.py": "96ca73b692755e049ecc93b665317b73a562fcd03f60b8352add6f51a9cc7fd1",
+    "jsr/backend.py": "eb663c310c7707128b2bdb5764b44169f7b4d4d49d9a790e0fc3e3d1d215a99f",
+    "jsr/backend_mumps.py": "82f430dc2cad4175b755d4e0fe1649f8d3653a2fbeb5452e811009bee64bf577",
+    "jsr/changing_backend.py": "71c1d69fdd8fef01c232fa8706ef899aabc8e7a9cf5014a32738e5935572ec75",
+    "jsr/changing_basis.py": "7cdea608c1e3f9642f97fa7a8618e425932df53c187c2fcb8f4471480a96848a",
+    "jsr/monitor.py": "f0ba15c3ce51eff34bf7a913649a9f43aa7ab32ddd4364f2dd2948cc98fa963d",
+    "jsr/partition.py": "2172ad5016f88929b8daf795ead72dbcfa6c3c512387f65b0edf64dd02d97ee0",
+    "jsr/selector.py": "f5466d0a870a20bd3000b1d4a6f1d0187cec7173711cae19509e4f4a9981ecc8"
+  },
+  "regimes": {
+    "compound_shift": {
+      "n_dofs": 15625,
+      "steps": 18,
+      "assembly_seconds": 2.265089989000444,
+      "trajectory_sha256": "d6c7288d421e6ac2660415732a47b2159aea55f44280e4cffaaec0b0a60ac89b",
+      "runs": [
+        {
+          "arm": "full",
+          "epsilon": null,
+          "initialization_seconds": 0.11630759099989518,
+          "total_seconds": 11.783799323000949,
+          "extra_audit_seconds": 0.14809652199983248,
+          "max_iterations": 53,
+          "max_true_relative_residual": 5.639164335590185e-10,
+          "retry_count": 0,
+          "k_sequence": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+              ],
+              "coarse_relative_error": 1.2639160418596664e-13,
+              "independent_csr_relative_residual": 8.878915101872695e-11,
+              "monitor_seconds": 2.3400002646667417e-06,
+              "local_seconds": 0.12532224500000666,
+              "coarse_seconds": 0.003012566000052175,
+              "solve_certification_seconds": 0.5120675400003165,
+              "timed_seconds": 0.6404221230000076,
+              "audit_seconds": 0.007238613000026817,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 49,
+              "petsc_true_relative_residual": 8.878915101872695e-11,
+              "attempts": [
+                {
+                  "iterations": 49,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 8.878915101872695e-11
+                }
+              ]
+            },
+            {
+              "step": 2,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+              ],
+              "coarse_relative_error": 1.2615449260599471e-13,
+              "independent_csr_relative_residual": 1.983244749635308e-10,
+              "monitor_seconds": 2.373999905103119e-06,
+              "local_seconds": 0.1271906269998908,
+              "coarse_seconds": 0.002787270999760949,
+              "solve_certification_seconds": 0.5443910869998945,
+              "timed_seconds": 0.6743838949996643,
+              "audit_seconds": 0.007181763000062347,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 51,
+              "petsc_true_relative_residual": 1.983244749635308e-10,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 1.983244749635308e-10
+                }
+              ]
+            },
+            {
+              "step": 3,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3,
+                3
+              ],
+              "coarse_relative_error": 1.2479565248437906e-13,
+              "independent_csr_relative_residual": 8.853050495738995e-11,
+              "monitor_seconds": 1.8359996829531156e-06,
+              "local_seconds": 0.1291085610000664,
+              "coarse_seconds": 0.0028376489999573096,
+              "solve_certification_seconds": 0.5341826829999263,
+              "timed_seconds": 0.6661503469999843,
+              "audit_seconds": 0.008167331000095146,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 53,
+              "petsc_true_relative_residual": 8.853050495738995e-11,
+              "attempts": [
+                {
+                  "iterations": 53,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 8.853050495738995e-11
+                }
+              ]
+            },
+            {
+              "step": 4,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                4,
+                4,
+                4,
+                4,
+                4,
+                4,
+                4,
+                4
+              ],
+              "coarse_relative_error": 1.2475305253486093e-13,
+              "independent_csr_relative_residual": 9.0337983061175e-11,
+              "monitor_seconds": 3.1620002118870616e-06,
+              "local_seconds": 0.12109909399987373,
+              "coarse_seconds": 0.002136081000116974,
+              "solve_certification_seconds": 0.5407504200002222,
+              "timed_seconds": 0.6640011610002148,
+              "audit_seconds": 0.0074765389999811305,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 53,
+              "petsc_true_relative_residual": 9.0337983061175e-11,
+              "attempts": [
+                {
+                  "iterations": 53,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 9.0337983061175e-11
+                }
+              ]
+            },
+            {
+              "step": 5,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5
+              ],
+              "coarse_relative_error": 1.2485877941089433e-13,
+              "independent_csr_relative_residual": 8.63585558367043e-11,
+              "monitor_seconds": 2.1170003492443357e-06,
+              "local_seconds": 0.11815577800007304,
+              "coarse_seconds": 0.0018974349995914963,
+              "solve_certification_seconds": 0.5801258270003018,
+              "timed_seconds": 0.7001952980003807,
+              "audit_seconds": 0.00915236900027594,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 53,
+              "petsc_true_relative_residual": 8.63585558367043e-11,
+              "attempts": [
+                {
+                  "iterations": 53,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 8.63585558367043e-11
+                }
+              ]
+            },
+            {
+              "step": 6,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6,
+                6
+              ],
+              "coarse_relative_error": 1.31987456912439e-13,
+              "independent_csr_relative_residual": 9.01148897565935e-11,
+              "monitor_seconds": 2.7819996830658056e-06,
+              "local_seconds": 0.11586100700014867,
+              "coarse_seconds": 0.0019488210000417894,
+              "solve_certification_seconds": 0.5563766020000003,
+              "timed_seconds": 0.6742020199999388,
+              "audit_seconds": 0.008232649999627029,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 53,
+              "petsc_true_relative_residual": 9.01148897565935e-11,
+              "attempts": [
+                {
+                  "iterations": 53,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 9.01148897565935e-11
+                }
+              ]
+            },
+            {
+              "step": 7,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7
+              ],
+              "coarse_relative_error": 1.2719132481046257e-13,
+              "independent_csr_relative_residual": 5.639164335590185e-10,
+              "monitor_seconds": 2.7910000426345505e-06,
+              "local_seconds": 0.11418947999982265,
+              "coarse_seconds": 0.002398541000275145,
+              "solve_certification_seconds": 0.4899545149996811,
+              "timed_seconds": 0.6065601370000877,
+              "audit_seconds": 0.00816733400006342,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 47,
+              "petsc_true_relative_residual": 5.639164335590185e-10,
+              "attempts": [
+                {
+                  "iterations": 47,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 5.639164335590185e-10
+                }
+              ]
+            },
+            {
+              "step": 8,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8,
+                8
+              ],
+              "coarse_relative_error": 1.2683549982371048e-13,
+              "independent_csr_relative_residual": 3.1868109058714704e-10,
+              "monitor_seconds": 3.1849999686528463e-06,
+              "local_seconds": 0.11395587500010151,
+              "coarse_seconds": 0.002364207000027818,
+              "solve_certification_seconds": 0.527917871000227,
+              "timed_seconds": 0.6442664219998733,
+              "audit_seconds": 0.008409200000187411,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 48,
+              "petsc_true_relative_residual": 3.1868109058714704e-10,
+              "attempts": [
+                {
+                  "iterations": 48,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 3.1868109058714704e-10
+                }
+              ]
+            },
+            {
+              "step": 9,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9,
+                9
+              ],
+              "coarse_relative_error": 1.223935794888675e-13,
+              "independent_csr_relative_residual": 4.659647060702436e-10,
+              "monitor_seconds": 2.4800001483527012e-06,
+              "local_seconds": 0.11580613499972969,
+              "coarse_seconds": 0.0024187499998333806,
+              "solve_certification_seconds": 0.5187377540000853,
+              "timed_seconds": 0.6369794880001791,
+              "audit_seconds": 0.009463099999720725,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 49,
+              "petsc_true_relative_residual": 4.659647060702436e-10,
+              "attempts": [
+                {
+                  "iterations": 49,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 4.659647060702436e-10
+                }
+              ]
+            },
+            {
+              "step": 10,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10,
+                10
+              ],
+              "coarse_relative_error": 1.2740025287694228e-13,
+              "independent_csr_relative_residual": 1.9681753445819337e-10,
+              "monitor_seconds": 3.448999905231176e-06,
+              "local_seconds": 0.11728980899988528,
+              "coarse_seconds": 0.0021447409999382216,
+              "solve_certification_seconds": 0.5234043660002499,
+              "timed_seconds": 0.6428567600000861,
+              "audit_seconds": 0.008054222000282607,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 51,
+              "petsc_true_relative_residual": 1.9681753445819337e-10,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 1.9681753445819337e-10
+                }
+              ]
+            },
+            {
+              "step": 11,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                11,
+                11,
+                11,
+                11,
+                11,
+                11,
+                11,
+                11
+              ],
+              "coarse_relative_error": 1.2531564331459475e-13,
+              "independent_csr_relative_residual": 4.382514787236091e-10,
+              "monitor_seconds": 2.3420002435159404e-06,
+              "local_seconds": 0.11641468500010888,
+              "coarse_seconds": 0.002696992999972281,
+              "solve_certification_seconds": 0.5535085259998596,
+              "timed_seconds": 0.6726392230002602,
+              "audit_seconds": 0.008293995999792969,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 50,
+              "petsc_true_relative_residual": 4.382514787236091e-10,
+              "attempts": [
+                {
+                  "iterations": 50,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 4.382514787236091e-10
+                }
+              ]
+            },
+            {
+              "step": 12,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                12,
+                12,
+                12,
+                12,
+                12,
+                12,
+                12,
+                12
+              ],
+              "coarse_relative_error": 1.3003415646542494e-13,
+              "independent_csr_relative_residual": 4.1968737825526463e-10,
+              "monitor_seconds": 3.1199997465591878e-06,
+              "local_seconds": 0.11549674199977744,
+              "coarse_seconds": 0.002033591999861528,
+              "solve_certification_seconds": 0.5465388460002032,
+              "timed_seconds": 0.6640842140000132,
+              "audit_seconds": 0.009153505000085715,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 51,
+              "petsc_true_relative_residual": 4.1968737825526463e-10,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 4.1968737825526463e-10
+                }
+              ]
+            },
+            {
+              "step": 13,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                13,
+                13,
+                13,
+                13,
+                13,
+                13,
+                13,
+                13
+              ],
+              "coarse_relative_error": 1.2091939452967032e-13,
+              "independent_csr_relative_residual": 1.715504859519776e-10,
+              "monitor_seconds": 2.6399998205306474e-06,
+              "local_seconds": 0.11870117200032837,
+              "coarse_seconds": 0.0018508000002839253,
+              "solve_certification_seconds": 0.5233932050000476,
+              "timed_seconds": 0.6439597369999319,
+              "audit_seconds": 0.007154397999784123,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 52,
+              "petsc_true_relative_residual": 1.715504859519776e-10,
+              "attempts": [
+                {
+                  "iterations": 52,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 1.715504859519776e-10
+                }
+              ]
+            },
+            {
+              "step": 14,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                14,
+                14,
+                14,
+                14,
+                14,
+                14,
+                14,
+                14
+              ],
+              "coarse_relative_error": 1.2298653483842487e-13,
+              "independent_csr_relative_residual": 3.2751952341191127e-10,
+              "monitor_seconds": 2.004000180022558e-06,
+              "local_seconds": 0.1283094830000664,
+              "coarse_seconds": 0.0029215130002739897,
+              "solve_certification_seconds": 0.5361012780003875,
+              "timed_seconds": 0.6673561679999693,
+              "audit_seconds": 0.007940141999824846,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 51,
+              "petsc_true_relative_residual": 3.2751952341191127e-10,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 3.2751952341191127e-10
+                }
+              ]
+            },
+            {
+              "step": 15,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15,
+                15
+              ],
+              "coarse_relative_error": 1.3027884071058786e-13,
+              "independent_csr_relative_residual": 2.392630963541167e-10,
+              "monitor_seconds": 2.1280002329149283e-06,
+              "local_seconds": 0.11598206799999389,
+              "coarse_seconds": 0.001973717999590008,
+              "solve_certification_seconds": 0.5483163439998862,
+              "timed_seconds": 0.6662870440000006,
+              "audit_seconds": 0.00956727500033594,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 51,
+              "petsc_true_relative_residual": 2.392630963541167e-10,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 2.392630963541167e-10
+                }
+              ]
+            },
+            {
+              "step": 16,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                16,
+                16,
+                16,
+                16,
+                16,
+                16,
+                16,
+                16
+              ],
+              "coarse_relative_error": 1.2577155550732804e-13,
+              "independent_csr_relative_residual": 4.081516039956905e-10,
+              "monitor_seconds": 2.719999883993296e-06,
+              "local_seconds": 0.11542831199994907,
+              "coarse_seconds": 0.002564676000019972,
+              "solve_certification_seconds": 0.5057619429999249,
+              "timed_seconds": 0.6237759219998225,
+              "audit_seconds": 0.008480136999878596,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 50,
+              "petsc_true_relative_residual": 4.081516039956905e-10,
+              "attempts": [
+                {
+                  "iterations": 50,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 4.081516039956905e-10
+                }
+              ]
+            },
+            {
+              "step": 17,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                17,
+                17,
+                17,
+                17,
+                17,
+                17,
+                17,
+                17
+              ],
+              "coarse_relative_error": 1.26377477405024e-13,
+              "independent_csr_relative_residual": 4.2894672968425995e-10,
+              "monitor_seconds": 4.208000063954387e-06,
+              "local_seconds": 0.11732965999999578,
+              "coarse_seconds": 0.002690265999717667,
+              "solve_certification_seconds": 0.49355103299967595,
+              "timed_seconds": 0.613587648000248,
+              "audit_seconds": 0.007580831999803195,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 48,
+              "petsc_true_relative_residual": 4.2894672968425995e-10,
+              "attempts": [
+                {
+                  "iterations": 48,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 4.2894672968425995e-10
+                }
+              ]
+            },
+            {
+              "step": 18,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                18,
+                18,
+                18,
+                18,
+                18,
+                18,
+                18,
+                18
+              ],
+              "coarse_relative_error": 1.285989712332605e-13,
+              "independent_csr_relative_residual": 4.868815960494023e-10,
+              "monitor_seconds": 3.0300002435978968e-06,
+              "local_seconds": 0.12654581600008896,
+              "coarse_seconds": 0.0020528489999378507,
+              "solve_certification_seconds": 0.5534774820002895,
+              "timed_seconds": 0.6820917160002864,
+              "audit_seconds": 0.00838311600000452,
+              "dc": {},
+              "telemetry": {},
+              "iterations": 50,
+              "petsc_true_relative_residual": 4.868815960494023e-10,
+              "attempts": [
+                {
+                  "iterations": 50,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 4.868815960494023e-10
+                }
+              ]
+            }
+          ],
+          "repeat": 0,
+          "position": 0,
+          "order": [
+            "full",
+            "dc_jsr"
+          ]
+        },
+        {
+          "arm": "dc_jsr",
+          "epsilon": 0.05,
+          "initialization_seconds": 0.12064857799987294,
+          "total_seconds": 11.274544820999836,
+          "extra_audit_seconds": 0.1721828619988628,
+          "max_iterations": 61,
+          "max_true_relative_residual": 8.208396219107496e-10,
+          "retry_count": 0,
+          "k_sequence": [
+            2,
+            6,
+            4,
+            6,
+            6,
+            6,
+            8,
+            2,
+            7,
+            3,
+            7,
+            7,
+            8,
+            4,
+            4,
+            2,
+            4,
+            2
+          ],
+          "steps": [
+            {
+              "step": 1,
+              "selected": [
+                0,
+                4
+              ],
+              "k": 2,
+              "factor_build_states": [
+                1,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0
+              ],
+              "coarse_relative_error": 1.2639160418596664e-13,
+              "independent_csr_relative_residual": 2.887125207006329e-10,
+              "monitor_seconds": 0.0003136310001536913,
+              "local_seconds": 0.029830605999904947,
+              "coarse_seconds": 0.0020604119999916293,
+              "solve_certification_seconds": 0.5171958370001448,
+              "timed_seconds": 0.5494132090002495,
+              "audit_seconds": 0.00886738700000933,
+              "dc": {
+                "increment": [
+                  0.05613735111516717,
+                  0.019450321492995703,
+                  0.009589135634908066,
+                  0.03071692970972805,
+                  0.056846996923653796,
+                  0.019862350107606227,
+                  0.009813065718255878,
+                  0.03126956336375472
+                ],
+                "V_before": [
+                  0.05613735111516717,
+                  0.019450321492995703,
+                  0.009589135634908066,
+                  0.03071692970972805,
+                  0.056846996923653796,
+                  0.019862350107606227,
+                  0.009813065718255878,
+                  0.03126956336375472
+                ],
+                "V_after": [
+                  0.0,
+                  0.019450321492995703,
+                  0.009589135634908066,
+                  0.03071692970972805,
+                  0.0,
+                  0.019862350107606227,
+                  0.009813065718255878,
+                  0.03126956336375472
+                ],
+                "residual_proxy": 0.03126956336375472
+              },
+              "telemetry": {
+                "V_total": 0.2336857140660696,
+                "V_max": 0.056846996923653796,
+                "k_t": 2
+              },
+              "iterations": 49,
+              "petsc_true_relative_residual": 2.887125207006329e-10,
+              "attempts": [
+                {
+                  "iterations": 49,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 2.887125207006329e-10
+                }
+              ]
+            },
+            {
+              "step": 2,
+              "selected": [
+                0,
+                1,
+                3,
+                4,
+                5,
+                7
+              ],
+              "k": 6,
+              "factor_build_states": [
+                2,
+                2,
+                0,
+                2,
+                2,
+                2,
+                0,
+                2
+              ],
+              "coarse_relative_error": 1.2615449260599471e-13,
+              "independent_csr_relative_residual": 7.944480587723585e-11,
+              "monitor_seconds": 0.0004817039998670225,
+              "local_seconds": 0.08466954000004989,
+              "coarse_seconds": 0.0022464389999186096,
+              "solve_certification_seconds": 0.5328325099999347,
+              "timed_seconds": 0.6202435350000997,
+              "audit_seconds": 0.010675472000002628,
+              "dc": {
+                "increment": [
+                  0.05746748618060044,
+                  0.03331601372720085,
+                  0.009803056841075967,
+                  0.05168311279915266,
+                  0.05816780376013429,
+                  0.033934587124590146,
+                  0.010027617870735863,
+                  0.052469176124539274
+                ],
+                "V_before": [
+                  0.05746748618060044,
+                  0.05276633522019655,
+                  0.019392192475984033,
+                  0.08240004250888071,
+                  0.05816780376013429,
+                  0.053796937232196376,
+                  0.019840683588991742,
+                  0.083738739488294
+                ],
+                "V_after": [
+                  0.0,
+                  0.0,
+                  0.019392192475984033,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.019840683588991742,
+                  0.0
+                ],
+                "residual_proxy": 0.019840683588991742
+              },
+              "telemetry": {
+                "V_total": 0.42757022045527815,
+                "V_max": 0.083738739488294,
+                "k_t": 6
+              },
+              "iterations": 51,
+              "petsc_true_relative_residual": 7.944480587723585e-11,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 7.944480587723585e-11
+                }
+              ]
+            },
+            {
+              "step": 3,
+              "selected": [
+                0,
+                3,
+                4,
+                7
+              ],
+              "k": 4,
+              "factor_build_states": [
+                3,
+                2,
+                0,
+                3,
+                3,
+                2,
+                0,
+                3
+              ],
+              "coarse_relative_error": 1.2479565248437906e-13,
+              "independent_csr_relative_residual": 1.6069315748283949e-10,
+              "monitor_seconds": 0.0003330949998598953,
+              "local_seconds": 0.05401798499997312,
+              "coarse_seconds": 0.0022779269997954543,
+              "solve_certification_seconds": 0.5621744479999506,
+              "timed_seconds": 0.6188173009995808,
+              "audit_seconds": 0.008857044999786012,
+              "dc": {
+                "increment": [
+                  0.057245798655767344,
+                  0.047387703040399985,
+                  0.009752708067548025,
+                  0.07168551795133093,
+                  0.057923870732254384,
+                  0.04813931956235382,
+                  0.009972734636163903,
+                  0.07256010931161438
+                ],
+                "V_before": [
+                  0.057245798655767344,
+                  0.047387703040399985,
+                  0.029144900543532058,
+                  0.07168551795133093,
+                  0.057923870732254384,
+                  0.04813931956235382,
+                  0.029813418225155645,
+                  0.07256010931161438
+                ],
+                "V_after": [
+                  0.0,
+                  0.047387703040399985,
+                  0.029144900543532058,
+                  0.0,
+                  0.0,
+                  0.04813931956235382,
+                  0.029813418225155645,
+                  0.0
+                ],
+                "residual_proxy": 0.04813931956235382
+              },
+              "telemetry": {
+                "V_total": 0.41390063802240856,
+                "V_max": 0.07256010931161438,
+                "k_t": 4
+              },
+              "iterations": 51,
+              "petsc_true_relative_residual": 1.6069315748283949e-10,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 1.6069315748283949e-10
+                }
+              ]
+            },
+            {
+              "step": 4,
+              "selected": [
+                0,
+                1,
+                3,
+                4,
+                5,
+                7
+              ],
+              "k": 6,
+              "factor_build_states": [
+                4,
+                4,
+                0,
+                4,
+                4,
+                4,
+                0,
+                4
+              ],
+              "coarse_relative_error": 1.2475305253486093e-13,
+              "independent_csr_relative_residual": 7.62731110320213e-11,
+              "monitor_seconds": 0.00026882900010605226,
+              "local_seconds": 0.08738325700005589,
+              "coarse_seconds": 0.002320321000297554,
+              "solve_certification_seconds": 0.5239069200001722,
+              "timed_seconds": 0.6138931420000517,
+              "audit_seconds": 0.013002623999909702,
+              "dc": {
+                "increment": [
+                  0.055310789708972914,
+                  0.056341223292448554,
+                  0.009400670597939484,
+                  0.0826280769721108,
+                  0.055937376507595706,
+                  0.05708994227396942,
+                  0.009607677627130667,
+                  0.08339680417828234
+                ],
+                "V_before": [
+                  0.055310789708972914,
+                  0.10372892633284854,
+                  0.038545571141471544,
+                  0.0826280769721108,
+                  0.055937376507595706,
+                  0.10522926183632325,
+                  0.039421095852286314,
+                  0.08339680417828234
+                ],
+                "V_after": [
+                  0.0,
+                  0.0,
+                  0.038545571141471544,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.039421095852286314,
+                  0.0
+                ],
+                "residual_proxy": 0.039421095852286314
+              },
+              "telemetry": {
+                "V_total": 0.5641979025298914,
+                "V_max": 0.10522926183632325,
+                "k_t": 6
+              },
+              "iterations": 51,
+              "petsc_true_relative_residual": 7.62731110320213e-11,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 7.62731110320213e-11
+                }
+              ]
+            },
+            {
+              "step": 5,
+              "selected": [
+                0,
+                1,
+                3,
+                4,
+                5,
+                7
+              ],
+              "k": 6,
+              "factor_build_states": [
+                5,
+                5,
+                0,
+                5,
+                5,
+                5,
+                0,
+                5
+              ],
+              "coarse_relative_error": 1.2485877941089433e-13,
+              "independent_csr_relative_residual": 5.802961896897619e-11,
+              "monitor_seconds": 0.0002944140001091,
+              "local_seconds": 0.09331114399992657,
+              "coarse_seconds": 0.0023161089998211537,
+              "solve_certification_seconds": 0.5307936150002206,
+              "timed_seconds": 0.6267292009997618,
+              "audit_seconds": 0.00840371200001755,
+              "dc": {
+                "increment": [
+                  0.05100245963689939,
+                  0.058138418251698167,
+                  0.00863381830309518,
+                  0.08274668327052358,
+                  0.05154629220795067,
+                  0.0588132832034077,
+                  0.008817821789253588,
+                  0.08336090361109567
+                ],
+                "V_before": [
+                  0.05100245963689939,
+                  0.058138418251698167,
+                  0.047179389444566726,
+                  0.08274668327052358,
+                  0.05154629220795067,
+                  0.0588132832034077,
+                  0.048238917641539904,
+                  0.08336090361109567
+                ],
+                "V_after": [
+                  0.0,
+                  0.0,
+                  0.047179389444566726,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.048238917641539904,
+                  0.0
+                ],
+                "residual_proxy": 0.048238917641539904
+              },
+              "telemetry": {
+                "V_total": 0.4810263472676818,
+                "V_max": 0.08336090361109567,
+                "k_t": 6
+              },
+              "iterations": 51,
+              "petsc_true_relative_residual": 5.802961896897619e-11,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 5.802961896897619e-11
+                }
+              ]
+            },
+            {
+              "step": 6,
+              "selected": [
+                1,
+                2,
+                3,
+                5,
+                6,
+                7
+              ],
+              "k": 6,
+              "factor_build_states": [
+                5,
+                6,
+                6,
+                6,
+                5,
+                6,
+                6,
+                6
+              ],
+              "coarse_relative_error": 1.31987456912439e-13,
+              "independent_csr_relative_residual": 8.054390530080454e-11,
+              "monitor_seconds": 0.00026576099980957224,
+              "local_seconds": 0.08798664099958842,
+              "coarse_seconds": 0.0025206440000147268,
+              "solve_certification_seconds": 0.5686243479999575,
+              "timed_seconds": 0.6594131669999115,
+              "audit_seconds": 0.007617231000040192,
+              "dc": {
+                "increment": [
+                  0.04531122622976938,
+                  0.05791388308876996,
+                  0.007641028020625203,
+                  0.08078474819276243,
+                  0.04579245049516444,
+                  0.058603339380022844,
+                  0.007803086499438107,
+                  0.08140222529832943
+                ],
+                "V_before": [
+                  0.04531122622976938,
+                  0.05791388308876996,
+                  0.05482041746519193,
+                  0.08078474819276243,
+                  0.04579245049516444,
+                  0.058603339380022844,
+                  0.05604200414097801,
+                  0.08140222529832943
+                ],
+                "V_after": [
+                  0.04531122622976938,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.04579245049516444,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "residual_proxy": 0.04579245049516444
+              },
+              "telemetry": {
+                "V_total": 0.4806702942909884,
+                "V_max": 0.08140222529832943,
+                "k_t": 6
+              },
+              "iterations": 54,
+              "petsc_true_relative_residual": 8.054390530080454e-11,
+              "attempts": [
+                {
+                  "iterations": 54,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 8.054390530080454e-11
+                }
+              ]
+            },
+            {
+              "step": 7,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7,
+                7
+              ],
+              "coarse_relative_error": 1.2719132481046257e-13,
+              "independent_csr_relative_residual": 5.639164335590185e-10,
+              "monitor_seconds": 0.00033368599997629644,
+              "local_seconds": 0.11758437200023764,
+              "coarse_seconds": 0.0021879900000385533,
+              "solve_certification_seconds": 0.47957625900016865,
+              "timed_seconds": 0.5996954120000737,
+              "audit_seconds": 0.009124709999923653,
+              "dc": {
+                "increment": [
+                  0.25068722942612853,
+                  0.27001971003056346,
+                  0.284202249637295,
+                  0.554969536738942,
+                  0.153416035061682,
+                  0.28292688923289455,
+                  0.2878846054959147,
+                  0.8565109415653921
+                ],
+                "V_before": [
+                  0.2959984556558979,
+                  0.27001971003056346,
+                  0.284202249637295,
+                  0.554969536738942,
+                  0.19920848555684645,
+                  0.28292688923289455,
+                  0.2878846054959147,
+                  0.8565109415653921
+                ],
+                "V_after": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "residual_proxy": 0.0
+              },
+              "telemetry": {
+                "V_total": 3.0317208739137462,
+                "V_max": 0.8565109415653921,
+                "k_t": 8
+              },
+              "iterations": 47,
+              "petsc_true_relative_residual": 5.639164335590185e-10,
+              "attempts": [
+                {
+                  "iterations": 47,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 5.639164335590185e-10
+                }
+              ]
+            },
+            {
+              "step": 8,
+              "selected": [
+                3,
+                7
+              ],
+              "k": 2,
+              "factor_build_states": [
+                7,
+                7,
+                7,
+                8,
+                7,
+                7,
+                7,
+                8
+              ],
+              "coarse_relative_error": 1.2683549982371048e-13,
+              "independent_csr_relative_residual": 6.316248592995812e-10,
+              "monitor_seconds": 0.0003592699999899196,
+              "local_seconds": 0.025971863999984635,
+              "coarse_seconds": 0.0026767949998429685,
+              "solve_certification_seconds": 0.4986268910001854,
+              "timed_seconds": 0.5276582789997519,
+              "audit_seconds": 0.018246417000227666,
+              "dc": {
+                "increment": [
+                  0.03484085667898633,
+                  0.04246661240772922,
+                  0.04246661240772922,
+                  0.14332130985522423,
+                  0.01518673391039087,
+                  0.04293930043784946,
+                  0.042939300437849465,
+                  0.12586849207904233
+                ],
+                "V_before": [
+                  0.03484085667898633,
+                  0.04246661240772922,
+                  0.04246661240772922,
+                  0.14332130985522423,
+                  0.01518673391039087,
+                  0.04293930043784946,
+                  0.042939300437849465,
+                  0.12586849207904233
+                ],
+                "V_after": [
+                  0.03484085667898633,
+                  0.04246661240772922,
+                  0.04246661240772922,
+                  0.0,
+                  0.01518673391039087,
+                  0.04293930043784946,
+                  0.042939300437849465,
+                  0.0
+                ],
+                "residual_proxy": 0.042939300437849465
+              },
+              "telemetry": {
+                "V_total": 0.49002921821480105,
+                "V_max": 0.14332130985522423,
+                "k_t": 2
+              },
+              "iterations": 47,
+              "petsc_true_relative_residual": 6.316248592995812e-10,
+              "attempts": [
+                {
+                  "iterations": 47,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 6.316248592995812e-10
+                }
+              ]
+            },
+            {
+              "step": 9,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                6,
+                7
+              ],
+              "k": 7,
+              "factor_build_states": [
+                9,
+                9,
+                9,
+                9,
+                7,
+                9,
+                9,
+                9
+              ],
+              "coarse_relative_error": 1.223935794888675e-13,
+              "independent_csr_relative_residual": 7.376151230614275e-10,
+              "monitor_seconds": 0.0003918039997188316,
+              "local_seconds": 0.10038574000009248,
+              "coarse_seconds": 0.0019498120000207564,
+              "solve_certification_seconds": 0.5401556719998553,
+              "timed_seconds": 0.6428941849999319,
+              "audit_seconds": 0.008047938999879989,
+              "dc": {
+                "increment": [
+                  0.03644706398722589,
+                  0.04443498058826293,
+                  0.04443498058826294,
+                  0.15389726257665423,
+                  0.018354638063976036,
+                  0.04492618987337758,
+                  0.04492618987337755,
+                  0.1288351248163918
+                ],
+                "V_before": [
+                  0.07128792066621223,
+                  0.08690159299599215,
+                  0.08690159299599215,
+                  0.15389726257665423,
+                  0.03354137197436691,
+                  0.08786549031122703,
+                  0.087865490311227,
+                  0.1288351248163918
+                ],
+                "V_after": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.03354137197436691,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "residual_proxy": 0.03354137197436691
+              },
+              "telemetry": {
+                "V_total": 0.7370958466480635,
+                "V_max": 0.15389726257665423,
+                "k_t": 7
+              },
+              "iterations": 48,
+              "petsc_true_relative_residual": 7.376151230614275e-10,
+              "attempts": [
+                {
+                  "iterations": 48,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 7.376151230614275e-10
+                }
+              ]
+            },
+            {
+              "step": 10,
+              "selected": [
+                3,
+                4,
+                7
+              ],
+              "k": 3,
+              "factor_build_states": [
+                9,
+                9,
+                9,
+                10,
+                10,
+                9,
+                9,
+                10
+              ],
+              "coarse_relative_error": 1.2740025287694228e-13,
+              "independent_csr_relative_residual": 4.017478893405706e-10,
+              "monitor_seconds": 0.00022754500014343648,
+              "local_seconds": 0.048310753000350815,
+              "coarse_seconds": 0.002344203000120615,
+              "solve_certification_seconds": 0.5181650450003872,
+              "timed_seconds": 0.5690636369999993,
+              "audit_seconds": 0.009411418000127014,
+              "dc": {
+                "increment": [
+                  0.038302145413757746,
+                  0.04689521680905234,
+                  0.046895216809052356,
+                  0.16240100281318964,
+                  0.022068718958547378,
+                  0.047409458019834136,
+                  0.04740945801983415,
+                  0.13173041311667064
+                ],
+                "V_before": [
+                  0.038302145413757746,
+                  0.04689521680905234,
+                  0.046895216809052356,
+                  0.16240100281318964,
+                  0.05561009093291429,
+                  0.047409458019834136,
+                  0.04740945801983415,
+                  0.13173041311667064
+                ],
+                "V_after": [
+                  0.038302145413757746,
+                  0.04689521680905234,
+                  0.046895216809052356,
+                  0.0,
+                  0.0,
+                  0.047409458019834136,
+                  0.04740945801983415,
+                  0.0
+                ],
+                "residual_proxy": 0.04740945801983415
+              },
+              "telemetry": {
+                "V_total": 0.5766530019343052,
+                "V_max": 0.16240100281318964,
+                "k_t": 3
+              },
+              "iterations": 50,
+              "petsc_true_relative_residual": 4.017478893405706e-10,
+              "attempts": [
+                {
+                  "iterations": 50,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 4.017478893405706e-10
+                }
+              ]
+            },
+            {
+              "step": 11,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                5,
+                6,
+                7
+              ],
+              "k": 7,
+              "factor_build_states": [
+                11,
+                11,
+                11,
+                11,
+                10,
+                11,
+                11,
+                11
+              ],
+              "coarse_relative_error": 1.2531564331459475e-13,
+              "independent_csr_relative_residual": 3.684886837157778e-10,
+              "monitor_seconds": 0.00028357600012896,
+              "local_seconds": 0.09801794299983158,
+              "coarse_seconds": 0.0022854069998174964,
+              "solve_certification_seconds": 0.5259438020002563,
+              "timed_seconds": 0.626544928000385,
+              "audit_seconds": 0.007317094999962137,
+              "dc": {
+                "increment": [
+                  0.04036177447323411,
+                  0.04985228333695948,
+                  0.04985228333695948,
+                  0.16828201999437872,
+                  0.026290538620846793,
+                  0.05039334927449469,
+                  0.05039334927449469,
+                  0.13418600700669323
+                ],
+                "V_before": [
+                  0.07866391988699185,
+                  0.09674750014601183,
+                  0.09674750014601183,
+                  0.16828201999437872,
+                  0.026290538620846793,
+                  0.09780280729432883,
+                  0.09780280729432883,
+                  0.13418600700669323
+                ],
+                "V_after": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.026290538620846793,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "residual_proxy": 0.026290538620846793
+              },
+              "telemetry": {
+                "V_total": 0.7965231003895918,
+                "V_max": 0.16828201999437872,
+                "k_t": 7
+              },
+              "iterations": 50,
+              "petsc_true_relative_residual": 3.684886837157778e-10,
+              "attempts": [
+                {
+                  "iterations": 50,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 3.684886837157778e-10
+                }
+              ]
+            },
+            {
+              "step": 12,
+              "selected": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 7,
+              "factor_build_states": [
+                11,
+                12,
+                12,
+                12,
+                12,
+                12,
+                12,
+                12
+              ],
+              "coarse_relative_error": 1.3003415646542494e-13,
+              "independent_csr_relative_residual": 8.208396219107496e-10,
+              "monitor_seconds": 0.00023774700002832105,
+              "local_seconds": 0.10249639699986801,
+              "coarse_seconds": 0.0023093760000847396,
+              "solve_certification_seconds": 0.5499532919998273,
+              "timed_seconds": 0.6550162630001068,
+              "audit_seconds": 0.007660319000024174,
+              "dc": {
+                "increment": [
+                  0.042497178376409046,
+                  0.05315045790715923,
+                  0.05315045790715923,
+                  0.1708668493510154,
+                  0.03084798319881008,
+                  0.0537195426959739,
+                  0.0537195426959739,
+                  0.13567170570659393
+                ],
+                "V_before": [
+                  0.042497178376409046,
+                  0.05315045790715923,
+                  0.05315045790715923,
+                  0.1708668493510154,
+                  0.05713852181965687,
+                  0.0537195426959739,
+                  0.0537195426959739,
+                  0.13567170570659393
+                ],
+                "V_after": [
+                  0.042497178376409046,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "residual_proxy": 0.042497178376409046
+              },
+              "telemetry": {
+                "V_total": 0.6199142564599415,
+                "V_max": 0.1708668493510154,
+                "k_t": 7
+              },
+              "iterations": 51,
+              "petsc_true_relative_residual": 8.208396219107496e-10,
+              "attempts": [
+                {
+                  "iterations": 51,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 8.208396219107496e-10
+                }
+              ]
+            },
+            {
+              "step": 13,
+              "selected": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 8,
+              "factor_build_states": [
+                13,
+                13,
+                13,
+                13,
+                13,
+                13,
+                13,
+                13
+              ],
+              "coarse_relative_error": 1.2091939452967032e-13,
+              "independent_csr_relative_residual": 1.715504859519776e-10,
+              "monitor_seconds": 0.0002389300002505479,
+              "local_seconds": 0.11372501899995768,
+              "coarse_seconds": 0.0022475450000456476,
+              "solve_certification_seconds": 0.5325435059999108,
+              "timed_seconds": 0.6487694420002299,
+              "audit_seconds": 0.01023254200026713,
+              "dc": {
+                "increment": [
+                  0.28507449636850374,
+                  0.3470412464790858,
+                  0.30628861465734636,
+                  0.7581149682477198,
+                  0.1415728445518146,
+                  0.3492416431522787,
+                  0.2903574248976969,
+                  1.1786481409257652
+                ],
+                "V_before": [
+                  0.3275716747449128,
+                  0.3470412464790858,
+                  0.30628861465734636,
+                  0.7581149682477198,
+                  0.1415728445518146,
+                  0.3492416431522787,
+                  0.2903574248976969,
+                  1.1786481409257652
+                ],
+                "V_after": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "residual_proxy": 0.0
+              },
+              "telemetry": {
+                "V_total": 3.6988365576566204,
+                "V_max": 1.1786481409257652,
+                "k_t": 8
+              },
+              "iterations": 52,
+              "petsc_true_relative_residual": 1.715504859519776e-10,
+              "attempts": [
+                {
+                  "iterations": 52,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 1.715504859519776e-10
+                }
+              ]
+            },
+            {
+              "step": 14,
+              "selected": [
+                2,
+                3,
+                6,
+                7
+              ],
+              "k": 4,
+              "factor_build_states": [
+                13,
+                13,
+                14,
+                14,
+                13,
+                13,
+                14,
+                14
+              ],
+              "coarse_relative_error": 1.2298653483842487e-13,
+              "independent_csr_relative_residual": 3.449525533010672e-10,
+              "monitor_seconds": 0.00035668999998961226,
+              "local_seconds": 0.062184800999602885,
+              "coarse_seconds": 0.002602476999982173,
+              "solve_certification_seconds": 0.5455654659999709,
+              "timed_seconds": 0.6107229260001077,
+              "audit_seconds": 0.00949271499985116,
+              "dc": {
+                "increment": [
+                  0.004999951227278107,
+                  0.008708746925907417,
+                  0.05882109247155406,
+                  0.22166836953568878,
+                  0.005011900607937617,
+                  0.008740214327403165,
+                  0.059534425816008096,
+                  0.2219234369787602
+                ],
+                "V_before": [
+                  0.004999951227278107,
+                  0.008708746925907417,
+                  0.05882109247155406,
+                  0.22166836953568878,
+                  0.005011900607937617,
+                  0.008740214327403165,
+                  0.059534425816008096,
+                  0.2219234369787602
+                ],
+                "V_after": [
+                  0.004999951227278107,
+                  0.008708746925907417,
+                  0.0,
+                  0.0,
+                  0.005011900607937617,
+                  0.008740214327403165,
+                  0.0,
+                  0.0
+                ],
+                "residual_proxy": 0.008740214327403165
+              },
+              "telemetry": {
+                "V_total": 0.5894081378905375,
+                "V_max": 0.2219234369787602,
+                "k_t": 4
+              },
+              "iterations": 53,
+              "petsc_true_relative_residual": 3.449525533010672e-10,
+              "attempts": [
+                {
+                  "iterations": 53,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 3.449525533010672e-10
+                }
+              ]
+            },
+            {
+              "step": 15,
+              "selected": [
+                2,
+                3,
+                6,
+                7
+              ],
+              "k": 4,
+              "factor_build_states": [
+                13,
+                13,
+                15,
+                15,
+                13,
+                13,
+                15,
+                15
+              ],
+              "coarse_relative_error": 1.3027884071058786e-13,
+              "independent_csr_relative_residual": 2.8647675239566475e-10,
+              "monitor_seconds": 0.0002754699999059085,
+              "local_seconds": 0.057096972999715945,
+              "coarse_seconds": 0.0023750569998810533,
+              "solve_certification_seconds": 0.6041002870001648,
+              "timed_seconds": 0.6638604939998913,
+              "audit_seconds": 0.00803582299977279,
+              "dc": {
+                "increment": [
+                  0.00481863224471819,
+                  0.00948990819924567,
+                  0.05696220523252111,
+                  0.23776860607851238,
+                  0.004823987332247544,
+                  0.00951757602079651,
+                  0.057583328801145,
+                  0.23792645670341905
+                ],
+                "V_before": [
+                  0.009818583471996297,
+                  0.018198655125153087,
+                  0.05696220523252111,
+                  0.23776860607851238,
+                  0.00983588794018516,
+                  0.018257790348199673,
+                  0.057583328801145,
+                  0.23792645670341905
+                ],
+                "V_after": [
+                  0.009818583471996297,
+                  0.018198655125153087,
+                  0.0,
+                  0.0,
+                  0.00983588794018516,
+                  0.018257790348199673,
+                  0.0,
+                  0.0
+                ],
+                "residual_proxy": 0.018257790348199673
+              },
+              "telemetry": {
+                "V_total": 0.6463515137011318,
+                "V_max": 0.23792645670341905,
+                "k_t": 4
+              },
+              "iterations": 55,
+              "petsc_true_relative_residual": 2.8647675239566475e-10,
+              "attempts": [
+                {
+                  "iterations": 55,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 2.8647675239566475e-10
+                }
+              ]
+            },
+            {
+              "step": 16,
+              "selected": [
+                3,
+                7
+              ],
+              "k": 2,
+              "factor_build_states": [
+                13,
+                13,
+                15,
+                16,
+                13,
+                13,
+                15,
+                16
+              ],
+              "coarse_relative_error": 1.2577155550732804e-13,
+              "independent_csr_relative_residual": 3.7780386711088446e-10,
+              "monitor_seconds": 0.00024803499991321587,
+              "local_seconds": 0.027148579999902722,
+              "coarse_seconds": 0.002253422000194405,
+              "solve_certification_seconds": 0.6353412820003541,
+              "timed_seconds": 0.6650047309999536,
+              "audit_seconds": 0.008824109999750362,
+              "dc": {
+                "increment": [
+                  0.004053857320435942,
+                  0.009854308062513441,
+                  0.047845048730601976,
+                  0.24554953215393963,
+                  0.0040496208426658445,
+                  0.009877997432219822,
+                  0.048261324027525504,
+                  0.24561124455235517
+                ],
+                "V_before": [
+                  0.013872440792432238,
+                  0.02805296318766653,
+                  0.047845048730601976,
+                  0.24554953215393963,
+                  0.013885508782851004,
+                  0.028135787780419495,
+                  0.048261324027525504,
+                  0.24561124455235517
+                ],
+                "V_after": [
+                  0.013872440792432238,
+                  0.02805296318766653,
+                  0.047845048730601976,
+                  0.0,
+                  0.013885508782851004,
+                  0.028135787780419495,
+                  0.048261324027525504,
+                  0.0
+                ],
+                "residual_proxy": 0.048261324027525504
+              },
+              "telemetry": {
+                "V_total": 0.6712138500077915,
+                "V_max": 0.24561124455235517,
+                "k_t": 2
+              },
+              "iterations": 60,
+              "petsc_true_relative_residual": 3.7780386711088446e-10,
+              "attempts": [
+                {
+                  "iterations": 60,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 3.7780386711088446e-10
+                }
+              ]
+            },
+            {
+              "step": 17,
+              "selected": [
+                2,
+                3,
+                6,
+                7
+              ],
+              "k": 4,
+              "factor_build_states": [
+                13,
+                13,
+                17,
+                17,
+                13,
+                13,
+                17,
+                17
+              ],
+              "coarse_relative_error": 1.26377477405024e-13,
+              "independent_csr_relative_residual": 6.950392413068674e-10,
+              "monitor_seconds": 0.0003645770002549398,
+              "local_seconds": 0.06621033900000839,
+              "coarse_seconds": 0.002757461000328476,
+              "solve_certification_seconds": 0.6323463230000925,
+              "timed_seconds": 0.7016984239999147,
+              "audit_seconds": 0.010011490999659145,
+              "dc": {
+                "increment": [
+                  0.0028634433178521355,
+                  0.009924452539906661,
+                  0.0336211475481931,
+                  0.2473364690590088,
+                  0.0028537335633272657,
+                  0.009945817375342277,
+                  0.03383088412211873,
+                  0.24735311534028892
+                ],
+                "V_before": [
+                  0.01673588411028437,
+                  0.03797741572757319,
+                  0.08146619627879507,
+                  0.2473364690590088,
+                  0.016739242346178268,
+                  0.03808160515576177,
+                  0.08209220814964424,
+                  0.24735311534028892
+                ],
+                "V_after": [
+                  0.01673588411028437,
+                  0.03797741572757319,
+                  0.0,
+                  0.0,
+                  0.016739242346178268,
+                  0.03808160515576177,
+                  0.0,
+                  0.0
+                ],
+                "residual_proxy": 0.03808160515576177
+              },
+              "telemetry": {
+                "V_total": 0.7677821361675347,
+                "V_max": 0.24735311534028892,
+                "k_t": 4
+              },
+              "iterations": 58,
+              "petsc_true_relative_residual": 6.950392413068674e-10,
+              "attempts": [
+                {
+                  "iterations": 58,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 6.950392413068674e-10
+                }
+              ]
+            },
+            {
+              "step": 18,
+              "selected": [
+                3,
+                7
+              ],
+              "k": 2,
+              "factor_build_states": [
+                13,
+                13,
+                17,
+                18,
+                13,
+                13,
+                17,
+                18
+              ],
+              "coarse_relative_error": 1.285989712332605e-13,
+              "independent_csr_relative_residual": 6.222949087557063e-10,
+              "monitor_seconds": 0.00024290999999720952,
+              "local_seconds": 0.028077779000341252,
+              "coarse_seconds": 0.002206272999956127,
+              "solve_certification_seconds": 0.6445662259998244,
+              "timed_seconds": 0.675106544999835,
+              "audit_seconds": 0.008354811999652156,
+              "dc": {
+                "increment": [
+                  0.0016843985694408093,
+                  0.009757940536206544,
+                  0.019646036150309278,
+                  0.24477196949816418,
+                  0.001674775621986615,
+                  0.009777142551667464,
+                  0.019719971584456233,
+                  0.24476638803845274
+                ],
+                "V_before": [
+                  0.018420282679725182,
+                  0.047735356263779734,
+                  0.019646036150309278,
+                  0.24477196949816418,
+                  0.018414017968164883,
+                  0.04785874770742923,
+                  0.019719971584456233,
+                  0.24476638803845274
+                ],
+                "V_after": [
+                  0.018420282679725182,
+                  0.047735356263779734,
+                  0.019646036150309278,
+                  0.0,
+                  0.018414017968164883,
+                  0.04785874770742923,
+                  0.019719971584456233,
+                  0.0
+                ],
+                "residual_proxy": 0.04785874770742923
+              },
+              "telemetry": {
+                "V_total": 0.6613327698904814,
+                "V_max": 0.24477196949816418,
+                "k_t": 2
+              },
+              "iterations": 61,
+              "petsc_true_relative_residual": 6.222949087557063e-10,
+              "attempts": [
+                {
+                  "iterations": 61,
+                  "reason": 2,
+                  "rtol": 5e-11,
+                  "true_relative_residual": 6.222949087557063e-10
+                }
+              ]
+            }
+          ],
+          "repeat": 0,
+          "position": 1,
+          "order": [
+            "full",
+            "dc_jsr"
+          ]
+        }
+      ],
+      "summary": {
+        "full": {
+          "mean_seconds": 11.783799323000949,
+          "median_seconds": 11.783799323000949,
+          "std_seconds": null,
+          "min_seconds": 11.783799323000949,
+          "max_seconds": 11.783799323000949,
+          "max_iterations": 53,
+          "max_true_relative_residual": 5.639164335590185e-10,
+          "repeat_k_equal": true,
+          "k_sequence": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ]
+        },
+        "dc_jsr": {
+          "mean_seconds": 11.274544820999836,
+          "median_seconds": 11.274544820999836,
+          "std_seconds": null,
+          "min_seconds": 11.274544820999836,
+          "max_seconds": 11.274544820999836,
+          "max_iterations": 61,
+          "max_true_relative_residual": 8.208396219107496e-10,
+          "repeat_k_equal": true,
+          "k_sequence": [
+            2,
+            6,
+            4,
+            6,
+            6,
+            6,
+            8,
+            2,
+            7,
+            3,
+            7,
+            7,
+            8,
+            4,
+            4,
+            2,
+            4,
+            2
+          ],
+          "paired_ratios_vs_full": [
+            0.9567835052140533
+          ],
+          "paired_wins_vs_full": 1,
+          "ratio_of_mean_times_vs_full": 0.9567835052140533,
+          "iterations_equal_full_every_step": false
+        }
+      }
+    }
+  },
+  "completed_utc": "2026-10-03T06:38:14.472000+00:00"
+}

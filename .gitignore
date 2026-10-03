@@ -81,6 +81,12 @@ results/*
 !results/figure_held_out_generalization.png
 !results/figure_held_out_generalization.pdf
 !results/final_held_out_audit.json
+!results/dc_jsr_certification_audit_n24.json
+!results/dc_jsr_validation_summary_2026-10-03.json
+!results/dc_jsr_staccato_frozen_n24.json
+!results/dc_jsr_compound_sensitivity_eps0p03_n24.json
+!results/dc_jsr_compound_sensitivity_eps0p05_n24.json
+!results/dc_jsr_compound_sensitivity_eps0p12_n24.json
 data/
 logs/
 

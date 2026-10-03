@@ -1,0 +1,258 @@
+% Section 3 replacement, integrated into docs/main.tex.
+\section{Method: Defect-Constrained Stateful Schwarz Maintenance}
+\label{sec:method}
+
+\subsection{Operator Sequence and Two-Level Architecture}
+We consider a prescribed sequence of sparse symmetric positive definite (SPD)
+systems $A_t x_t=b_t$, $t=0,\ldots,T$. The maintenance problem concerns the
+discrete operators and their cached local factors; it does not require a
+particular constitutive model or a coupled multiphysics time integrator.
+Localized changes motivate selective maintenance, but the policy also permits
+simultaneous changes in all subdomains.
+
+Let $R_i$ restrict to overlapping subdomain $i$, and let $D_i$ be positive
+diagonal partition-of-unity weights, with
+$\sum_i R_i^T D_i R_i=I$. Define $A_i(t)=R_i A_t R_i^T$.
+For a fixed, full-column-rank coarse basis $Z$, set
+\begin{equation}
+A_0(t)=Z^T A_t Z.
+\label{eq:dc_coarse_operator}
+\end{equation}
+The fully refreshed symmetric two-level additive Schwarz preconditioner is
+\begin{equation}
+P_t=\sum_{i=1}^M R_i^T D_i A_i(t)^{-1}D_i R_i
+       +Z A_0(t)^{-1}Z^T.
+\label{eq:two_level_prec}
+\end{equation}
+In the maintained preconditioner, $A_i(t)^{-1}$ is replaced by the inverse
+associated with the latest successful local refresh at step $\tau_i$.
+Symmetric restriction and prolongation preserve compatibility with PCG.
+The audited experiments use continuous piecewise-linear FEM on
+$\mathrm{UnitCubeMesh}(N,N,N)$, with $(N+1)^3$ degrees of freedom;
+the maintenance construction itself also applies to other SPD discretizations.
+
+\subsection{Persistent Algebraic Variation State}
+\label{subsec:diag_proxy}
+Write $\mathbf d_i(t)=\operatorname{diag}(A_i(t))$ and define the
+dimensionless local increment
+\begin{equation}
+v_i(t)=\frac{\|\mathbf d_i(t)-\mathbf d_i(t-1)\|_2}
+                  {\|\mathbf d_i(t)\|_2}.
+\label{eq:dc_increment}
+\end{equation}
+The denominator is nonzero for SPD local matrices. Initially all local factors
+are built from $A_{t=0}$, and $V_i(0)=0$. Before the decision at step $t$, accumulate
+\begin{equation}
+V_i^-(t)=V_i(t-1)+v_i(t).
+\label{eq:dc_state_evolution}
+\end{equation}
+The preconditioner state consists of the persistent local solver contexts,
+their build steps, the current coarse operator, and one decision scalar per block:
+\begin{equation}
+\mathcal M_t=\bigl(\{K_i\}_{i=1}^M,\{\tau_i\}_{i=1}^M,
+                        A_0(t),\{V_i(t)\}_{i=1}^M\bigr).
+\label{eq:state_tuple}
+\end{equation}
+Here $V_i$ is an \emph{algebraic stale-state proxy}, specifically an accumulated
+normalized diagonal variation. It is not a spectral-error estimator.
+The build step records factor provenance; it does not enter a separate
+priority weighting or trigger rule.
+
+\subsection{Defect-Constrained Minimum-Cardinality Subset Selection}
+For a refresh set $S$, define the residual proxy
+\begin{equation}
+R_t(S)=\max_{i\notin S}V_i^-(t),\qquad \max\emptyset:=0.
+\label{eq:dc_residual_proxy}
+\end{equation}
+With prescribed maintenance tolerance $\varepsilon\ge0$, equal local costs give
+\begin{equation}
+S_t^\star\in\arg\min_{S\subseteq\{1,\ldots,M\}}|S|
+\quad\text{subject to}\quad R_t(S)\le\varepsilon.
+\label{eq:dc_subset_problem}
+\end{equation}
+\noindent\textbf{Proposition (Closed-form optimal refresh set).}
+The unique solution of \eqref{eq:dc_subset_problem} is
+\begin{equation}
+\boxed{S_t^\star=\{i:V_i^-(t)>\varepsilon\}.}
+\label{eq:dc_closed_form}
+\end{equation}
+It also uniquely minimizes $\sum_{i\in S}c_i$ for any strictly positive costs
+$c_i$. Indeed, every feasible set must contain every block whose proxy exceeds
+$\varepsilon$. The set in \eqref{eq:dc_closed_form} is feasible, and adding any
+other block strictly increases the cost. \hfill $\blacksquare$
+
+Refactorize precisely the selected blocks. After successful refresh, commit
+\begin{equation}
+V_i(t)=\begin{cases}0,&i\in S_t^\star,\\
+V_i^-(t),&i\notin S_t^\star,\end{cases}
+\qquad
+\tau_i\leftarrow t\quad(i\in S_t^\star).
+\label{eq:dc_state_commit}
+\end{equation}
+Consequently $\max_i V_i(t)\le\varepsilon$.
+The budget $K_t=|S_t^\star|$ is an output of the constraint: zero refresh,
+partial refresh, and full refresh all follow from the same rule.
+The policy has a single maintenance tolerance. Monitoring costs
+$\mathcal O(\sum_i n_i)$ and closed-form selection costs $\mathcal O(M)$.
+Sorting, as used in the shadow prototype, is unnecessary for the max constraint.
+
+\subsection{Diagonal Endpoint Bound and Its Limitations}
+Let $\tau_i<t$ denote the most recent successful refresh before the current
+decision. Along this unrefreshed interval,
+\begin{equation}
+V_i^-(t)=\sum_{s=\tau_i+1}^{t}
+\frac{\|\mathbf d_i(s)-\mathbf d_i(s-1)\|_2}{\|\mathbf d_i(s)\|_2}.
+\label{eq:dc_path_sum}
+\end{equation}
+The triangle inequality gives the normalized diagonal endpoint bound
+\begin{align}
+\frac{\|\mathbf d_i(t)-\mathbf d_i(\tau_i)\|_2}{\|\mathbf d_i(t)\|_2}
+&\le\sum_{s=\tau_i+1}^{t}
+\frac{\|\mathbf d_i(s)\|_2}{\|\mathbf d_i(t)\|_2}
+\frac{\|\mathbf d_i(s)-\mathbf d_i(s-1)\|_2}{\|\mathbf d_i(s)\|_2}
+\notag\\
+&\le\gamma_i(t)V_i^-(t),\qquad
+\gamma_i(t)=\max_{\tau_i<s\le t}
+\frac{\|\mathbf d_i(s)\|_2}{\|\mathbf d_i(t)\|_2}.
+\label{eq:dc_endpoint_bound}
+\end{align}
+The norm-ratio factor cannot generally be dropped. For the scalar positive
+diagonal sequence $10\to5\to1$, the path state is $5$, while the current
+normalized endpoint drift is $9$. Closed oscillations can also have zero
+endpoint drift and positive path state. Thus accumulated variation retains
+history and may be conservative under reversals; it does not eliminate all
+effects of elapsed reuse. These statements concern diagonal vectors only:
+neither \eqref{eq:dc_endpoint_bound} nor $R_t(S)\le\varepsilon$ bounds a
+generalized-eigenvalue perturbation or the PCG iteration count.
+
+\subsection{Coarse Synchronization and Positive Definiteness}
+The coarse operator \eqref{eq:dc_coarse_operator} is assembled and factored at
+every step, including steps with $S_t^\star=\emptyset$. The basis $Z$ is fixed;
+this updates the coarse operator, not the coarse basis. With the committed
+build steps, the maintained preconditioner is
+\begin{equation}
+Q_t=\sum_{i=1}^M R_i^T D_i A_i(\tau_i)^{-1}D_i R_i
+       +Z A_0(t)^{-1}Z^T.
+\label{eq:dc_maintained_preconditioner}
+\end{equation}
+If the current global operator and cached local operators are SPD, the positive
+weights cover all degrees of freedom, and $Z$ has full column rank, then $Q_t$
+is SPD: each summand has a nonnegative quadratic form and for every nonzero
+vector at least one local summand is strictly positive. This structural
+property permits PCG with stale factors; it does not imply a uniform
+condition-number bound. Coarse synchronization is a fixed feature of the
+two-level architecture, rather than an additional adaptive decision.
+
+\subsection{Theoretical Foundation: Conditional Spectral Stability}
+\label{subsec:theory_stability}
+
+A fundamental theoretical question is: under what mathematical conditions does a selectively maintained preconditioner guarantee stability of the effective condition number without iteration degradation? To address this rigorously, we state a conditional perturbation proposition linking the local staleness of unrefactored subdomains to the global preconditioned spectrum.
+
+Let $A_t \in \mathbb{R}^{n \times n}$ be an SPD operator at step $t$. Let $P = M_{\text{exact}}^{-1}(A_t)$ denote the exact two-level Symmetric Weighted Additive Schwarz preconditioner defined in \eqref{eq:two_level_prec}, and let $Q = M_t^{-1}$ denote a statefully maintained preconditioner where a subset $\mathcal{S}_t \subset \{1, \dots, M\}$ is refactorized using current local operators $A_i(t)$, while unrefactored subdomains $j \notin \mathcal{S}_t$ retain historical direct factors $A_j(\tau_j)$ with $\tau_j < t$, and the Galerkin coarse operator $A_0(t) = Z^T A_t Z$ is synchronized:
+\begin{equation}
+Q = \sum_{i \in \mathcal{S}_t} R_i^T D_i A_i(t)^{-1} D_i R_i + \sum_{j \notin \mathcal{S}_t} R_j^T D_j A_j(\tau_j)^{-1} D_j R_j + Z A_0(t)^{-1} Z^T.
+\label{eq:stateful_prec_decomp}
+\end{equation}
+
+\noindentThe spectral assumption below uses a separate parameter $\eta$; it is not implied by the DC-JSR maintenance tolerance $\varepsilon$ or by its diagonal proxy constraint.
+
+\noindent\textbf{Proposition (Conditional Spectral Stability under Bounded Local Drift).}
+\textit{Assume that for all unrefactored subdomains $j \notin \mathcal{S}_t$, the symmetric relative operator drift satisfies the spectral-norm bound:
+\begin{equation}
+\|E_j\|_2 := \left\| A_j(t)^{-1/2} \left( A_j(t) - A_j(\tau_j) \right) A_j(t)^{-1/2} \right\|_2 \le \eta < \frac{1}{2}.
+\label{eq:prop_condition}
+\end{equation}
+Define the relative drift expansion constant $\delta = \frac{\eta}{1 - \eta} < 1$. Then the stateful preconditioner $Q$ satisfies the two-sided quadratic form perturbation bound:
+\begin{equation}
+(1 - \delta) P \preceq Q \preceq (1 + \delta) P.
+\label{eq:quadratic_bound}
+\end{equation}
+Consequently, the generalized eigenvalues $\lambda_k(Q A_t)$ satisfy:
+\begin{equation}
+(1 - \delta) \lambda_k(P A_t) \le \lambda_k(Q A_t) \le (1 + \delta) \lambda_k(P A_t) \quad (\forall k=1, \dots, n).
+\end{equation}
+Because $Q A_t$ is similar to the symmetric positive definite operator $A_t^{1/2} Q A_t^{1/2}$ (and $Q^{1/2} A_t Q^{1/2}$), its spectrum is real and positive. The effective spectral condition number governing Preconditioned Conjugate Gradient (PCG) convergence, defined as $\kappa_{\text{PCG}}(Q A_t) := \lambda_{\max}(Q A_t) / \lambda_{\min}(Q A_t) = \kappa_{\text{sp}}(Q^{1/2} A_t Q^{1/2})$, satisfies:
+\begin{equation}
+\kappa_{\text{PCG}}(Q A_t) \le \left( \frac{1 + \delta}{1 - \delta} \right) \kappa_{\text{PCG}}(P A_t) = \left( \frac{1}{1 - 2\eta} \right) \kappa_{\text{PCG}}(P A_t).
+\label{eq:condition_number_bound}
+\end{equation}}
+
+\noindent\textit{Proof.}
+For any unrefactored subdomain $j \notin \mathcal{S}_t$, write $A_j(\tau_j) = A_j(t)^{1/2} (I - E_j) A_j(t)^{1/2}$. By the condition $\|E_j\|_2 \le \eta < 1/2 < 1$, the Neumann series expansion yields:
+\begin{equation}
+A_j(\tau_j)^{-1} - A_j(t)^{-1} = A_j(t)^{-1/2} \left[ (I - E_j)^{-1} - I \right] A_j(t)^{-1/2}.
+\end{equation}
+Using $\|(I - E_j)^{-1} - I\|_2 \le \|E_j\|_2 / (1 - \|E_j\|_2) \le \eta / (1 - \eta) = \delta$, the local quadratic form satisfies:
+\begin{equation}
+-\delta A_j(t)^{-1} \preceq A_j(\tau_j)^{-1} - A_j(t)^{-1} \preceq \delta A_j(t)^{-1}.
+\end{equation}
+Applying the symmetric restriction/weighting operator $R_j^T D_j (\cdot) D_j R_j$ and summing over all skipped subdomains $j \notin \mathcal{S}_t$:
+\begin{equation}
+Q - P = \sum_{j \notin \mathcal{S}_t} R_j^T D_j \left( A_j(\tau_j)^{-1} - A_j(t)^{-1} \right) D_j R_j.
+\end{equation}
+Because the diagonal partition-of-unity weights $D_i$ are non-negative, each term $R_i^T D_i A_i(t)^{-1} D_i R_i$ is positive semi-definite (PSD). Summing over the subset $j \notin \mathcal{S}_t$ is bounded by the sum over all subdomains:
+\begin{equation}
+\sum_{j \notin \mathcal{S}_t} R_j^T D_j A_j(t)^{-1} D_j R_j \preceq \sum_{i=1}^M R_i^T D_i A_i(t)^{-1} D_i R_i = P_{\text{loc}} \preceq P.
+\end{equation}
+Therefore, $-\delta P \preceq -\delta P_{\text{loc}} \preceq Q - P \preceq \delta P_{\text{loc}} \preceq \delta P$, establishing \eqref{eq:quadratic_bound}. 
+
+Congruence of \eqref{eq:quadratic_bound} by $A_t^{1/2}$ yields the corresponding Loewner bounds between $A_t^{1/2}QA_t^{1/2}$ and $A_t^{1/2}PA_t^{1/2}$. Applying the Courant--Fischer min-max theorem to the symmetric operator $A_t^{1/2} Q A_t^{1/2}$ relative to $A_t^{1/2} P A_t^{1/2}$ yields $(1 - \delta) \lambda_k(P A_t) \le \lambda_k(Q A_t) \le (1 + \delta) \lambda_k(P A_t)$ for all $k$. Taking the ratio $\lambda_{\max} / \lambda_{\min}$ establishes \eqref{eq:condition_number_bound}. \hfill $\blacksquare$
+
+
+This proposition is an independent sufficient condition on full local matrices. DC-JSR does not evaluate $E_j$, certify $\eta$, or infer this condition from $V_i$.
+
+\subsection{Operator-Family Generalization and Architectural Requirements: 3-D Damaged Linear Elasticity}
+\label{subsec:elasticity_generalization}
+
+To establish the mathematical formulation and architectural design requirements for extending stateful selective maintenance beyond scalar diffusion to vector continuum mechanics, consider the 3-D balance of linear momentum for an elastic body undergoing localized progressive damage or phase softening:
+\begin{equation}
+-\nabla \cdot \boldsymbol{\sigma}(\boldsymbol{u}, t) = \boldsymbol{f}(x), \quad x \in \Omega = (0, 1)^3,
+\label{eq:elasticity_momentum}
+\end{equation}
+where $\boldsymbol{u} = (u_1, u_2, u_3)^T$ is the displacement vector field, and $\boldsymbol{\sigma}$ is the Cauchy stress tensor governed by a time-evolving fourth-order elasticity tensor $\mathbf{C}(x, t)$:
+\begin{equation}
+\boldsymbol{\sigma}(\boldsymbol{u}, t) = \mathbf{C}(x, t) : \boldsymbol{\varepsilon}(\boldsymbol{u}), \quad \boldsymbol{\varepsilon}(\boldsymbol{u}) = \frac{1}{2} \left( \nabla \boldsymbol{u} + (\nabla \boldsymbol{u})^T \right).
+\end{equation}
+To ensure positive-definiteness throughout time evolution, we assume uniform strong ellipticity: there exist constants $0 < \alpha_C \le \beta_C < \infty$ such that:
+\begin{equation}
+\alpha_C \|\boldsymbol{\xi}\|^2 \le \boldsymbol{\xi} : \mathbf{C}(x, t) : \boldsymbol{\xi} \le \beta_C \|\boldsymbol{\xi}\|^2, \quad \forall \boldsymbol{\xi} \in \mathbb{R}_{\text{sym}}^{3 \times 3}, \ \forall x \in \Omega, \ \forall t \ge 0.
+\label{eq:strong_ellipticity}
+\end{equation}
+In localized damage mechanics, this is modeled via $\mathbf{C}(x, t) = (1 - d(x, t)) \mathbf{C}_0(x) + d(x, t) \mathbf{C}_{\text{residual}}$ with damage variable $d(x, t) \in [0, 1)$ and $\mathbf{C}_{\text{residual}} \succ 0$.
+
+Discretizing \eqref{eq:elasticity_momentum} via finite elements or finite differences yields the $3 \times 3$ block sparse system $A_t \boldsymbol{u}_t = \boldsymbol{b}_t \in \mathbb{R}^{3n \times 3n}$. Extending the stateful maintenance framework to this vector operator family introduces two key architectural requirements:
+\begin{enumerate}
+    \item \textbf{Block-Diagonal Operator-Drift Proxy}: For $3 \times 3$ nodal blocks, scalar diagonal traces can fail to capture off-diagonal shear coupling. We therefore define the block-diagonal Frobenius drift surrogate:
+    \begin{equation}
+    d_i^{\text{block}}(t) = \sqrt{\sum_{p \in \Omega_i} \left\| A_{t, pp} - A_{t-1, pp} \right\|_F^2},
+    \label{eq:block_proxy}
+    \end{equation}
+    where $A_{t, pp} \in \mathbb{R}^{3 \times 3}$ is the diagonal nodal block at spatial grid point $p$. Evaluating \eqref{eq:block_proxy} retains $\mathcal{O}(n_i)$ computational complexity while capturing the full tensor Frobenius norm of nodal stiffness variations. We emphasize that $d_i^{\text{block}}$ serves as an empirical drift surrogate rather than a certified norm-equivalent estimator of the global operator perturbation.
+    \item \textbf{Vector Coarse Space Construction}: Unlike scalar problems where piecewise constant indicators suffice, vector elasticity requires coarse interpolation operators $Z \in \mathbb{R}^{3n \times 3M}$ that span rigid body modes (translations and infinitesimal rotations) or block-component partition indicators ($Z = Z_{\text{scalar}} \otimes I_3$) to prevent low-frequency locking.
+\end{enumerate}
+This subsection records architectural requirements for a possible vector-operator extension. Such an extension is not evaluated in the DC-JSR audit and is not an additional component of the scalar maintenance policy.
+
+\subsection{Certified Solve and Cost Accounting}
+Every solve is accepted only if
+\begin{equation}
+\operatorname{RelRes}(x_t)=\frac{\|b_t-A_t x_t\|_2}{\|b_t\|_2}<10^{-8}.
+\label{eq:rel_res}
+\end{equation}
+The audit uses $\mathrm{rtol}=5\times10^{-11}$ and
+$\mathrm{atol}=10^{-14}$, explicit PETSc true-residual evaluation, and an
+independent CSR residual calculation. A failed initial certification permits
+a tighter solver retry; it does not change $S_t^\star$. No retry was required
+in the 876 audited solves. The maximum true relative residual was
+$3.276221\times10^{-9}$.
+For identically defined timed work, the net saving over Full Rebuild is
+\begin{equation}
+\Delta T_{\rm net}=\sum_{t=1}^T
+\left[T_{\rm setup}^{\rm full}(t)-T_{\rm setup}^{\rm DC}(t)
+      +T_{\rm solve,cert}^{\rm full}(t)-T_{\rm solve,cert}^{\rm DC}(t)
+      +T_{\rm monitor}^{\rm full}(t)-T_{\rm monitor}^{\rm DC}(t)\right].
+\label{eq:cost_model}
+\end{equation}
+Here setup includes local and coarse maintenance, and solve includes primary
+true-residual certification. Assembly, initialization, and additional audit
+checks are accounted for separately. The constraint minimizes required local
+refreshes for the chosen proxy; it does not minimize total runtime a priori.

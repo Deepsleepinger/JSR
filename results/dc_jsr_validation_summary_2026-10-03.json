@@ -1,0 +1,19 @@
+{
+  "formal_n24_solve_count": 876,
+  "max_true_relative_residual": 3.2762207510210456e-09,
+  "max_coarse_relative_error": 1.5971071346877371e-13,
+  "solver_retry_count": 0,
+  "source_fingerprints_match_current_files": true,
+  "policy_tests": {
+    "passed": 5,
+    "exhaustive_cases": 200,
+    "subsets_per_case": 256
+  },
+  "files": [
+    "results/dc_jsr_certification_audit_n24.json",
+    "results/dc_jsr_staccato_frozen_n24.json",
+    "results/dc_jsr_compound_sensitivity_eps0p03_n24.json",
+    "results/dc_jsr_compound_sensitivity_eps0p05_n24.json",
+    "results/dc_jsr_compound_sensitivity_eps0p12_n24.json"
+  ]
+}
