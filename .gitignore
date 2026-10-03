@@ -87,6 +87,8 @@ results/*
 !results/dc_jsr_compound_sensitivity_eps0p03_n24.json
 !results/dc_jsr_compound_sensitivity_eps0p05_n24.json
 !results/dc_jsr_compound_sensitivity_eps0p12_n24.json
+!results/dc_jsr_parallel_audit/
+!results/dc_jsr_parallel_audit/*.json
 data/
 logs/
 

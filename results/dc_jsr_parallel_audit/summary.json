@@ -1,0 +1,1066 @@
+{
+  "status": "complete",
+  "formal_certified_solves": 1248,
+  "warmup_certified_solves": 312,
+  "total_certified_solves": 1560,
+  "retries": 0,
+  "max_true_residual": 3.7069515186174057e-09,
+  "max_coarse_relative_error": 2.960716660150694e-13,
+  "max_serial_distributed_apply_relative_error": 5.293140888715136e-14,
+  "source_sha256": {
+    "benchmarks/run_dc_jsr_parallel_audit.py": "17667942b2faea140b4780bac4f342ff1c2d2eeb9830175d9b8565b49c82eaec",
+    "jsr/backend_mpi.py": "b41007f9049a1be5f9972a0cdea5b7b8ed37a9940ec98592235b5464d6e04e5e",
+    "jsr/backend_mumps.py": "82f430dc2cad4175b755d4e0fe1649f8d3653a2fbeb5452e811009bee64bf577",
+    "benchmarks/run_dc_jsr_shadow_prototype.py": "9ed2e634db3f87b381332968cb78637749a7c611293a5036bb3017fccc55d94c"
+  },
+  "history_checks": [
+    {
+      "mesh_n": 24,
+      "regime": "gentle_single_front",
+      "arm": "full",
+      "budget_sequence": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+      ],
+      "max_iteration_difference_across_processes_and_repeats": 0
+    },
+    {
+      "mesh_n": 24,
+      "regime": "gentle_single_front",
+      "arm": "dc_jsr",
+      "budget_sequence": [
+        1,
+        2,
+        2,
+        2,
+        3,
+        2,
+        2,
+        2,
+        3,
+        2
+      ],
+      "max_iteration_difference_across_processes_and_repeats": 0
+    },
+    {
+      "mesh_n": 32,
+      "regime": "gentle_single_front",
+      "arm": "full",
+      "budget_sequence": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+      ],
+      "max_iteration_difference_across_processes_and_repeats": 2
+    },
+    {
+      "mesh_n": 32,
+      "regime": "gentle_single_front",
+      "arm": "dc_jsr",
+      "budget_sequence": [
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        3,
+        2,
+        2,
+        2
+      ],
+      "max_iteration_difference_across_processes_and_repeats": 1
+    },
+    {
+      "mesh_n": 24,
+      "regime": "multi_front_churn",
+      "arm": "full",
+      "budget_sequence": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+      ],
+      "max_iteration_difference_across_processes_and_repeats": 0
+    },
+    {
+      "mesh_n": 24,
+      "regime": "multi_front_churn",
+      "arm": "dc_jsr",
+      "budget_sequence": [
+        5,
+        5,
+        5,
+        4,
+        5,
+        5,
+        7,
+        6,
+        8,
+        8,
+        8,
+        8,
+        5,
+        6,
+        7,
+        6
+      ],
+      "max_iteration_difference_across_processes_and_repeats": 1
+    },
+    {
+      "mesh_n": 32,
+      "regime": "multi_front_churn",
+      "arm": "full",
+      "budget_sequence": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+      ],
+      "max_iteration_difference_across_processes_and_repeats": 0
+    },
+    {
+      "mesh_n": 32,
+      "regime": "multi_front_churn",
+      "arm": "dc_jsr",
+      "budget_sequence": [
+        4,
+        5,
+        5,
+        4,
+        4,
+        5,
+        5,
+        4,
+        8,
+        8,
+        8,
+        6,
+        6,
+        5,
+        6,
+        7
+      ],
+      "max_iteration_difference_across_processes_and_repeats": 1
+    }
+  ],
+  "configurations": [
+    {
+      "mesh_n": 24,
+      "n_dofs": 15625,
+      "regime": "gentle_single_front",
+      "processes": 1,
+      "full": {
+        "mean_seconds": 4.766204566999477,
+        "sd_seconds": 0.1261682346898389,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 47,
+        "max_true_residual": 1.7833711117335495e-09,
+        "mean_total_with_initialization_seconds": 4.937482850498782,
+        "mean_stage_maxima": {
+          "monitor": 6.074100110708969e-05,
+          "local": 1.1654039357463262,
+          "coarse": 0.019929228499677265,
+          "solve_and_certification": 3.5808106617523663
+        },
+        "mean_local_rank_work_seconds": 1.1654039357463262,
+        "mean_local_critical_seconds": 1.1654039357463262,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.018577578472104506,
+          "local": 3.382225315017422,
+          "coarse": 0.08537917201192613
+        },
+        "speedup_vs_own_p1": 1.0,
+        "efficiency_vs_own_p1": 1.0
+      },
+      "dc_jsr": {
+        "mean_seconds": 3.9223920119975446,
+        "sd_seconds": 0.11276724660246706,
+        "ratio_of_mean_times_vs_full": 0.8229592240240021,
+        "paired_ratios_vs_full": [
+          0.7851372671771453,
+          0.8258932207801054,
+          0.816626420486347,
+          0.8660459811516106
+        ],
+        "paired_wins_vs_full": 4,
+        "max_iterations": 47,
+        "max_true_residual": 1.84911215465973e-09,
+        "mean_total_with_initialization_seconds": 4.092415202997472,
+        "mean_stage_maxima": {
+          "monitor": 0.001542070248433447,
+          "local": 0.29169837724748504,
+          "coarse": 0.02030094225119683,
+          "solve_and_certification": 3.6088506222504293
+        },
+        "mean_local_rank_work_seconds": 0.29169837724748504,
+        "mean_local_critical_seconds": 0.29169837724748504,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.01873465376047534,
+          "local": 3.4091939052550515,
+          "coarse": 0.08551658947999385
+        },
+        "speedup_vs_own_p1": 1.0,
+        "efficiency_vs_own_p1": 1.0
+      },
+      "ratio": 0.8229592240240021,
+      "ratio_with_initialization": 0.8288464642634776,
+      "source_file": "gentle_single_front_n24_p1.json",
+      "sha256": "9e11589b2301c16c18cb7aa56f50d172700fbe58ceeacafb52479cda096bd196"
+    },
+    {
+      "mesh_n": 24,
+      "n_dofs": 15625,
+      "regime": "gentle_single_front",
+      "processes": 2,
+      "full": {
+        "mean_seconds": 2.8073384927465668,
+        "sd_seconds": 0.08565373723008914,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 47,
+        "max_true_residual": 1.7833710909923058e-09,
+        "mean_total_with_initialization_seconds": 2.8901561809962004,
+        "mean_stage_maxima": {
+          "monitor": 6.898149786138674e-05,
+          "local": 0.6408210920026249,
+          "coarse": 0.04375137375063787,
+          "solve_and_certification": 2.1534774864967403
+        },
+        "mean_local_rank_work_seconds": 1.2509859495030469,
+        "mean_local_critical_seconds": 0.6408210920026249,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.13075912224576314,
+          "local": 1.922119973525696,
+          "coarse": 0.08221737228359416
+        },
+        "speedup_vs_own_p1": 1.6977662577256398,
+        "efficiency_vs_own_p1": 0.8488831288628199
+      },
+      "dc_jsr": {
+        "mean_seconds": 2.2892999799978497,
+        "sd_seconds": 0.022187952306514935,
+        "ratio_of_mean_times_vs_full": 0.8154698786458441,
+        "paired_ratios_vs_full": [
+          0.8207494449672282,
+          0.7779145493829585,
+          0.8338409243905354,
+          0.8316479702547044
+        ],
+        "paired_wins_vs_full": 4,
+        "max_iterations": 47,
+        "max_true_residual": 1.8491121332940437e-09,
+        "mean_total_with_initialization_seconds": 2.375009062748177,
+        "mean_stage_maxima": {
+          "monitor": 0.0011248419996263692,
+          "local": 0.18012759874545736,
+          "coarse": 0.06554982499710604,
+          "solve_and_certification": 2.096010950247546
+        },
+        "mean_local_rank_work_seconds": 0.3070096192486744,
+        "mean_local_critical_seconds": 0.18012759874545736,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.10006379077731253,
+          "local": 1.8712980605059784,
+          "coarse": 0.07885194399023021
+        },
+        "speedup_vs_own_p1": 1.7133586887993721,
+        "efficiency_vs_own_p1": 0.8566793443996861
+      },
+      "ratio": 0.8154698786458441,
+      "ratio_with_initialization": 0.8217580345189308,
+      "source_file": "gentle_single_front_n24_p2.json",
+      "sha256": "4d82c28eb4cb1f20278e64e1ae26c21a39400d5b7acecd7accd5536fda6798b3"
+    },
+    {
+      "mesh_n": 24,
+      "n_dofs": 15625,
+      "regime": "gentle_single_front",
+      "processes": 4,
+      "full": {
+        "mean_seconds": 2.0901082905047588,
+        "sd_seconds": 0.022493510636911806,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 47,
+        "max_true_residual": 1.7833710972988179e-09,
+        "mean_total_with_initialization_seconds": 2.1476148317551633,
+        "mean_stage_maxima": {
+          "monitor": 7.120750251488062e-05,
+          "local": 0.42283870799565193,
+          "coarse": 0.08358165050140087,
+          "solve_and_certification": 1.6533208985001693
+        },
+        "mean_local_rank_work_seconds": 1.5591386414944282,
+        "mean_local_critical_seconds": 0.42283870799565193,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.3174654355061648,
+          "local": 1.2998748742529642,
+          "coarse": 0.11235532651517133
+        },
+        "speedup_vs_own_p1": 2.280362500188181,
+        "efficiency_vs_own_p1": 0.5700906250470452
+      },
+      "dc_jsr": {
+        "mean_seconds": 1.8874851012506042,
+        "sd_seconds": 0.06522968323166402,
+        "ratio_of_mean_times_vs_full": 0.903056128634741,
+        "paired_ratios_vs_full": [
+          0.8931564838021671,
+          0.94067454434885,
+          0.9160811560016381,
+          0.8627075796399767
+        ],
+        "paired_wins_vs_full": 4,
+        "max_iterations": 47,
+        "max_true_residual": 1.8491121312725413e-09,
+        "mean_total_with_initialization_seconds": 1.9404018442510278,
+        "mean_stage_maxima": {
+          "monitor": 0.0010249880006085732,
+          "local": 0.20784220100176753,
+          "coarse": 0.2182724274989596,
+          "solve_and_certification": 1.669388537496161
+        },
+        "mean_local_rank_work_seconds": 0.39946056300414057,
+        "mean_local_critical_seconds": 0.20784220100176753,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.32559109500289196,
+          "local": 1.309193299504841,
+          "coarse": 0.11137957428854861
+        },
+        "speedup_vs_own_p1": 2.078104886443161,
+        "efficiency_vs_own_p1": 0.5195262216107902
+      },
+      "ratio": 0.903056128634741,
+      "ratio_with_initialization": 0.9035148275006146,
+      "source_file": "gentle_single_front_n24_p4.json",
+      "sha256": "677e95b78bae2ad541f5da1a0cc06eb798e16b2cde091ff183ab6187f07ee753"
+    },
+    {
+      "mesh_n": 32,
+      "n_dofs": 35937,
+      "regime": "gentle_single_front",
+      "processes": 1,
+      "full": {
+        "mean_seconds": 13.650162119500237,
+        "sd_seconds": 0.7675560898491252,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 50,
+        "max_true_residual": 3.7069514888754365e-09,
+        "mean_total_with_initialization_seconds": 14.276663786001336,
+        "mean_stage_maxima": {
+          "monitor": 7.281450052687433e-05,
+          "local": 5.130795429752652,
+          "coarse": 0.04747405824764428,
+          "solve_and_certification": 8.471819816999414
+        },
+        "mean_local_rank_work_seconds": 5.130795429752652,
+        "mean_local_critical_seconds": 5.130795429752652,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.042149164977672626,
+          "local": 8.053713079504632,
+          "coarse": 0.1439326565259762
+        },
+        "speedup_vs_own_p1": 1.0,
+        "efficiency_vs_own_p1": 1.0
+      },
+      "dc_jsr": {
+        "mean_seconds": 10.114708145749319,
+        "sd_seconds": 0.5813735087235159,
+        "ratio_of_mean_times_vs_full": 0.7409954590429173,
+        "paired_ratios_vs_full": [
+          0.7722060979839859,
+          0.63476933469756,
+          0.8046901252304928,
+          0.7640298546592292
+        ],
+        "paired_wins_vs_full": 4,
+        "max_iterations": 51,
+        "max_true_residual": 1.1360524506486967e-09,
+        "mean_total_with_initialization_seconds": 10.804173351749341,
+        "mean_stage_maxima": {
+          "monitor": 0.0035497074995873845,
+          "local": 1.270202193250043,
+          "coarse": 0.04621701950145507,
+          "solve_and_certification": 8.794739225498233
+        },
+        "mean_local_rank_work_seconds": 1.270202193250043,
+        "mean_local_critical_seconds": 1.270202193250043,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.043324107022272074,
+          "local": 8.362721711226186,
+          "coarse": 0.14957510799376905
+        },
+        "speedup_vs_own_p1": 1.0,
+        "efficiency_vs_own_p1": 1.0
+      },
+      "ratio": 0.7409954590429173,
+      "ratio_with_initialization": 0.7567715758875776,
+      "source_file": "gentle_single_front_n32_p1.json",
+      "sha256": "a09cc25510ca7ebb9ed6ae314cc67b2bfdceebf7dbd0fae8fcbe50a8143524d9"
+    },
+    {
+      "mesh_n": 32,
+      "n_dofs": 35937,
+      "regime": "gentle_single_front",
+      "processes": 2,
+      "full": {
+        "mean_seconds": 8.409395876748022,
+        "sd_seconds": 0.4255499203410463,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 49,
+        "max_true_residual": 3.706951509454146e-09,
+        "mean_total_with_initialization_seconds": 8.759621003248867,
+        "mean_stage_maxima": {
+          "monitor": 9.296874668507371e-05,
+          "local": 2.9887665172509514,
+          "coarse": 0.13670344349975494,
+          "solve_and_certification": 5.3928814832515855
+        },
+        "mean_local_rank_work_seconds": 5.868515324001237,
+        "mean_local_critical_seconds": 2.9887665172509514,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.34755604276688246,
+          "local": 4.96249686473584,
+          "coarse": 0.13333356801376794
+        },
+        "speedup_vs_own_p1": 1.6232036545268291,
+        "efficiency_vs_own_p1": 0.8116018272634146
+      },
+      "dc_jsr": {
+        "mean_seconds": 6.243065757994373,
+        "sd_seconds": 0.21452759425258,
+        "ratio_of_mean_times_vs_full": 0.7423917067879333,
+        "paired_ratios_vs_full": [
+          0.7740411438089453,
+          0.7506115719311611,
+          0.6926094000060192,
+          0.7564591126512059
+        ],
+        "paired_wins_vs_full": 4,
+        "max_iterations": 50,
+        "max_true_residual": 1.1360524532754615e-09,
+        "mean_total_with_initialization_seconds": 6.605519762494623,
+        "mean_stage_maxima": {
+          "monitor": 0.002061034752841806,
+          "local": 0.8129240877542543,
+          "coarse": 0.2555796097476559,
+          "solve_and_certification": 5.402292415501506
+        },
+        "mean_local_rank_work_seconds": 1.3962784360001024,
+        "mean_local_critical_seconds": 0.8129240877542543,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.19046241503838246,
+          "local": 4.9482875425319435,
+          "coarse": 0.13441602198599867
+        },
+        "speedup_vs_own_p1": 1.6201508261861937,
+        "efficiency_vs_own_p1": 0.8100754130930968
+      },
+      "ratio": 0.7423917067879333,
+      "ratio_with_initialization": 0.7540873925989142,
+      "source_file": "gentle_single_front_n32_p2.json",
+      "sha256": "4bdacfd1dc114e71402ae410db498492115b1057dfb4339a81096d5553b05908"
+    },
+    {
+      "mesh_n": 32,
+      "n_dofs": 35937,
+      "regime": "gentle_single_front",
+      "processes": 4,
+      "full": {
+        "mean_seconds": 5.373490791497716,
+        "sd_seconds": 0.09303380180996342,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 49,
+        "max_true_residual": 3.7069515186174057e-09,
+        "mean_total_with_initialization_seconds": 5.563548454498232,
+        "mean_stage_maxima": {
+          "monitor": 7.363750046351925e-05,
+          "local": 1.671637492498121,
+          "coarse": 0.13061125600233936,
+          "solve_and_certification": 3.685590451248572
+        },
+        "mean_local_rank_work_seconds": 6.430962675750379,
+        "mean_local_critical_seconds": 1.671637492498121,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.45786267653966206,
+          "local": 3.074720032008372,
+          "coarse": 0.1402019705010389
+        },
+        "speedup_vs_own_p1": 2.540278312395809,
+        "efficiency_vs_own_p1": 0.6350695780989523
+      },
+      "dc_jsr": {
+        "mean_seconds": 4.542827855502765,
+        "sd_seconds": 0.08779578237503846,
+        "ratio_of_mean_times_vs_full": 0.845414653485723,
+        "paired_ratios_vs_full": [
+          0.8279486528075026,
+          0.8477443907427304,
+          0.8483203638270401,
+          0.8578384987838706
+        ],
+        "paired_wins_vs_full": 4,
+        "max_iterations": 50,
+        "max_true_residual": 1.1360525118034554e-09,
+        "mean_total_with_initialization_seconds": 4.73546809425261,
+        "mean_stage_maxima": {
+          "monitor": 0.001596040247932251,
+          "local": 0.8235555087503599,
+          "coarse": 0.840923221247067,
+          "solve_and_certification": 3.701476005002405
+        },
+        "mean_local_rank_work_seconds": 1.5429762725025284,
+        "mean_local_critical_seconds": 0.8235555087503599,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.466534959222372,
+          "local": 3.105867362481149,
+          "coarse": 0.1319799082557438
+        },
+        "speedup_vs_own_p1": 2.2265224365693914,
+        "efficiency_vs_own_p1": 0.5566306091423479
+      },
+      "ratio": 0.845414653485723,
+      "ratio_with_initialization": 0.851159674977558,
+      "source_file": "gentle_single_front_n32_p4.json",
+      "sha256": "5dc2557d15bab87781cac30643eefc7be01af396121b35c212c0522aea161ca6"
+    },
+    {
+      "mesh_n": 24,
+      "n_dofs": 15625,
+      "regime": "multi_front_churn",
+      "processes": 1,
+      "full": {
+        "mean_seconds": 8.766670268998496,
+        "sd_seconds": 0.3188527541363589,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 54,
+        "max_true_residual": 1.32746794944202e-09,
+        "mean_total_with_initialization_seconds": 8.945635926500472,
+        "mean_stage_maxima": {
+          "monitor": 9.857000259216875e-05,
+          "local": 1.9844003794996752,
+          "coarse": 0.03444627949738788,
+          "solve_and_certification": 6.747725039998841
+        },
+        "mean_local_rank_work_seconds": 1.9844003794996752,
+        "mean_local_critical_seconds": 1.9844003794996752,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.035072860996478994,
+          "local": 6.373187360740303,
+          "coarse": 0.16006437927262596
+        },
+        "speedup_vs_own_p1": 1.0,
+        "efficiency_vs_own_p1": 1.0
+      },
+      "dc_jsr": {
+        "mean_seconds": 8.36199928275255,
+        "sd_seconds": 0.15613488530728944,
+        "ratio_of_mean_times_vs_full": 0.95383983042262,
+        "paired_ratios_vs_full": [
+          0.9396311464186283,
+          0.9633416043734586,
+          0.9359228422192556,
+          0.9785276968778718
+        ],
+        "paired_wins_vs_full": 4,
+        "max_iterations": 54,
+        "max_true_residual": 1.2022335931523766e-09,
+        "mean_total_with_initialization_seconds": 8.555074034504287,
+        "mean_stage_maxima": {
+          "monitor": 0.002575679247456719,
+          "local": 1.5196727484990333,
+          "coarse": 0.03339772749950498,
+          "solve_and_certification": 6.806353127506554
+        },
+        "mean_local_rank_work_seconds": 1.5196727484990333,
+        "mean_local_critical_seconds": 1.5196727484990333,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.03553360673595307,
+          "local": 6.426642396999341,
+          "coarse": 0.16124374449555035
+        },
+        "speedup_vs_own_p1": 1.0,
+        "efficiency_vs_own_p1": 1.0
+      },
+      "ratio": 0.95383983042262,
+      "ratio_with_initialization": 0.9563405111492199,
+      "source_file": "multi_front_churn_n24_p1.json",
+      "sha256": "50a0889ac2c4e3bd82255ce2e897039b899f3cf8d7bf62687f158f440228a6b1"
+    },
+    {
+      "mesh_n": 24,
+      "n_dofs": 15625,
+      "regime": "multi_front_churn",
+      "processes": 2,
+      "full": {
+        "mean_seconds": 4.739488524495755,
+        "sd_seconds": 0.13134245049416035,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 54,
+        "max_true_residual": 1.3274679390294763e-09,
+        "mean_total_with_initialization_seconds": 4.826149613495545,
+        "mean_stage_maxima": {
+          "monitor": 9.01019984667073e-05,
+          "local": 1.0086517325034947,
+          "coarse": 0.051930513248407806,
+          "solve_and_certification": 3.710175719748804
+        },
+        "mean_local_rank_work_seconds": 1.986035071005972,
+        "mean_local_critical_seconds": 1.0086517325034947,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.21017420706084522,
+          "local": 3.3265472962184504,
+          "coarse": 0.1401655349700377
+        },
+        "speedup_vs_own_p1": 1.84970809058583,
+        "efficiency_vs_own_p1": 0.924854045292915
+      },
+      "dc_jsr": {
+        "mean_seconds": 5.002573624500656,
+        "sd_seconds": 0.7345425244144753,
+        "ratio_of_mean_times_vs_full": 1.0555091754405905,
+        "paired_ratios_vs_full": [
+          0.9233271317904642,
+          0.9828649222837225,
+          1.0122992126885204,
+          1.312951480997068
+        ],
+        "paired_wins_vs_full": 2,
+        "max_iterations": 54,
+        "max_true_residual": 1.2022337036720033e-09,
+        "mean_total_with_initialization_seconds": 5.084486758500134,
+        "mean_stage_maxima": {
+          "monitor": 0.0019001170012415969,
+          "local": 0.9194121295022342,
+          "coarse": 0.27629805474771274,
+          "solve_and_certification": 4.06073938524878
+        },
+        "mean_local_rank_work_seconds": 1.5836372457506513,
+        "mean_local_critical_seconds": 0.9194121295022342,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.4545039044760415,
+          "local": 3.6561355535013718,
+          "coarse": 0.15644639401762106
+        },
+        "speedup_vs_own_p1": 1.6715394735619156,
+        "efficiency_vs_own_p1": 0.8357697367809578
+      },
+      "ratio": 1.0555091754405905,
+      "ratio_with_initialization": 1.053528623373422,
+      "source_file": "multi_front_churn_n24_p2.json",
+      "sha256": "15269222a862398c9819094ca6b789d881017f768967d7ca3d2344752c4326f2"
+    },
+    {
+      "mesh_n": 24,
+      "n_dofs": 15625,
+      "regime": "multi_front_churn",
+      "processes": 4,
+      "full": {
+        "mean_seconds": 3.7957809509998697,
+        "sd_seconds": 0.04413482912464071,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 54,
+        "max_true_residual": 1.3274679491622724e-09,
+        "mean_total_with_initialization_seconds": 3.8592626002500765,
+        "mean_stage_maxima": {
+          "monitor": 0.00012087450068065664,
+          "local": 0.7153751134983395,
+          "coarse": 0.11699150075219222,
+          "solve_and_certification": 3.0622597299980043
+        },
+        "mean_local_rank_work_seconds": 2.657731750500716,
+        "mean_local_critical_seconds": 0.7153751134983395,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.43384180726479826,
+          "local": 2.4383207580185626,
+          "coarse": 0.18127429151900287
+        },
+        "speedup_vs_own_p1": 2.3095827662787585,
+        "efficiency_vs_own_p1": 0.5773956915696896
+      },
+      "dc_jsr": {
+        "mean_seconds": 3.805618671245611,
+        "sd_seconds": 0.06322805010001949,
+        "ratio_of_mean_times_vs_full": 1.0025917513082914,
+        "paired_ratios_vs_full": [
+          0.9818218770269963,
+          0.9948189304230542,
+          1.0219373983019142,
+          1.0120524355678053
+        ],
+        "paired_wins_vs_full": 2,
+        "max_iterations": 54,
+        "max_true_residual": 1.2022337725245095e-09,
+        "mean_total_with_initialization_seconds": 3.8638554717463194,
+        "mean_stage_maxima": {
+          "monitor": 0.0018519167524573277,
+          "local": 0.6774102164999931,
+          "coarse": 0.34555719525087625,
+          "solve_and_certification": 3.1082820595020166
+        },
+        "mean_local_rank_work_seconds": 2.031843192999986,
+        "mean_local_critical_seconds": 0.6774102164999931,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.4287164929746723,
+          "local": 2.473276264496235,
+          "coarse": 0.18346704524992674
+        },
+        "speedup_vs_own_p1": 2.197277237978128,
+        "efficiency_vs_own_p1": 0.549319309494532
+      },
+      "ratio": 1.0025917513082914,
+      "ratio_with_initialization": 1.0011900904322877,
+      "source_file": "multi_front_churn_n24_p4.json",
+      "sha256": "4eeb38e752991705e3dff875b27f1588fd5bd9f1013a9b442c49da207fd66653"
+    },
+    {
+      "mesh_n": 32,
+      "n_dofs": 35937,
+      "regime": "multi_front_churn",
+      "processes": 1,
+      "full": {
+        "mean_seconds": 26.585382823754117,
+        "sd_seconds": 1.043499058962321,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 58,
+        "max_true_residual": 1.4309717380465e-09,
+        "mean_total_with_initialization_seconds": 27.357857651252743,
+        "mean_stage_maxima": {
+          "monitor": 0.0001323827518717735,
+          "local": 9.273079024752406,
+          "coarse": 0.07868163450075372,
+          "solve_and_certification": 17.233489781749086
+        },
+        "mean_local_rank_work_seconds": 9.273079024752406,
+        "mean_local_critical_seconds": 9.273079024752406,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.085926497525179,
+          "local": 16.38819667622738,
+          "coarse": 0.29581372374923376
+        },
+        "speedup_vs_own_p1": 1.0,
+        "efficiency_vs_own_p1": 1.0
+      },
+      "dc_jsr": {
+        "mean_seconds": 24.361252759745184,
+        "sd_seconds": 2.337476993437362,
+        "ratio_of_mean_times_vs_full": 0.9163401152146786,
+        "paired_ratios_vs_full": [
+          0.870940453086124,
+          0.8516607869009442,
+          1.1110140056218378,
+          0.8464851928554229
+        ],
+        "paired_wins_vs_full": 3,
+        "max_iterations": 62,
+        "max_true_residual": 1.4309717380465e-09,
+        "mean_total_with_initialization_seconds": 25.115100520495616,
+        "mean_stage_maxima": {
+          "monitor": 0.005042118248638872,
+          "local": 6.455716055746052,
+          "coarse": 0.0769004132525879,
+          "solve_and_certification": 17.823594172497906
+        },
+        "mean_local_rank_work_seconds": 6.455716055746052,
+        "mean_local_critical_seconds": 6.455716055746052,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.08995382499961124,
+          "local": 16.950213779497062,
+          "coarse": 0.3032482385306139
+        },
+        "speedup_vs_own_p1": 1.0,
+        "efficiency_vs_own_p1": 1.0
+      },
+      "ratio": 0.9163401152146786,
+      "ratio_with_initialization": 0.9180214635463451,
+      "source_file": "multi_front_churn_n32_p1.json",
+      "sha256": "0adf358b66f10dcafb40ab8e4f87147d15b0f427a11c00907463d73ac7a98651"
+    },
+    {
+      "mesh_n": 32,
+      "n_dofs": 35937,
+      "regime": "multi_front_churn",
+      "processes": 2,
+      "full": {
+        "mean_seconds": 14.83711098150161,
+        "sd_seconds": 0.2692851712736627,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 58,
+        "max_true_residual": 1.4309717984477931e-09,
+        "mean_total_with_initialization_seconds": 15.217934167751082,
+        "mean_stage_maxima": {
+          "monitor": 0.00014413475128094433,
+          "local": 4.88442882399886,
+          "coarse": 0.14579782374767092,
+          "solve_and_certification": 9.908182677252626
+        },
+        "mean_local_rank_work_seconds": 9.668059507499493,
+        "mean_local_critical_seconds": 4.88442882399886,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.4177189453275787,
+          "local": 9.054514290710358,
+          "coarse": 0.2508315247523569
+        },
+        "speedup_vs_own_p1": 1.7918166721877218,
+        "efficiency_vs_own_p1": 0.8959083360938609
+      },
+      "dc_jsr": {
+        "mean_seconds": 14.273145898252551,
+        "sd_seconds": 0.5798663669612498,
+        "ratio_of_mean_times_vs_full": 0.9619895622569521,
+        "paired_ratios_vs_full": [
+          0.9129612769800112,
+          0.9624977676332036,
+          0.961413865734169,
+          1.0117203358881117
+        ],
+        "paired_wins_vs_full": 3,
+        "max_iterations": 62,
+        "max_true_residual": 1.4309717984477931e-09,
+        "mean_total_with_initialization_seconds": 14.638092630501887,
+        "mean_stage_maxima": {
+          "monitor": 0.0035770457498074393,
+          "local": 3.950940207999338,
+          "coarse": 1.2495253107490498,
+          "solve_and_certification": 10.274720839501242
+        },
+        "mean_local_rank_work_seconds": 6.6968440829996325,
+        "mean_local_critical_seconds": 3.950940207999338,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.4432480069463054,
+          "local": 9.390746951516121,
+          "coarse": 0.25706832352807396
+        },
+        "speedup_vs_own_p1": 1.7067893044327187,
+        "efficiency_vs_own_p1": 0.8533946522163594
+      },
+      "ratio": 0.9619895622569521,
+      "ratio_with_initialization": 0.9618974868167087,
+      "source_file": "multi_front_churn_n32_p2.json",
+      "sha256": "b32dcecbc57df01c7e4e0b3e09582c107989deda8bf045a2f470b8de8d024c2b"
+    },
+    {
+      "mesh_n": 32,
+      "n_dofs": 35937,
+      "regime": "multi_front_churn",
+      "processes": 4,
+      "full": {
+        "mean_seconds": 9.641454455500934,
+        "sd_seconds": 0.6831189914291542,
+        "ratio_of_mean_times_vs_full": 1.0,
+        "paired_ratios_vs_full": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paired_wins_vs_full": 0,
+        "max_iterations": 58,
+        "max_true_residual": 1.4309716832322756e-09,
+        "mean_total_with_initialization_seconds": 9.84728498675122,
+        "mean_stage_maxima": {
+          "monitor": 0.00010855474556592526,
+          "local": 2.762304602997574,
+          "coarse": 0.21893392675247014,
+          "solve_and_certification": 6.851089597753344
+        },
+        "mean_local_rank_work_seconds": 10.655683156494888,
+        "mean_local_critical_seconds": 2.762304602997574,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.7809497469497728,
+          "local": 5.743877204982709,
+          "coarse": 0.24718581702290976
+        },
+        "speedup_vs_own_p1": 2.7574037658380286,
+        "efficiency_vs_own_p1": 0.6893509414595071
+      },
+      "dc_jsr": {
+        "mean_seconds": 9.379381537501104,
+        "sd_seconds": 0.19850520847012054,
+        "ratio_of_mean_times_vs_full": 0.972818113780509,
+        "paired_ratios_vs_full": [
+          0.892462827355713,
+          0.9920704894005838,
+          1.0122136007586768,
+          1.0059861358508533
+        ],
+        "paired_wins_vs_full": 2,
+        "max_iterations": 62,
+        "max_true_residual": 1.4309716832322756e-09,
+        "mean_total_with_initialization_seconds": 9.57451247750123,
+        "mean_stage_maxima": {
+          "monitor": 0.0027566412472879165,
+          "local": 2.4824057532496226,
+          "coarse": 1.3214542399982747,
+          "solve_and_certification": 6.867724798748895
+        },
+        "mean_local_rank_work_seconds": 7.343064163001145,
+        "mean_local_critical_seconds": 2.4824057532496226,
+        "mean_apply_seconds_max_rank": {
+          "overlap": 0.7706827037245603,
+          "local": 5.750531318203684,
+          "coarse": 0.24781221549983456
+        },
+        "speedup_vs_own_p1": 2.597319733965702,
+        "efficiency_vs_own_p1": 0.6493299334914255
+      },
+      "ratio": 0.972818113780509,
+      "ratio_with_initialization": 0.972299724277607,
+      "source_file": "multi_front_churn_n32_p4.json",
+      "sha256": "9035dd7563816b55903790f0e6068f3d6385d6b980245f322132f3d07f617b45"
+    }
+  ],
+  "input_reassembly_audits": [
+    {
+      "regime": "gentle_single_front",
+      "mesh_n": 24,
+      "assembly_seconds": 1.1011836340003356,
+      "all_arrays_identical": true,
+      "original_n24_audit_identical": true,
+      "trajectory_sha256": "bf5356dd28e628c5196f121077bda575dbb93ab48cbf33259203c6fb1e0d50b3",
+      "frozen_npz_sha256": "5823418c75ef533e854849ef6cda2520219c1445a957af83de967043f5d48901"
+    },
+    {
+      "regime": "multi_front_churn",
+      "mesh_n": 24,
+      "assembly_seconds": 1.7093565619979927,
+      "all_arrays_identical": true,
+      "original_n24_audit_identical": true,
+      "trajectory_sha256": "fd4f029d9816eff48f19f851252ddfc478f1170520529d5d2512716beea6d52e",
+      "frozen_npz_sha256": "1946d5d28e0c8b30822a164ca58e9b05b7c68b565f9e9dd009a46de24b152eba"
+    },
+    {
+      "regime": "gentle_single_front",
+      "mesh_n": 32,
+      "assembly_seconds": 2.25730898799884,
+      "all_arrays_identical": true,
+      "original_n24_audit_identical": null,
+      "trajectory_sha256": "6ccbc58d9a1aeb235ba93860df36a490f7c73bdf72145c068ec6a39937f48595",
+      "frozen_npz_sha256": "82014258a497e6c1741f1639548a006bc5a748ee0043651063ff6e2f9a921471"
+    },
+    {
+      "regime": "multi_front_churn",
+      "mesh_n": 32,
+      "assembly_seconds": 3.2109736170023098,
+      "all_arrays_identical": true,
+      "original_n24_audit_identical": null,
+      "trajectory_sha256": "199747b0f0fa0f61618cb0218b9ee34e186a1bdff595d54e30795d4482617513",
+      "frozen_npz_sha256": "4d1dad819ddfa59c2d4af1705f6e51541e6fd25e349a2bf1d66b1b592a8ab60a"
+    }
+  ]
+}

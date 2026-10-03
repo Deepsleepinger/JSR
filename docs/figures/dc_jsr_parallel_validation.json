@@ -1,0 +1,8 @@
+{
+  "source_summary": "results/dc_jsr_parallel_audit/summary.json",
+  "summary_sha256": "71b2ff197eed2ad1c2ea3f8d3ec69db3a508407b47741e2e1e4d462d885d54e6",
+  "plotting_script_sha256": "e6caacf2f3efe454b3e3ff9e8b656d740d6c4b5e3e2c00f5c760f40bb98458cb",
+  "formal_repeats": 4,
+  "error_bars": "sample standard deviation",
+  "configurations": 12
+}

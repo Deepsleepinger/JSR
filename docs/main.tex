@@ -28,7 +28,7 @@
             country={Country}}
 
 \begin{abstract}
-Sequences of evolving sparse SPD operators arise in computational mechanics and make persistent Schwarz factors progressively stale. We propose defect-constrained joint stateful repair (DC-JSR), a maintenance policy based on an accumulated normalized diagonal-variation proxy. With one prescribed tolerance, the unique minimum-cardinality refresh set is the set of blocks whose accumulated proxy exceeds that tolerance. The current Galerkin coarse operator is updated at each step within a fixed two-level symmetric additive Schwarz architecture. A diagonal endpoint bound includes the necessary intermediate-to-current norm ratios; the proxy is not asserted to bound spectral perturbations. On three 3-D FEM operator trajectories, four cyclically ordered timing repetitions give mean DC/Full maintenance-and-certified-solve time ratios of 0.847, 0.977, and 0.929; a fourth trajectory, repeated twice, gives 0.932. Fixed K=3 reaches 245 and 201 PCG iterations in multi-front and compound sequences, whereas DC-JSR reaches 54 and 61, respectively. All 876 audited solves satisfy independent relative true residuals below $10^{-8}$, with a maximum of $3.276221\times10^{-9}$. The results support adaptive factor maintenance without fixed refresh budgets and quantify both setup savings and iteration penalties.
+Sequences of evolving sparse SPD operators arise in computational mechanics and make persistent Schwarz factors progressively stale. We propose defect-constrained joint stateful repair (DC-JSR), a maintenance policy based on an accumulated normalized diagonal-variation proxy. With one prescribed tolerance, the unique minimum-cardinality refresh set is the set of blocks whose accumulated proxy exceeds that tolerance. The current Galerkin coarse operator is updated at each step within a fixed two-level symmetric additive Schwarz architecture. A diagonal endpoint bound includes the necessary intermediate-to-current norm ratios; the proxy is not asserted to bound spectral perturbations. On three 3-D FEM operator trajectories, four cyclically ordered single-process timing repetitions give mean DC/Full maintenance-and-certified-solve time ratios of 0.847, 0.977, and 0.929; a fourth trajectory, repeated twice, gives 0.932. Fixed K=3 reaches 245 and 201 PCG iterations in multi-front and compound sequences, whereas DC-JSR reaches 54 and 61, respectively. All 876 audited solves satisfy independent relative true residuals below $10^{-8}$, with a maximum of $3.276221\times10^{-9}$. Additional single-node MPI tests with eight fixed subdomains and one, two, or four processes retain gentle-sequence savings, while multi-front measurements include near-parity and negative configurations. The results quantify maintenance savings, iteration penalties, and the distinction between reduced work and reduced parallel wall time.
 \end{abstract}
 
 \begin{keyword}
@@ -105,7 +105,8 @@ proxy constraint and independent sufficient conditions for spectral stability.
 \item A reproducible two-level FEM operator-sequence evaluation with repeated
 timing, direct adaptive-controller and fixed-budget comparisons, complete
 refresh histories, and independent true-residual certification. The results
-quantify maintenance savings together with iteration penalties.
+quantify maintenance savings together with iteration penalties; a separate
+finite single-node MPI study tests whether these savings persist in parallel.
 \end{enumerate}
 Neither selective factorization nor cumulative triggering is claimed to be
 new in isolation. The method is specified by its particular accumulated
@@ -485,7 +486,7 @@ refreshes for the chosen proxy; it does not minimize total runtime a priori.
 
 \subsection{Primary DC-JSR Audit: Repeated Timing and Certified Solves}
 \label{subsec:dc_primary_audit}
-The primary evaluation concerns algebraic maintenance on identical prescribed
+The primary single-process evaluation concerns algebraic maintenance on identical prescribed
 3-D FEM operator and right-hand-side sequences. Each mesh has $N=24$ intervals
 per axis, $15,625$ nodal degrees of freedom and eight overlapping subdomains.
 DC-JSR uses the frozen value $\varepsilon=0.08$. Full Rebuild, instantaneous
@@ -577,6 +578,118 @@ These finite checks corroborate the closed-form implementation; the general
 optimality result is the proposition in Section~\ref{sec:method}.
 
 
+\subsection{Limited Single-Node MPI Validation}
+\label{subsec:dc_mpi_validation}
+We additionally evaluate a distributed implementation on the same prescribed
+operator family, with $N=24$ and $N=32$ ($15,625$ and $35,937$ degrees of freedom).
+The partition remains fixed at eight subdomains as the number of MPI processes
+changes through $P=1,2,4$. The single WSL node exposes four logical CPUs of an
+Intel Core i5-12490F; each rank is pinned to one logical CPU, with OpenMP and
+BLAS thread counts fixed to one. These are finite single-node strong-scaling
+measurements, not a multi-node scalability claim.
+
+The global AIJ matrices and PCG vectors are distributed by contiguous rows.
+Local factor $i$ is owned by rank $i\bmod P$. PETSc vector scatters exchange
+overlapping input entries and add the returned local corrections. The
+unchanged threshold rule is evaluated locally by each factor owner. The
+fixed eight-dimensional Galerkin operator is assembled by an MPI reduction;
+its exact LU is replicated, and each application reduces the coarse right-hand
+side. All local factors and the coarse operator are fixed during each PCG solve.
+
+Full and DC use the same distributed backend. Each configuration has one full
+warmup per method and four paired repetitions with alternating method order.
+Process-count order is cyclically rotated across mesh/workload configurations;
+MPI jobs run sequentially. After a step-start barrier, timed work includes
+monitoring, selected local submatrix construction and refactorization, coarse
+maintenance, PCG, and primary true-residual certification. The step wall time is
+\begin{equation}
+T_t^{\rm MPI}=\max_{0\le p<P}T_{t,p},
+\label{eq:dc_mpi_walltime}
+\end{equation}
+and sequence time is its sum. Input generation, distributed operator/overlap-row
+staging, and additional independent audits are excluded. Static backend setup
+and initial factor/coarse construction are separately measured. The snapshot
+inputs were reassembled and verified array by array; the $N=24$ matrix/right-hand
+side hashes match the original serial audit. Thus the experiment measures
+maintenance and solves of preloaded sequences, rather than a complete physical
+application with assembly and data-distribution costs.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Finite MPI validation with eight fixed subdomains and
+$\varepsilon=0.08$. Times are means $\pm$ sample standard deviations in seconds
+across four paired repeats. DC/Full is a ratio of mean times; the Init column
+also includes static setup and initial local/coarse factors. Iteration entries
+are the maximum Full/DC counts. All configurations and slower DC repetitions
+are retained.}
+\label{tab:dc_mpi_performance}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llccccccc}
+\toprule
+$N$ & Trajectory & $P$ & Full (s) & DC (s) & DC/Full & With Init & DC wins & Max.~iters F/DC \\
+\midrule
+24 & Gentle & 1 & $4.766\pm0.126$ & $3.922\pm0.113$ & 0.823 & 0.829 & 4/4 & 47/47 \\
+24 & Gentle & 2 & $2.807\pm0.086$ & $2.289\pm0.022$ & 0.815 & 0.822 & 4/4 & 47/47 \\
+24 & Gentle & 4 & $2.090\pm0.022$ & $1.887\pm0.065$ & 0.903 & 0.904 & 4/4 & 47/47 \\
+24 & Multi-front & 1 & $8.767\pm0.319$ & $8.362\pm0.156$ & 0.954 & 0.956 & 4/4 & 54/54 \\
+24 & Multi-front & 2 & $4.739\pm0.131$ & $5.003\pm0.735$ & 1.056 & 1.054 & 2/4 & 54/54 \\
+24 & Multi-front & 4 & $3.796\pm0.044$ & $3.806\pm0.063$ & 1.003 & 1.001 & 2/4 & 54/54 \\
+32 & Gentle & 1 & $13.650\pm0.768$ & $10.115\pm0.581$ & 0.741 & 0.757 & 4/4 & 50/51 \\
+32 & Gentle & 2 & $8.409\pm0.426$ & $6.243\pm0.215$ & 0.742 & 0.754 & 4/4 & 49/50 \\
+32 & Gentle & 4 & $5.373\pm0.093$ & $4.543\pm0.088$ & 0.845 & 0.851 & 4/4 & 49/50 \\
+32 & Multi-front & 1 & $26.585\pm1.043$ & $24.361\pm2.337$ & 0.916 & 0.918 & 3/4 & 58/62 \\
+32 & Multi-front & 2 & $14.837\pm0.269$ & $14.273\pm0.580$ & 0.962 & 0.962 & 3/4 & 58/62 \\
+32 & Multi-front & 4 & $9.641\pm0.683$ & $9.379\pm0.199$ & 0.973 & 0.972 & 2/4 & 58/62 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/dc_jsr_parallel_validation.pdf}
+\caption{Maintenance-and-certified-solve wall time for $P=1,2,4$ on one
+node, with eight fixed subdomains. Error bars are sample standard deviations
+of four repetitions. The larger mesh retains gentle-sequence savings, while
+multi-front benefits are small and include negative configurations. Assembly,
+input staging and initialization are excluded from these curves; initialization
+is included in the secondary ratio in Table~\ref{tab:dc_mpi_performance}.}
+\label{fig:dc_mpi_validation}
+\end{figure}
+
+Gentle-sequence DC/Full ratios at four processes are 0.903 and 0.845 for
+$N=24$ and $N=32$, respectively; DC is faster in all 24 gentle paired
+comparisons across meshes and process counts. Multi-front four-process ratios
+are 1.003 and 0.973, each with only two of four paired wins. The $N=24$
+two-process mean ratio is 1.056, with a relatively large DC standard deviation:
+one retained DC repeat takes 6.099\,s versus its paired Full time of 4.645\,s.
+The data do not identify the source of this execution variability.
+On $N=32$ multi-front, DC reaches 62 iterations versus 58 for Full.
+
+The distinction between local work and the parallel critical path is material.
+For $N=32$ gentle at four processes, mean accumulated rank-local maintenance
+work decreases from 6.431 to 1.543\,s, whereas the sum of stepwise maximum-rank
+local times decreases from 1.672 to 0.824\,s. For $N=24$ multi-front, the
+corresponding values are 2.658 to 2.032\,s and 0.715 to 0.677\,s. Reduced
+maintenance work therefore yields much less reduction of the local critical
+path in the latter case, and does not imply a total wall-time advantage.
+Stage timers include collective waiting; their maxima must not be summed
+as an alternative total, nor interpreted as pure communication measurements.
+
+All 1,248 formal MPI solves and 312 warmup solves pass both PETSc and independent
+CSR true-residual checks, with maximum $3.706952\times10^{-9}$ and no retries.
+The maximum independent coarse-matrix relative difference is
+$2.960717\times10^{-13}$. Random-vector preconditioner actions at initial and
+mixed stale-factor states agree with the original serial backend to
+$5.293141\times10^{-14}$. A separate small SPD test with non-neighbour entries
+and stale factors agrees with an independent dense reference at $P=1,2,4$.
+DC budget sequences are invariant across process counts and repetitions;
+stepwise iteration differences across these runs are at most two for Full
+and one for DC. The implementation fingerprints are unchanged across the
+twelve configurations. New one-process seconds are not compared directly
+with the earlier serial implementation, since thread controls, static local
+extraction maps and input staging differ.
+
 \subsection{Evolutionary Baselines and Preliminary Ablation Studies}
 \label{subsec:dc_evolutionary_context}
 The current evidence has two distinct roles. The repeated audit tables and
@@ -648,12 +761,15 @@ Minimum required refresh cost for the proxy does not imply minimum total
 maintenance-and-solve time.
 
 \subsection{Evidence Scope and Reproducibility}
-The confirmed DC-JSR results use the stated $N=24$, eight-subdomain FEM
+The original single-process DC-JSR audit uses the stated $N=24$, eight-subdomain FEM
 operator sequences, four timing repetitions for the three principal
 comparisons and two for staccato. The sensitivity results are preliminary
 single-run comparisons at the additional tolerances. The audit is not a
 preregistered blind study, and the historical larger-mesh and partition
-studies are not evidence of DC-JSR scaling.
+studies are not evidence of DC-JSR scaling. The additional $N=24,32$ MPI
+replays in Section~\ref{subsec:dc_mpi_validation} provide finite single-node
+evidence at one, two and four processes, with both gains and losses retained.
+They do not establish multi-node or mesh-independent scalability.
 
 The discrete sequences permit a controlled algebraic comparison without
 requiring a new physical model. Assembly and initialization are excluded
@@ -678,7 +794,11 @@ DC-JSR reaches 54 and 61. Compound full refresh at steps 7 and 13 emerges
 from the same threshold rule. All 876 audited solves meet the strict
 $10^{-8}$ true-residual criterion. The results quantify selective maintenance
 savings and their iteration trade-off rather than guaranteeing universal
-runtime superiority or a uniform spectral perturbation bound.
+runtime superiority or a uniform spectral perturbation bound. The additional
+MPI replay certifies 1,248 formal solves and 312 warmup solves. Gentle-sequence
+benefits persist at four processes, while multi-front configurations include
+near-parity and negative timing results. Minimum proxy-constrained maintenance
+work is consequently distinct from minimum parallel wall time.
 
 The implementation and benchmark drivers are available at
 \url{https://github.com/Deepsleepinger/JSR}; the present audit records the exact

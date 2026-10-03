@@ -1,0 +1,20 @@
+[
+  {
+    "regime": "gentle_single_front",
+    "mesh_n": 32,
+    "assembly_seconds": 2.25730898799884,
+    "all_arrays_identical": true,
+    "original_n24_audit_identical": null,
+    "trajectory_sha256": "6ccbc58d9a1aeb235ba93860df36a490f7c73bdf72145c068ec6a39937f48595",
+    "frozen_npz_sha256": "82014258a497e6c1741f1639548a006bc5a748ee0043651063ff6e2f9a921471"
+  },
+  {
+    "regime": "multi_front_churn",
+    "mesh_n": 32,
+    "assembly_seconds": 3.2109736170023098,
+    "all_arrays_identical": true,
+    "original_n24_audit_identical": null,
+    "trajectory_sha256": "199747b0f0fa0f61618cb0218b9ee34e186a1bdff595d54e30795d4482617513",
+    "frozen_npz_sha256": "4d1dad819ddfa59c2d4af1705f6e51541e6fd25e349a2bf1d66b1b592a8ab60a"
+  }
+]

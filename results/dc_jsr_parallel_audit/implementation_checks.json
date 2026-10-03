@@ -1,0 +1,35 @@
+{
+  "mpi_integration_tests": {
+    "process_counts": [
+      1,
+      2,
+      4
+    ],
+    "status": "passed",
+    "test_source_sha256": "eb8c01522f91ce7f4b5c12e2ec47a0a8e5920c64622d41a12cae5d16298f0a55"
+  },
+  "policy_tests": {
+    "count": 5,
+    "status": "passed",
+    "finite_exhaustive_instances": 200
+  },
+  "manuscript_static_checks": {
+    "labels": 82,
+    "missing_refs": 0,
+    "missing_citations": 0,
+    "environments_balanced": true,
+    "braces_balanced": true,
+    "figure_assets_present": true,
+    "historical_appendix_unchanged": true
+  },
+  "native_latex_compile": {
+    "status": "unverified",
+    "diagnostic": "Unable to find standard directories for platform"
+  },
+  "source_sha256": {
+    "benchmarks/run_dc_jsr_parallel_audit.py": "17667942b2faea140b4780bac4f342ff1c2d2eeb9830175d9b8565b49c82eaec",
+    "jsr/backend_mpi.py": "b41007f9049a1be5f9972a0cdea5b7b8ed37a9940ec98592235b5464d6e04e5e",
+    "jsr/backend_mumps.py": "82f430dc2cad4175b755d4e0fe1649f8d3653a2fbeb5452e811009bee64bf577",
+    "benchmarks/run_dc_jsr_shadow_prototype.py": "9ed2e634db3f87b381332968cb78637749a7c611293a5036bb3017fccc55d94c"
+  }
+}
