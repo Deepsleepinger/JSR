@@ -89,6 +89,11 @@ results/*
 !results/dc_jsr_compound_sensitivity_eps0p12_n24.json
 !results/dc_jsr_parallel_audit/
 !results/dc_jsr_parallel_audit/*.json
+!results/dc_jsr_long_horizon_audit/
+!results/dc_jsr_long_horizon_audit/*.json
+!results/dc_jsr_long_horizon_inputs/
+results/dc_jsr_long_horizon_inputs/*
+!results/dc_jsr_long_horizon_inputs/*.json
 data/
 logs/
 

@@ -1,0 +1,20 @@
+{
+  "title": "DC-JSR policy and fixed two-level solver architecture",
+  "created_date": "2026-10-04",
+  "figure_inches": [
+    7.5,
+    5.65
+  ],
+  "policy": "Accumulated normalized diagonal variation, strict threshold, successful-refresh reset",
+  "architecture": "All cached local actions plus current Galerkin coarse action; fixed within PCG",
+  "state_feedback": "Factor maintenance to next operator step; no Krylov trigger in the policy",
+  "rendering_checks": {
+    "text_within_canvas": true
+  },
+  "source_sha256": "88fa1c5e10c13d214b49ca2a1faa7fcb7606860d5709c8698156bdc2bb2c74b8",
+  "files": {
+    "pdf": "9e52d8e6505d1f8eed1c39ab68cea110b0dcc903eef4dd278dbd15b751836809",
+    "svg": "534614faac218fef6d76fecaef4e2248c29c0088503e805fa229cd803b1b75c8",
+    "png": "310dbaa745450a7fa21c4993d19478c4274c738cc4ffa1f3f85fb559893da6c2"
+  }
+}

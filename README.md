@@ -24,6 +24,8 @@ Traditional domain decomposition solvers face an acute dilemma:
 
 ### The DC-JSR Principle
 
+![DC-JSR Architecture Overview](docs/figures/dc_jsr_architecture_schematic.png)
+
 Instead of treating preconditioner updates as a collection of heuristic control rules, **DC-JSR (Defect-Constrained Joint Stateful Repair)** formulates preconditioner maintenance as a **single constrained optimization problem** governed by an accumulated normalized diagonal variation proxy.
 
 ```text
@@ -155,6 +157,8 @@ python benchmarks/run_dc_jsr_certification_audit.py --repeats 4
 │   ├── run_dc_jsr_certification_audit.py  # Primary 4-repeat certification audit runner
 │   ├── run_dc_jsr_parallel_suite.py       # Distributed MPI strong scaling benchmark suite
 │   ├── run_dc_jsr_shadow_prototype.py     # Clean DC-JSR algorithm reference implementation
+│   ├── plot_dc_jsr_architecture.py        # 4-stage methodology schematic generation
+│   ├── draw_dc_jsr_architecture.py        # Two-level solver architecture figure generation
 │   └── plot_dc_jsr_manuscript.py          # Publication figure generation script
 ├── tests/
 │   ├── test_dc_jsr_policy.py              # Mathematical policy contract tests (200 cases)
@@ -166,6 +170,8 @@ python benchmarks/run_dc_jsr_certification_audit.py --repeats 4
 ├── docs/
 │   ├── main.tex                           # Full CMAME manuscript LaTeX source
 │   ├── figures/
+│   │   ├── dc_jsr_architecture_schematic.png # 4-stage methodology architecture schematic
+│   │   ├── dc_jsr_architecture.pdf        # Two-level solver architecture publication figure
 │   │   ├── dc_jsr_budget_proxy_pcg.png    # Adaptive budget & residual proxy figure
 │   │   └── dc_jsr_parallel_validation.png # Distributed MPI strong scaling figure
 │   └── archive/                           # Historical campaign artifacts and exploratory baselines

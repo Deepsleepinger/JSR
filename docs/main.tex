@@ -219,6 +219,12 @@ Appendix~\ref{sec:evolutionary_baselines}.
 \section{Method: Defect-Constrained Stateful Schwarz Maintenance}
 \label{sec:method}
 
+Figure~\ref{fig:dc_jsr_architecture} summarizes the maintenance policy and
+the fixed two-level solver architecture. Accumulated local diagonal variation
+determines the refresh set; its cardinality is the maintenance budget.
+Persistent state is committed after successful local maintenance, while
+the current coarse operator is synchronized at every operator step.
+
 \subsection{Operator Sequence and Two-Level Architecture}
 We consider a prescribed sequence of sparse symmetric positive definite (SPD)
 systems $A_t x_t=b_t$, $t=0,\ldots,T$. The maintenance problem concerns the
@@ -247,6 +253,20 @@ Symmetric restriction and prolongation preserve compatibility with PCG.
 The audited experiments use continuous piecewise-linear FEM on
 $\mathrm{UnitCubeMesh}(N,N,N)$, with $(N+1)^3$ degrees of freedom;
 the maintenance construction itself also applies to other SPD discretizations.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/dc_jsr_architecture.pdf}
+\caption{DC-JSR within a fixed two-level solver architecture.
+(a) Accumulated diagonal variation and one prescribed tolerance determine
+the refresh set; only successfully refreshed blocks reset their state.
+(b) All cached local factors and the current Galerkin coarse correction
+contribute to every preconditioner application. The preconditioner remains
+fixed throughout each PCG solve, which is accepted only after true-residual
+certification. State persists across operator steps; the variation proxy
+is not a spectral-error bound.}
+\label{fig:dc_jsr_architecture}
+\end{figure}
 
 \subsection{Persistent Algebraic Variation State}
 \label{subsec:diag_proxy}

@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with matplotlib (https://matplotlib.org/) -->
+<svg height="406.8pt" version="1.1" viewBox="0 0 540 406.8" width="540pt" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css">
+*{stroke-linecap:butt;stroke-linejoin:round;}
+  </style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 406.8 
+L 540 406.8 
+L 540 0 
+L 0 0 
+z
+" style="fill:#ffffff;"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path clip-path="url(#pdd3c663cee)" d="M 135.938317 74.49864 
+L 393.689406 74.49864 
+Q 397.060396 74.49864 397.060396 71.078808 
+L 397.060396 33.197592 
+Q 397.060396 29.77776 393.689406 29.77776 
+L 135.938317 29.77776 
+Q 132.567327 29.77776 132.567327 33.197592 
+L 132.567327 71.078808 
+Q 132.567327 74.49864 135.938317 74.49864 
+z
+" style="fill:#f2f5f8;stroke:#a8b5c1;stroke-linejoin:miter;stroke-width:0.8;"/>
+   </g>
+   <g id="patch_3">
+    <path clip-path="url(#pdd3c663cee)" d="M 426.362079 74.49864 
+L 512.970594 74.49864 
+Q 516.341584 74.49864 516.341584 71.078808 
+L 516.341584 33.197592 
+Q 516.341584 29.77776 512.970594 29.77776 
+L 426.362079 29.77776 
+Q 422.991089 29.77776 422.991089 33.197592 
+L 422.991089 71.078808 
+Q 422.991089 74.49864 426.362079 74.49864 
+z
+" style="fill:#edf5fa;stroke:#146c94;stroke-linejoin:miter;stroke-width:0.8;"/>
+   </g>
+   <g id="patch_4">
+    <path clip-path="url(#pdd3c663cee)" d="M 21.843267 174.46296 
+L 98.079505 174.46296 
+Q 101.450495 174.46296 101.450495 171.043128 
+L 101.450495 104.224872 
+Q 101.450495 100.80504 98.079505 100.80504 
+L 21.843267 100.80504 
+Q 18.472277 100.80504 18.472277 104.224872 
+L 18.472277 171.043128 
+Q 18.472277 174.46296 21.843267 174.46296 
+z
+" style="fill:#f2f5f8;stroke:#a8b5c1;stroke-linejoin:miter;stroke-width:0.8;"/>
+   </g>
+   <g id="patch_5">
+    <path clip-path="url(#pdd3c663cee)" d="M 125.56604 206.03064 
+L 515.563663 206.03064 
+Q 518.934653 206.03064 518.934653 202.610808 
+L 518.934653 93.702312 
+Q 518.934653 90.28248 515.563663 90.28248 
+L 125.56604 90.28248 
+Q 122.19505 90.28248 122.19505 93.702312 
+L 122.19505 202.610808 
+Q 122.19505 206.03064 125.56604 206.03064 
+z
+" style="fill:#f6fafd;stroke:#afcadb;stroke-linejoin:miter;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_6">
+    <path clip-path="url(#pdd3c663cee)" d="M 135.938317 174.46296 
+L 258.849802 174.46296 
+Q 262.220792 174.46296 262.220792 171.043128 
+L 262.220792 104.224872 
+Q 262.220792 100.80504 258.849802 100.80504 
+L 135.938317 100.80504 
+Q 132.567327 100.80504 132.567327 104.224872 
+L 132.567327 171.043128 
+Q 132.567327 174.46296 135.938317 174.46296 
+z
+" style="fill:#ffffff;stroke:#146c94;stroke-linejoin:miter;stroke-width:0.8;"/>
+   </g>
+   <g id="patch_7">
+    <path clip-path="url(#pdd3c663cee)" d="M 281.150198 174.46296 
+L 383.317129 174.46296 
+Q 386.688119 174.46296 386.688119 171.043128 
+L 386.688119 104.224872 
+Q 386.688119 100.80504 383.317129 100.80504 
+L 281.150198 100.80504 
+Q 277.779208 100.80504 277.779208 104.224872 
+L 277.779208 171.043128 
+Q 277.779208 174.46296 281.150198 174.46296 
+z
+" style="fill:#ffffff;stroke:#146c94;stroke-linejoin:miter;"/>
+   </g>
+   <g id="patch_8">
+    <path clip-path="url(#pdd3c663cee)" d="M 405.617525 182.35488 
+L 507.784455 182.35488 
+Q 511.155446 182.35488 511.155446 178.935048 
+L 511.155446 104.224872 
+Q 511.155446 100.80504 507.784455 100.80504 
+L 405.617525 100.80504 
+Q 402.246535 100.80504 402.246535 104.224872 
+L 402.246535 178.935048 
+Q 402.246535 182.35488 405.617525 182.35488 
+z
+" style="fill:#ffffff;stroke:#146c94;stroke-linejoin:miter;stroke-width:0.8;"/>
+   </g>
+   <g id="patch_9">
+    <path clip-path="url(#pdd3c663cee)" d="M 21.843267 290.21112 
+L 170.685446 290.21112 
+Q 174.056436 290.21112 174.056436 286.791288 
+L 174.056436 225.234312 
+Q 174.056436 221.81448 170.685446 221.81448 
+L 21.843267 221.81448 
+Q 18.472277 221.81448 18.472277 225.234312 
+L 18.472277 286.791288 
+Q 18.472277 290.21112 21.843267 290.21112 
+z
+" style="fill:#fcf7f1;stroke:#c8a98c;stroke-linejoin:miter;stroke-width:0.8;"/>
+   </g>
+   <g id="patch_10">
+    <path clip-path="url(#pdd3c663cee)" d="M 208.544257 290.21112 
+L 512.970594 290.21112 
+Q 516.341584 290.21112 516.341584 286.791288 
+L 516.341584 225.234312 
+Q 516.341584 221.81448 512.970594 221.81448 
+L 208.544257 221.81448 
+Q 205.173267 221.81448 205.173267 225.234312 
+L 205.173267 286.791288 
+Q 205.173267 290.21112 208.544257 290.21112 
+z
+" style="fill:#f2f6fa;stroke:#a8b5c1;stroke-linejoin:miter;stroke-width:0.8;"/>
+   </g>
+   <g id="patch_11">
+    <path clip-path="url(#pdd3c663cee)" d="M 167.055149 363.86904 
+L 383.317129 363.86904 
+Q 386.688119 363.86904 386.688119 360.449208 
+L 386.688119 309.414792 
+Q 386.688119 305.99496 383.317129 305.99496 
+L 167.055149 305.99496 
+Q 163.684158 305.99496 163.684158 309.414792 
+L 163.684158 360.449208 
+Q 163.684158 363.86904 167.055149 363.86904 
+z
+" style="fill:#f6f8fa;stroke:#889ba9;stroke-linejoin:miter;stroke-width:0.8;"/>
+   </g>
+   <g id="patch_12">
+    <path clip-path="url(#pdd3c663cee)" d="M 415.989802 363.86904 
+L 512.970594 363.86904 
+Q 516.341584 363.86904 516.341584 360.449208 
+L 516.341584 309.414792 
+Q 516.341584 305.99496 512.970594 305.99496 
+L 415.989802 305.99496 
+Q 412.618812 305.99496 412.618812 309.414792 
+L 412.618812 360.449208 
+Q 412.618812 363.86904 415.989802 363.86904 
+z
+" style="fill:#ffffff;stroke:#889ba9;stroke-linejoin:miter;stroke-width:0.8;"/>
+   </g>
+   <g id="patch_13">
+    <path clip-path="url(#pdd3c663cee)" d="M 101.450495 137.634 
+L 131.616998 137.634 
+" style="fill:none;stroke:#516376;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 128.016998 135.834 
+L 131.616998 137.634 
+L 128.016998 139.434 
+L 128.016998 135.834 
+z
+" style="fill:#516376;stroke:#516376;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_14">
+    <path clip-path="url(#pdd3c663cee)" d="M 262.220792 137.634 
+L 276.828879 137.634 
+" style="fill:none;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 273.228879 135.834 
+L 276.828879 137.634 
+L 273.228879 139.434 
+L 273.228879 135.834 
+z
+" style="fill:#146c94;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_15">
+    <path clip-path="url(#pdd3c663cee)" d="M 386.688119 137.634 
+L 401.296206 137.634 
+" style="fill:none;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 397.696206 135.834 
+L 401.296206 137.634 
+L 397.696206 139.434 
+L 397.696206 135.834 
+z
+" style="fill:#146c94;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_16">
+    <path clip-path="url(#pdd3c663cee)" d="M 197.394059 74.49864 
+L 197.394059 99.854711 
+" style="fill:none;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 199.194059 96.254711 
+L 197.394059 99.854711 
+L 195.594059 96.254711 
+L 199.194059 96.254711 
+z
+" style="fill:#146c94;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_17">
+    <path clip-path="url(#pdd3c663cee)" d="M 469.666337 74.49864 
+L 469.666337 82.916688 
+L 332.233663 82.916688 
+L 332.233663 99.854711 
+" style="fill:none;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 334.033663 96.254711 
+L 332.233663 99.854711 
+L 330.433663 96.254711 
+L 334.033663 96.254711 
+z
+" style="fill:#146c94;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_18">
+    <path clip-path="url(#pdd3c663cee)" d="M 376.315842 74.49864 
+L 376.315842 87.65184 
+L 456.70099 87.65184 
+L 456.70099 99.854711 
+" style="fill:none;stroke:#516376;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 458.50099 96.254711 
+L 456.70099 99.854711 
+L 454.90099 96.254711 
+L 458.50099 96.254711 
+z
+" style="fill:#516376;stroke:#516376;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_19">
+    <path clip-path="url(#pdd3c663cee)" d="M 511.155446 121.85016 
+L 526.713861 121.85016 
+L 526.713861 22.938096 
+L 345.19901 22.938096 
+L 345.19901 28.827431 
+" style="fill:none;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 346.99901 25.227431 
+L 345.19901 28.827431 
+L 343.39901 25.227431 
+L 346.99901 25.227431 
+z
+" style="fill:#146c94;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_20">
+    <path clip-path="url(#pdd3c663cee)" d="M 59.961386 174.46296 
+L 59.961386 220.864151 
+" style="fill:none;stroke:#a15b28;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 61.761386 217.264151 
+L 59.961386 220.864151 
+L 58.161386 217.264151 
+L 61.761386 217.264151 
+z
+" style="fill:#a15b28;stroke:#a15b28;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_21">
+    <path clip-path="url(#pdd3c663cee)" d="M 456.70099 182.35488 
+L 456.70099 220.864151 
+" style="fill:none;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 458.50099 217.264151 
+L 456.70099 220.864151 
+L 454.90099 217.264151 
+L 458.50099 217.264151 
+z
+" style="fill:#146c94;stroke:#146c94;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_22">
+    <path clip-path="url(#pdd3c663cee)" d="M 96.264356 290.21112 
+L 96.264356 334.932 
+L 162.73383 334.932 
+" style="fill:none;stroke:#a15b28;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 159.13383 333.132 
+L 162.73383 334.932 
+L 159.13383 336.732 
+L 159.13383 333.132 
+z
+" style="fill:#a15b28;stroke:#a15b28;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_23">
+    <path clip-path="url(#pdd3c663cee)" d="M 360.757426 290.21112 
+L 360.757426 298.10304 
+L 319.268317 298.10304 
+L 319.268317 305.044631 
+" style="fill:none;stroke:#516376;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 321.068317 301.444631 
+L 319.268317 305.044631 
+L 317.468317 301.444631 
+L 321.068317 301.444631 
+z
+" style="fill:#516376;stroke:#516376;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_24">
+    <path clip-path="url(#pdd3c663cee)" d="M 386.688119 334.932 
+L 411.668483 334.932 
+" style="fill:none;stroke:#516376;stroke-linecap:round;stroke-width:0.85;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 408.068483 333.132 
+L 411.668483 334.932 
+L 408.068483 336.732 
+L 408.068483 333.132 
+z
+" style="fill:#516376;stroke:#516376;stroke-linecap:round;stroke-width:0.85;"/>
+   </g>
+   <g id="patch_25">
+    <path clip-path="url(#pdd3c663cee)" d="M 18.472277 137.634 
+L 11.211683 137.634 
+L 11.211683 381.231264 
+L 464.480198 381.231264 
+L 464.480198 364.651664 
+" style="fill:none;stroke:#516376;stroke-linecap:round;stroke-width:0.7;"/>
+    <path clip-path="url(#pdd3c663cee)" d="M 462.680198 368.251664 
+L 464.480198 364.651664 
+L 466.280198 368.251664 
+L 462.680198 368.251664 
+z
+" style="fill:#516376;stroke:#516376;stroke-linecap:round;stroke-width:0.7;"/>
+   </g>
+   <g id="line2d_1">
+    <path clip-path="url(#pdd3c663cee)" d="M 410.025743 149.208816 
+L 503.376238 149.208816 
+" style="fill:none;stroke:#d7e1e9;stroke-linecap:square;stroke-width:0.65;"/>
+   </g>
+   <g id="text_1">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.5px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 264.813861, 45.276429)" x="264.813861" y="45.276429">Persistent state carried between operator steps</text>
+   </g>
+   <g id="text_2">
+    <!-- Cached factors, $\tau_i$, $V_i(t-1)$, $\mathbf{d}_i(t-1)$ -->
+    <g style="fill:#182b3d;" transform="translate(194.391361 61.586397)">
+     <text>
+      <tspan style="font-family:DejaVu Sans;font-size:8.5px;font-style:book;font-weight:book;" x="0 5.935059 11.143799 15.817139 21.204346 26.433838 31.829346 34.53125 37.523682 42.732422 47.405762 50.738525 55.938965 59.433594 63.862061 66.563965 74.779964 77.481868 107.957626 110.659531" y="-0.546875">Cached factors, , , </tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8.5px;font-style:italic;font-weight:italic;" x="69.265869 80.183772 90.236853 123.078267" y="-0.546875">τVtt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:5.95px;font-style:italic;font-weight:italic;" x="72.75087 85.377269 118.218683" y="0.578125">iii</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8.5px;font-style:regular;font-weight:regular;" x="87.406363 93.827243 100.877136 105.127136 120.247777 126.668657 133.71855 137.96855" y="-0.546875">(−1)(−1)</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8.5px;font-style:bold;font-weight:bold;" x="113.361435" y="-0.546875">d</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_3">
+    <!-- Initialize once: current local factors and $V_i(0)=0$ -->
+    <g style="fill:#516376;" transform="translate(132.567327 18.749279)">
+     <text>
+      <tspan style="font-family:DejaVu Sans;font-size:7.7px;font-style:book;font-weight:book;" x="0 2.267212 7.139465 9.275299 12.28949 14.425323 19.136169 21.272003 23.407837 27.443024 32.172638 34.616272 39.319611 44.191864 48.418488 53.148102 55.738129 58.181763 62.408386 67.28064 70.441223 73.601807 78.331421 83.203674 86.217865 88.661499 90.797333 95.500671 99.727295 104.438141 106.573975 109.017609 111.723999 116.434845 120.661469 123.675659 128.378998 131.539581 135.544739 137.988373 142.699219 147.571472 152.451233" y="-0.15625">Initialize once: current local factors and </tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.7px;font-style:italic;font-weight:italic;" x="154.894867" y="-0.15625">V</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:5.39px;font-style:italic;font-weight:italic;" x="159.591934" y="0.8609375000000004">i</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.7px;font-style:regular;font-weight:regular;" x="161.426978 163.986914 167.830664 171.500674 177.876678" y="-0.15625">(0)=0</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_4">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.3px;font-style:normal;font-weight:normal;text-anchor:middle;" transform="rotate(-0, 469.666337, 45.221241)" x="469.666337" y="45.221241">One prescribed</text>
+   </g>
+   <g id="text_5">
+    <!-- tolerance $\varepsilon$ -->
+    <g style="fill:#146c94;" transform="translate(444.137837 61.807147)">
+     <text>
+      <tspan style="font-family:DejaVu Sans;font-size:9.3px;font-style:book;font-weight:book;" x="0 3.645203 9.333176 11.916138 17.635895 21.458145 27.155197 33.047455 38.15892 43.878677" y="-0.9375">tolerance </tspan>
+      <tspan style="font-family:STIXGeneral;font-size:9.3px;font-style:italic;font-weight:italic;" x="46.833878" y="-0.9375">ε</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_6">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.5px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 59.961386, 118.934349)" x="59.961386" y="118.934349">Evolving SPD</text>
+   </g>
+   <g id="text_7">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:7.8px;font-style:normal;font-weight:normal;text-anchor:middle;" transform="rotate(-0, 59.961386, 136.103416)" x="59.961386" y="136.103416">operator sequence</text>
+   </g>
+   <g id="text_8">
+    <!-- $A_t,\ b_t$ -->
+    <g style="fill:#182b3d;" transform="translate(47.696386 156.453153)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:11px;font-style:italic;font-weight:italic;" x="0 16.331675" y="-0.484375">Ab</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.7px;font-style:italic;font-weight:italic;" x="6.720993 21.831675" y="0.96875">tt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:11px;font-style:regular;font-weight:regular;" x="9.345967" y="-0.484375">,</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_9">
+    <!-- $t=1,\ldots,T$ -->
+    <g style="fill:#516376;" transform="translate(42.536386 169.442637)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:8.5px;font-style:italic;font-weight:italic;" x="0 30.095081" y="-0.25">tT</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8.5px;font-style:regular;font-weight:regular;" x="3.59039 10.640283 14.890283 18.242682 26.742682" y="-0.25">=1,…,</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_10">
+    <text style="fill:#146c94;font-family:DejaVu Sans;font-size:8.7px;font-style:normal;font-weight:medium;text-anchor:start;" transform="rotate(-0, 132.567327, 197.908736)" x="132.567327" y="197.908736">(a) DC-JSR maintenance policy</text>
+   </g>
+   <g id="text_11">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.6px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 197.394059, 114.752919)" x="197.394059" y="114.752919">Accumulate variation</text>
+   </g>
+   <g id="text_12">
+    <!-- $\mathbf{d}_i(t)=\operatorname{diag}(A_i(t))$ -->
+    <g style="fill:#182b3d;" transform="translate(168.717559 130.354118)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:8.3px;font-style:bold;font-weight:bold;" x="0" y="-0.328125">d</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:5.81px;font-style:italic;font-weight:italic;" x="4.741021 44.75234" y="0.7687499999999998">ii</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8.3px;font-style:regular;font-weight:regular;" x="6.721209 11.790576 15.751492 22.63291 26.781347 29.087866 32.771673 36.92011 46.732528 51.801895 54.564742" y="-0.328125">()=diag(())</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8.3px;font-style:italic;font-weight:italic;" x="9.484057 39.682958 49.495376" y="-0.328125">tAt</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_13">
+    <!-- $v_i(t)=\frac{\Vert\mathbf{d}_i(t)-\mathbf{d}_i(t-1)\Vert_2}{\Vert\mathbf{d}_i(t)\Vert_2}$ -->
+    <g style="fill:#182b3d;" transform="translate(160.962059 148.122048)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:9.2px;font-style:italic;font-weight:italic;" x="0 9.331245" y="-0.8671875">vt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.44px;font-style:italic;font-weight:italic;" x="4.079239 34.606425 48.606425 52.149968" y="0.3468750000000007 -5.559375 2.9703124999999986 -5.559375">ittt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:9.2px;font-style:regular;font-weight:regular;" x="6.271812 11.885368 16.271474" y="-0.8671875">()=</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.44px;font-style:regular;font-weight:regular;" x="23.891573 32.464822 36.394311 37.891573 39.464584 46.464822 50.008365 50.394311 52.535914 54.866525 60.200594 63.416208 65.557811" y="-5.559375 -5.559375 -5.559375 2.9703124999999986 -5.559375 2.9703124999999986 -5.559375 2.9703124999999986 2.9703124999999986 -5.559375 -5.559375 -5.559375 -5.559375">‖()‖−(()‖−1)‖</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.44px;font-style:bold;font-weight:bold;" x="27.25511 41.25511 44.798654" y="-5.559375 2.9703124999999986 -5.559375">ddd</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:4.508px;font-style:italic;font-weight:italic;" x="30.93002 44.93002 48.473563" y="-4.70953125 3.82015625 -4.70953125">iii</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:4.508px;font-style:regular;font-weight:regular;" x="55.9986 69.020497" y="3.82015625 -4.70953125">22</tspan>
+     </text>
+     <rect height="0.575" width="47.663136" x="23.891573" y="-3.045313"/>
+    </g>
+   </g>
+   <g id="text_14">
+    <!-- $V_i^-(t)=V_i(t-1)+v_i(t)$ -->
+    <g style="fill:#146c94;" transform="translate(154.474559 166.362856)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:9.3px;font-style:italic;font-weight:italic;" x="0 16.512743 31.246395 42.241162 70.676514 80.118715" y="-0.71875">VtVtvt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.51px;font-style:regular;font-weight:regular;" x="7.609944" y="-3.9937500000000004">−</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.51px;font-style:italic;font-weight:italic;" x="5.680374 36.926769 74.804322" y="1.7375000000000007 0.5093750000000004 0.5093750000000004">iii</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:9.3px;font-style:regular;font-weight:regular;" x="13.416887 19.097261 23.535582 39.145307 46.168146 53.878958 58.527381 62.965702 77.022859 82.703234" y="-0.71875">()=(−1)+()</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_15">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.5px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 332.233663, 114.725325)" x="332.233663" y="114.725325">Required refresh set</text>
+   </g>
+   <g id="text_16">
+    <!-- $S_t^\star=\{i:V_i^-(t)&gt;\varepsilon\}$ -->
+    <g style="fill:#146c94;" transform="translate(293.773163 134.271592)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:9.7px;font-style:italic;font-weight:italic;" x="0 27.119147 35.303132 52.508597 67.861344" y="-0.5406250000000004">SiVtε</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.79px;font-style:regular;font-weight:regular;" x="6.882808 43.231725" y="-3.953125">⋆−</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.79px;font-style:italic;font-weight:italic;" x="4.84375 41.222199" y="2.0187500000000007">ti</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:9.7px;font-style:regular;font-weight:regular;" x="14.434336 22.469153 31.21114 49.28266 55.201712 59.826526 72.162598" y="-0.5406250000000004">={:()&gt;}</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_17">
+    <!-- $\min |S|\quad\mathrm{s.t.}\ R_t(S)\leq\varepsilon$ -->
+    <g style="fill:#182b3d;" transform="translate(298.456663 151.44391)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:8.1px;font-style:regular;font-weight:regular;" x="0 6.296921 8.546982 12.593842 18.259445 25.721863 28.870316 32.153122 34.403183 46.510421 53.252486 57.116426" y="-0.46875">min||s.t.()≤</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8.1px;font-style:italic;font-weight:italic;" x="14.212585 39.633861 49.205626 63.829366" y="-0.46875">SRSε</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:5.67px;font-style:italic;font-weight:italic;" x="44.579128" y="0.5999999999999996">t</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_18">
+    <!-- $K_t=|S_t^\star|\in\{0,\ldots,M\}$ -->
+    <g style="fill:#182b3d;" transform="translate(292.694163 166.2154)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:9.1px;font-style:italic;font-weight:italic;" x="0 18.910976 66.998794" y="-0.9921874999999991">KSM</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.37px;font-style:italic;font-weight:italic;" x="6.065536 23.457851" y="0.21250000000000036 1.4171875000000007">tt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:9.1px;font-style:regular;font-weight:regular;" x="9.549879 17.092235 31.145779 34.277658 41.820013 46.185019 50.731894 54.318469 63.412219 74.573898" y="-0.9921874999999991">=||∈{0,…,}</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.37px;font-style:regular;font-weight:regular;" x="25.369078" y="-4.2046875">⋆</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_19">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.4px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 456.70099, 114.697731)" x="456.70099" y="114.697731">Refresh / retain factors</text>
+   </g>
+   <g id="text_20">
+    <!-- Selected: refactorize $A_i(t)$ -->
+    <g style="fill:#182b3d;" transform="translate(406.78099 130.371196)">
+     <text>
+      <tspan style="font-family:DejaVu Sans;font-size:8px;font-style:book;font-weight:book;" x="0 5.078125 10 12.222656 17.144531 21.542969 24.679688 29.601562 34.679688 37.375 39.917969 43.207031 48.128906 50.945312 55.847656 60.246094 63.382812 68.277344 71.566406 73.789062 77.988281 82.910156" y="-0.921875">Selected: refactorize </tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8px;font-style:italic;font-weight:italic;" x="85.453125 94.91501" y="-0.921875">At</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:5.6px;font-style:italic;font-weight:italic;" x="90.34111" y="0.13750000000000018">i</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8px;font-style:regular;font-weight:regular;" x="92.251024 97.138994" y="-0.921875">()</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_21">
+    <!-- $\tau_i\leftarrow t,\quad V_i(t)=0$ -->
+    <g style="fill:#146c94;" transform="translate(426.66299 144.381649)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:9.2px;font-style:italic;font-weight:italic;" x="0 17.120393 29.93141 40.796973" y="-0.796875">τtVt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.44px;font-style:italic;font-weight:italic;" x="3.766861 35.544966" y="0.4171874999999998">ii</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:9.2px;font-style:regular;font-weight:regular;" x="7.286107 19.674516 37.73754 43.351096 47.737201 55.3573" y="-0.796875">←,()=0</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_22">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8px;font-style:normal;font-weight:normal;text-anchor:middle;" transform="rotate(-0, 456.70099, 160.88662)" x="456.70099" y="160.88662">Other blocks: reuse</text>
+   </g>
+   <g id="text_23">
+    <!-- $V_i(t)=V_i^-(t)$ -->
+    <g style="fill:#182b3d;" transform="translate(432.96499 173.708258)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:9.2px;font-style:italic;font-weight:italic;" x="0 10.865562 25.42589 41.743025" y="-0.796875">VtVt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.44px;font-style:italic;font-weight:italic;" x="5.613556 31.039445" y="0.4171874999999998 1.6312499999999996">ii</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:9.2px;font-style:regular;font-weight:regular;" x="7.806129 13.419685 17.805791 38.683592 44.297148" y="-0.796875">()=()</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.44px;font-style:regular;font-weight:regular;" x="32.944835" y="-4.034375000000001">−</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_24">
+    <!-- $A_t$ -->
+    <g style="fill:#516376;" transform="translate(113.608911 130.371196)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:8px;font-style:italic;font-weight:italic;" x="0" y="-0.65625">A</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:5.6px;font-style:italic;font-weight:italic;" x="4.887985" y="0.4031250000000002">t</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_25">
+    <!-- Successful commit $\rightarrow$ next step -->
+    <g style="fill:#146c94;" transform="translate(401.827723 16.582548)">
+     <text>
+      <tspan style="font-family:DejaVu Sans;font-size:7.5px;font-style:book;font-weight:book;" x="0 4.760742 9.51416 13.637695 17.76123 22.375488 26.282959 30.19043 32.830811 37.584229 39.667969 42.052002 46.175537 50.76416 58.070068 65.375977 67.459717 70.400391 81.895413 84.279446 89.032864 93.647122 98.085599 101.026273 103.410306 107.317776 110.25845 114.872708" y="-0.296875">Successful commit  next step</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.5px;font-style:regular;font-weight:regular;" x="73.867422" y="-0.296875">→</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_26">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.5px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 96.264356, 236.260893)" x="96.264356" y="236.260893">Current coarse correction</text>
+   </g>
+   <g id="text_27">
+    <!-- $A_0(t)=Z^T A_t Z$ -->
+    <g style="fill:#a15b28;" transform="translate(68.299856 253.707942)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:10.3px;font-style:italic;font-weight:italic;" x="0 13.778824 30.097302 41.377234 50.127077" y="-0.6593750000000007">AtZAZ</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.21px;font-style:regular;font-weight:regular;" x="6.291382" y="0.7046874999999986">0</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:10.3px;font-style:regular;font-weight:regular;" x="10.349976 16.641357 21.557074" y="-0.6593750000000007">()=</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.21px;font-style:italic;font-weight:italic;" x="36.91501 47.668616" y="-4.296875000000001 0.7046874999999986">Tt</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_28">
+    <!-- $Z A_0(t)^{-1} Z^T$ -->
+    <g style="fill:#182b3d;" transform="translate(73.814356 270.557929)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:10px;font-style:italic;font-weight:italic;" x="0 5.559982 18.940569 33.940365" y="-0.7390624999999993">ZAtZ</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7px;font-style:regular;font-weight:regular;" x="11.669968 25.204757 29.999751" y="0.5828125000000011 -4.2640625 -4.2640625">0−1</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:10px;font-style:regular;font-weight:regular;" x="15.610582 21.720552" y="-0.7390624999999993">()</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7px;font-style:italic;font-weight:italic;" x="40.563473" y="-4.2640625">T</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_29">
+    <!-- Fixed $Z$; synchronize every step -->
+    <g style="fill:#182b3d;" transform="translate(32.824356 284.5192)">
+     <text>
+      <tspan style="font-family:DejaVu Sans;font-size:8px;font-style:book;font-weight:book;" x="0 4.601562 6.824219 11.558594 16.480469 21.558594 28.549545 31.244858 33.787827 37.955795 42.69017 47.760483 52.15892 57.229233 60.518295 65.412827 70.483139 72.705795 76.905014 81.826889 84.369858 89.291733 94.026108 98.947983 102.237045 106.97142 109.514389 113.682358 116.819077 121.740952" y="-0.921875">Fixed ; synchronize every step</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8px;font-style:italic;font-weight:italic;" x="24.101562" y="-0.921875">Z</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_30">
+    <!-- $A_t$ -->
+    <g style="fill:#a15b28;" transform="translate(67.740594 209.982086)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:8.6px;font-style:italic;font-weight:italic;" x="0" y="-0.265625">A</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.02px;font-style:italic;font-weight:italic;" x="5.250763" y="0.8734374999999996">t</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_31">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.6px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 360.757426, 236.288487)" x="360.757426" y="236.288487">Local correction from ALL cached factors</text>
+   </g>
+   <g id="text_32">
+    <!-- $Q_{\mathrm{loc},t}=\sum_{i=1}^{M}R_i^T D_i A_i(\tau_i)^{-1}D_i R_i$ -->
+    <g style="fill:#182b3d;" transform="translate(302.716926 258.337288)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:10.3px;font-style:italic;font-weight:italic;" x="0 44.197253 56.043514 65.936317 78.115008 97.379114 107.271916" y="-0.5749999999999993">QRDAτDR</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.21px;font-style:regular;font-weight:regular;" x="7.434341 9.438115 13.042021 16.242287 34.615186 40.593346 88.383168 93.32052" y="0.7890625 0.7890625 0.7890625 0.7890625 6.964062500000001 6.964062500000001 -4.212499999999999 -4.212499999999999">loc,=1−1</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.21px;font-style:italic;font-weight:italic;" x="19.085048 31.570605 34.570605 50.488634 51.581291 63.477856 72.227699 82.336718 104.813455 113.563298" y="0.7890625 6.964062500000001 -12.296875 2.1531249999999993 -4.2125 0.7890625 0.7890625 0.7890625 0.7890625 0.7890625">tiMiTiiiii</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:10.3px;font-style:regular;font-weight:regular;" x="23.030377 33.570605 74.68616 84.795179" y="-0.5749999999999993 -2.5062499999999996 -0.5749999999999993 -0.5749999999999993">=∑()</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_33">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8px;font-style:normal;font-weight:normal;text-anchor:middle;" transform="rotate(-0, 360.757426, 280.317676)" x="360.757426" y="280.317676">Apply all M local solves at every PCG iteration</text>
+   </g>
+   <g id="text_34">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.6px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 275.186139, 322.04735)" x="275.186139" y="322.04735">Combine local and coarse corrections</text>
+   </g>
+   <g id="text_35">
+    <!-- $Q_t=Q_{\mathrm{loc},t}+Z A_0(t)^{-1}Z^T$ -->
+    <g style="fill:#182b3d;" transform="translate(227.211139 338.963756)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:10.1px;font-style:italic;font-weight:italic;" x="0 19.526514 50.473892 56.086014 69.592612 84.733813" y="-0.6578125000000004">QQZAtZ</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.07px;font-style:italic;font-weight:italic;" x="7.287674 38.235052 91.418904" y="0.6781249999999996 0.6781249999999996 -4.2203125">ttT</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:10.1px;font-style:regular;font-weight:regular;" x="11.154764 42.102142 66.231406 72.398672" y="-0.6578125000000004">=+()</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.07px;font-style:regular;font-weight:regular;" x="26.814188 28.77843 32.311243 35.448372 62.253281 75.915738 80.755688" y="0.6781249999999996 0.6781249999999996 0.6781249999999996 0.6781249999999996 0.6781249999999996 -4.2203125 -4.2203125">loc,0−1</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_36">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8px;font-style:normal;font-weight:normal;text-anchor:middle;" transform="rotate(-0, 275.186139, 356.080108)" x="275.186139" y="356.080108">Fixed during each PCG solve</text>
+   </g>
+   <g id="text_37">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.4px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 464.480198, 320.413779)" x="464.480198" y="320.413779">PCG + certification</text>
+   </g>
+   <g id="text_38">
+    <!-- $r_t=b_t-A_t x_t$ -->
+    <g style="fill:#182b3d;" transform="translate(441.927698 335.919835)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:9.3px;font-style:italic;font-weight:italic;" x="0 14.888286 30.808524 38.707436" y="-0.65625">rbAx</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.51px;font-style:italic;font-weight:italic;" x="3.61647 19.536708 36.488898 42.835243" y="0.5718750000000004">tttt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:9.3px;font-style:regular;font-weight:regular;" x="7.177473 23.097711" y="-0.65625">=−</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_39">
+    <!-- $\Vert r_t\Vert_2/\Vert b_t\Vert_2&lt;10^{-8}$ -->
+    <g style="fill:#182b3d;" transform="translate(431.832198 349.690819)">
+     <text>
+      <tspan style="font-family:STIXGeneral;font-size:8.8px;font-style:regular;font-weight:regular;" x="0 10.122104 18.324878 20.770404 31.868949 41.34199 48.638105 53.036527" y="-0.7328124999999996">‖‖/‖‖&lt;10</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8.8px;font-style:italic;font-weight:italic;" x="4.600754 25.371158" y="-0.7328124999999996">rb</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.16px;font-style:italic;font-weight:italic;" x="8.022736 29.76958" y="0.4296875">tt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:6.16px;font-style:regular;font-weight:regular;" x="14.858483 36.605327 57.570574 61.788668" y="0.4296875 0.4296875 -3.8328124999999993 -3.8328124999999993">22−8</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_40">
+    <!-- Accept $x_t$ -->
+    <g style="fill:#182b3d;" transform="translate(446.538698 361.352529)">
+     <text>
+      <tspan style="font-family:DejaVu Sans;font-size:8.1px;font-style:book;font-weight:book;" x="0 5.536789 9.986771 14.436752 19.416306 24.55394 27.727417" y="-0.09375">Accept </tspan>
+      <tspan style="font-family:STIXGeneral;font-size:8.1px;font-style:italic;font-weight:italic;" x="30.300186" y="-0.09375">x</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:5.67px;font-style:italic;font-weight:italic;" x="33.893799" y="0.9749999999999996">t</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_41">
+    <!-- Current $A_t,b_t$ -->
+    <g style="fill:#516376;" transform="translate(28.844554 377.097634)">
+     <text>
+      <tspan style="font-family:DejaVu Sans;font-size:7.9px;font-style:book;font-weight:book;" x="0 5.509567 10.510559 13.754654 16.998749 21.853333 26.854324 29.948151" y="-0.140625">Current </tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.9px;font-style:italic;font-weight:italic;" x="32.456345 42.273491" y="-0.140625">Ab</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:5.53px;font-style:italic;font-weight:italic;" x="37.277496 46.218788" y="0.9046874999999996">tt</tspan>
+      <tspan style="font-family:STIXGeneral;font-size:7.9px;font-style:regular;font-weight:regular;" x="39.161446" y="-0.140625">,</tspan>
+     </text>
+    </g>
+   </g>
+   <g id="text_42">
+    <text style="fill:#182b3d;font-family:DejaVu Sans;font-size:8.7px;font-style:normal;font-weight:medium;text-anchor:middle;" transform="rotate(-0, 270, 394.680608)" x="270" y="394.680608">(b) Fixed two-level symmetric additive Schwarz architecture</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pdd3c663cee">
+   <rect height="394.596" width="523.8" x="8.1" y="6.102"/>
+  </clipPath>
+ </defs>
+</svg>
