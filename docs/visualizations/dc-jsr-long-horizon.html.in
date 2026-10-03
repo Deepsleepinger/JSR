@@ -1,0 +1,213 @@
+<div id="dc-long-trajectory">
+  <h3>多前沿长轨迹 · 空间网格与维护决策</h3>
+  <div class="viz-controls">
+    <label class="form-label">网格 <select class="form-select" id="dc-long-mesh"></select></label>
+    <label class="form-label">截面 z <select class="form-select" id="dc-long-z"><option value="0">0.25</option><option value="1" selected>0.50</option><option value="2">0.75</option></select></label>
+    <button class="btn btn-primary" id="dc-long-play" type="button">播放动画</button>
+    <button class="btn" id="dc-long-prev" type="button">上一步</button>
+    <button class="btn" id="dc-long-next" type="button">下一步</button>
+  </div>
+  <label class="form-label" for="dc-long-step">时间步 <output id="dc-long-position" class="tabular-nums"></output></label>
+  <input class="form-range" id="dc-long-step" type="range" min="1" max="64" value="1" step="1">
+  <div id="dc-long-status" class="tabular-nums" aria-live="polite"></div>
+  <div class="dc-spatial">
+    <div><div>三维子域与热源轨迹</div><canvas id="dc-long-volume" role="img" aria-label="三维单位立方体、八个子域、当前刷新区域和移动热源"></canvas></div>
+    <div><div id="dc-long-slice-label"></div><canvas id="dc-long-slice" role="img" aria-label="实际有限元网格截面、算子系数与刷新区域"></canvas></div>
+  </div>
+  <div class="viz-row text-small dc-legend">
+    <span><b class="dc-swatch dc-refresh"></b>刷新核心区（R；因子含一层重叠）</span>
+    <span><b class="dc-swatch dc-heat"></b>系数 κ：1 → 39</span>
+    <span><b class="dc-swatch dc-source"></b>热源位置／截面投影</span>
+  </div>
+  <div class="dc-charts">
+    <div><div>刷新预算</div><svg class="dc-chart" id="dc-long-budget" role="img" aria-label="六十四步局部因子刷新数量"></svg></div>
+    <div><div>维护后残余代理</div><svg class="dc-chart" id="dc-long-proxy" role="img" aria-label="维护后最大累计变差与零点零八容差"></svg></div>
+    <div><div>PCG 迭代数</div><svg class="dc-chart" id="dc-long-iters" role="img" aria-label="DC-JSR 与全量重构的逐步平均 PCG 迭代数"></svg></div>
+    <div><div>累计求解与维护耗时</div><svg class="dc-chart" id="dc-long-time" role="img" aria-label="四轮平均累计墙钟时间及标准差范围"></svg></div>
+  </div>
+  <div class="viz-row text-small dc-legend">
+    <span><b class="dc-swatch dc-refresh"></b>DC-JSR</span>
+    <span><b class="dc-swatch dc-full"></b>Full（虚线）</span>
+    <span>阴影：四轮标准差 · 均为 4 MPI 进程</span>
+  </div>
+  <div id="dc-long-summary" class="tabular-nums"></div>
+  <div class="tooltip" id="dc-long-tooltip" role="tooltip" hidden></div>
+  <div class="text-small">完整 16 步轨迹循环四次；周期之间不重置状态。κ 为给定算子系数，非温度；时间不含输入准备及额外审计。</div>
+  <script type="application/json" id="dc-long-data">__DC_DATA__</script>
+</div>
+<style>
+#dc-long-trajectory{position:relative}
+#dc-long-trajectory #dc-long-tooltip{position:absolute;pointer-events:none;background:var(--popover);color:var(--popover-foreground)}
+#dc-long-trajectory .dc-spatial,#dc-long-trajectory .dc-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:12px 0}
+#dc-long-trajectory canvas{display:block;width:100%;height:300px}
+#dc-long-trajectory .dc-chart{display:block;width:100%;height:174px}
+#dc-long-trajectory .dc-chart text{fill:var(--foreground);font-size:12px}
+#dc-long-trajectory .dc-chart .domain,#dc-long-trajectory .dc-chart .tick line{stroke:var(--border)}
+#dc-long-trajectory .dc-swatch{display:inline-block;width:12px;height:8px;margin-right:5px}
+#dc-long-trajectory .dc-refresh{background:var(--viz-series-1)}
+#dc-long-trajectory .dc-full{background:var(--viz-series-2)}
+#dc-long-trajectory .dc-heat{background:var(--viz-series-3)}
+#dc-long-trajectory .dc-source{background:var(--viz-series-4)}
+@media(max-width:640px){#dc-long-trajectory .dc-spatial,#dc-long-trajectory .dc-charts{grid-template-columns:1fr}}
+</style>
+<script>__D3_LIBRARY__</script>
+<script>
+(() => {
+  const root=document.getElementById('dc-long-trajectory');
+  const data=JSON.parse(root.querySelector('#dc-long-data').textContent);
+  const el=id=>root.querySelector('#dc-long-'+id);
+  const saved=window.openai?.widgetState?.modelContent;
+  let mesh=data.configurations.some(c=>c.mesh_n===saved?.mesh_n)?saved.mesh_n:data.configurations.at(-1).mesh_n;
+  let step=Math.max(1,Math.min(64,saved?.step||1)), slice=Math.max(0,Math.min(2,saved?.slice??1)), timer=null;
+  let plots=[];
+  const probe=document.createElement('span');probe.hidden=true;root.appendChild(probe);
+  const color=name=>{probe.style.color='var('+name+')';return getComputedStyle(probe).color;};
+  const colors=()=>({fg:color('--foreground'),border:color('--border'),muted:color('--muted'),
+    dc:color('--viz-series-1'),full:color('--viz-series-2'),heat:color('--viz-series-3'),source:color('--viz-series-4')});
+  const config=()=>data.configurations.find(c=>c.mesh_n===mesh);
+  const persist=()=>window.openai?.setWidgetState({modelContent:{mesh_n:mesh,step,slice},privateContent:null}).catch(()=>{});
+  for(const c of data.configurations){const o=document.createElement('option');o.value=c.mesh_n;o.textContent='N='+c.mesh_n+' · '+c.n_dofs.toLocaleString()+' 自由度';el('mesh').appendChild(o);}
+  el('mesh').value=mesh;el('z').value=slice;
+  function prepareCanvas(canvas){
+    const width=canvas.clientWidth,height=300,dpr=window.devicePixelRatio||1;
+    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+    const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,width,height);
+    return {ctx,width,height};
+  }
+  function polygon(ctx,points,fill,stroke,alpha=1){
+    ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();
+    if(fill){ctx.globalAlpha=alpha;ctx.fillStyle=fill;ctx.fill();ctx.globalAlpha=1;}
+    if(stroke){ctx.strokeStyle=stroke;ctx.stroke();}
+  }
+  function volume(){
+    const c=config(),curr=c.steps[step-1],{ctx,width}=prepareCanvas(el('volume')),col=colors();
+    const scale=Math.min(width*.39,125),origin=[width*.5,182];
+    const project=([x,y,z])=>[origin[0]+scale*(x-y),origin[1]+scale*(.40*(x+y)-1.30*z)];
+    ctx.lineWidth=.8;
+    for(const cid of curr.selected){
+      const x=(cid%2)*.5,y=(Math.floor(cid/2)%2)*.5,z=Math.floor(cid/4)*.5;
+      const h=.5;
+      for(const face of [[[x,y,z+h],[x+h,y,z+h],[x+h,y+h,z+h],[x,y+h,z+h]],
+        [[x,y,z],[x+h,y,z],[x+h,y,z+h],[x,y,z+h]],[[x,y,z],[x,y+h,z],[x,y+h,z+h],[x,y,z+h]]])
+        polygon(ctx,face.map(project),col.dc,null,.12);
+    }
+    for(let axis=0;axis<3;axis++)for(const a of [0,.5,1])for(const b of [0,.5,1]){
+      const u=[0,0,0],v=[0,0,0];u[axis]=0;v[axis]=1;u[(axis+1)%3]=v[(axis+1)%3]=a;u[(axis+2)%3]=v[(axis+2)%3]=b;
+      ctx.beginPath();ctx.moveTo(...project(u));ctx.lineTo(...project(v));ctx.strokeStyle=col.border;ctx.stroke();
+    }
+    // Split trails at jumps and source-count changes; never imply traversing a pulse jump.
+    const cycleStart=Math.floor((step-1)/16)*16+1;
+    for(let beam=0;beam<2;beam++){
+      ctx.beginPath();let last=null;
+      for(let s=cycleStart;s<=step;s++){
+        const src=c.sources[s][beam];
+        if(!src){last=null;continue;}
+        const q=project(src),dist=last?Math.hypot(...src.slice(0,3).map((v,i)=>v-last[i])):Infinity;
+        if(dist>.35)ctx.moveTo(...q);else ctx.lineTo(...q);last=src;
+      }
+      ctx.strokeStyle=col.source;ctx.lineWidth=2;ctx.stroke();
+    }
+    ctx.font=getComputedStyle(root).font;
+    for(let cid=0;cid<8;cid++){
+      const p=project([.25+.5*(cid%2),.25+.5*(Math.floor(cid/2)%2),.25+.5*Math.floor(cid/4)]);
+      ctx.fillStyle=col.fg;ctx.textAlign='center';ctx.fillText(cid+(curr.selected.includes(cid)?' R':''),p[0],p[1]);
+    }
+    for(const src of c.sources[step]){const p=project(src);ctx.beginPath();ctx.arc(...p,5,0,Math.PI*2);ctx.fillStyle=col.source;ctx.fill();}
+    for(const [label,xyz] of [['x',[1.12,0,0]],['y',[0,1.12,0]],['z',[0,0,1.12]]]){const p=project(xyz);ctx.fillStyle=col.fg;ctx.fillText(label,...p);}
+  }
+  function coefficient(x,y,z,sources){
+    const c=config().coefficient;
+    return c.k_solid+(c.k_melt-c.k_solid)*sources.reduce((sum,s)=>sum+Math.exp(-((x-s[0])**2+(y-s[1])**2+(z-s[2])**2)/(2*c.r0*c.r0)),0);
+  }
+  function plane(){
+    const c=config(),geo=c.geometry.slices[slice],curr=c.steps[step-1],col=colors(),{ctx,width}=prepareCanvas(el('slice'));
+    const size=Math.min(width-58,245),left=(width-size)/2,top=12;
+    const project=([x,y])=>[left+size*x,top+size*(1-y)];
+    ctx.fillStyle=col.muted;ctx.fillRect(left,top,size,size);ctx.lineWidth=.3;
+    const values=geo.nodes.map(p=>coefficient(p[0],p[1],geo.z,c.sources[step]));
+    for(const tri of geo.triangles){const value=tri.reduce((s,i)=>s+values[i],0)/3;
+      polygon(ctx,tri.map(i=>project(geo.nodes[i])),col.heat,null,Math.sqrt(Math.max(0,(value-1)/38)));
+    }
+    // Actual tetrahedral faces, not a surrogate rectilinear grid.
+    ctx.beginPath();for(const tri of geo.triangles){const p=tri.map(i=>project(geo.nodes[i]));ctx.moveTo(...p[0]);ctx.lineTo(...p[1]);ctx.lineTo(...p[2]);ctx.closePath();}
+    ctx.strokeStyle=col.border;ctx.globalAlpha=.65;ctx.stroke();ctx.globalAlpha=1;
+    for(let iy=0;iy<2;iy++)for(let ix=0;ix<2;ix++){
+      const cid=ix+2*iy+4*(geo.z>=.5?1:0);
+      // z=.5 belongs to both overlapping layers: label every selected touching block.
+      const touching=[cid];if(geo.z===.5)touching.push(cid-4);
+      const refreshed=touching.filter(i=>curr.selected.includes(i));
+      if(refreshed.length){ctx.globalAlpha=.16;ctx.fillStyle=col.dc;ctx.fillRect(left+size*ix/2,top+size*(1-(iy+1)/2),size/2,size/2);ctx.globalAlpha=1;}
+      ctx.font=getComputedStyle(root).font;ctx.fillStyle=col.fg;ctx.textAlign='center';
+      ctx.fillText(touching.sort().join('/')+(refreshed.length?' R:'+refreshed.join(','):''),left+size*(.25+ix*.5),top+size*(.75-iy*.5));
+    }
+    ctx.lineWidth=1;ctx.strokeStyle=col.fg;ctx.strokeRect(left,top,size,size);
+    ctx.beginPath();ctx.moveTo(left+size/2,top);ctx.lineTo(left+size/2,top+size);ctx.moveTo(left,top+size/2);ctx.lineTo(left+size,top+size/2);ctx.strokeStyle=col.border;ctx.stroke();
+    for(const src of c.sources[step]){const p=project(src);ctx.beginPath();ctx.arc(...p,5,0,2*Math.PI);ctx.strokeStyle=col.source;ctx.lineWidth=2;ctx.setLineDash(Math.abs(src[2]-geo.z)<1e-10?[]:[3,2]);ctx.stroke();ctx.setLineDash([]);}
+    ctx.font=getComputedStyle(root).font;ctx.fillStyle=col.fg;ctx.textAlign='center';ctx.fillText('x ∈ [0, 1]',left+size/2,top+size+24);
+    ctx.save();ctx.translate(left-20,top+size/2);ctx.rotate(-Math.PI/2);ctx.fillText('y ∈ [0, 1]',0,0);ctx.restore();
+    el('slice-label').textContent='实际 FEM 截面 z='+geo.z.toFixed(2)+' · '+geo.triangles.length.toLocaleString()+' 三角形';
+  }
+  function makePlot(id,series,yTitle){
+    const svg=d3.select(el(id));svg.selectAll('*').remove();
+    const width=el(id).clientWidth,height=174,margin={left:64,right:15,top:10,bottom:42};
+    svg.attr('viewBox',`0 0 ${width} ${height}`);
+    const range=d3.extent(series.flatMap(s=>s.values.flatMap(p=>[p[1]-(p[2]||0),p[1]+(p[2]||0)])));
+    const padding=(range[1]-range[0])*.08||.01;
+    const x=d3.scaleLinear().domain([1,64]).range([margin.left,width-margin.right]);
+    const y=d3.scaleLinear().domain([Math.max(0,range[0]-padding),range[1]+padding]).nice().range([height-margin.bottom,margin.top]);
+    svg.append('rect').attr('data-chart-frame','').attr('x',margin.left).attr('y',margin.top).attr('width',width-margin.left-margin.right).attr('height',height-margin.top-margin.bottom).attr('fill','none').attr('stroke','var(--border)');
+    svg.append('g').attr('transform',`translate(0,${height-margin.bottom})`).call(d3.axisBottom(x).ticks(width<420?4:6).tickFormat(d3.format('d')));
+    svg.append('g').attr('transform',`translate(${margin.left},0)`).call(d3.axisLeft(y).ticks(3));
+    svg.append('text').attr('class','axis-title').attr('data-axis','x').attr('x',(margin.left+width-margin.right)/2).attr('y',height-6).attr('text-anchor','middle').text('时间步');
+    svg.append('text').attr('class','axis-title').attr('data-axis','y').attr('transform',`translate(15,${(margin.top+height-margin.bottom)/2}) rotate(-90)`).attr('text-anchor','middle').text(yTitle);
+    for(const s of series){
+      if(s.values.some(p=>p[2]))svg.append('path').attr('d',d3.area().x(p=>x(p[0])).y0(p=>y(p[1]-(p[2]||0))).y1(p=>y(p[1]+(p[2]||0)))(s.values)).attr('fill',s.color).attr('opacity',.12);
+      svg.append('path').attr('d',d3.line().x(p=>x(p[0])).y(p=>y(p[1]))(s.values)).attr('fill','none').attr('stroke',s.color).attr('stroke-width',1.7).attr('stroke-dasharray',s.dash?'5,3':null);
+    }
+    const guide=svg.append('line').attr('y1',margin.top).attr('y2',height-margin.bottom).attr('stroke','var(--foreground)').attr('stroke-width',1).attr('opacity',.5);
+    const hoverGuide=svg.append('line').attr('data-chart-hover-guide','').attr('y1',margin.top).attr('y2',height-margin.bottom).attr('stroke','var(--foreground)').attr('opacity',0);
+    const hoverMarkers=series.map(s=>svg.append('circle').attr('data-chart-hover-marker','').attr('r',3).attr('fill',s.color).attr('opacity',0));
+    function hover(event){
+      const px=Math.max(margin.left,Math.min(width-margin.right,d3.pointer(event,svg.node())[0]));
+      const t=x.invert(px),lo=Math.max(0,Math.floor(t)-1),hi=Math.min(63,Math.ceil(t)-1),alpha=t-(lo+1);
+      hoverGuide.attr('x1',px).attr('x2',px).attr('opacity',.55);
+      const values=series.map((s,i)=>{const value=s.values[lo][1]*(1-alpha)+s.values[hi][1]*alpha;
+        hoverMarkers[i].attr('cx',px).attr('cy',y(value)).attr('opacity',1);return s.label+': '+d3.format('.4~g')(value);});
+      const tip=el('tooltip');tip.hidden=false;tip.textContent='步 '+t.toFixed(1)+' · '+values.join(' · ');
+      const box=svg.node().getBoundingClientRect(),base=root.getBoundingClientRect();
+      tip.style.left=Math.max(0,Math.min(base.width-tip.offsetWidth-4,box.left-base.left+px+8))+'px';
+      tip.style.top=(box.top-base.top+margin.top)+'px';
+    }
+    // Clicking any plot selects the same discrete measured time step.
+    svg.append('rect').attr('data-chart-hit','').attr('data-chart-hover-overlay','cross-series').attr('x',margin.left).attr('y',margin.top).attr('width',width-margin.left-margin.right).attr('height',height-margin.top-margin.bottom).attr('fill','transparent').attr('class','cursor-interaction').on('pointermove',hover).on('pointerleave',()=>{el('tooltip').hidden=true;hoverGuide.attr('opacity',0);hoverMarkers.forEach(m=>m.attr('opacity',0));}).on('click',event=>{setStep(Math.round(x.invert(d3.pointer(event,svg.node())[0])));hover(event);persist();});
+    plots.push(()=>{guide.attr('x1',x(step)).attr('x2',x(step));});
+  }
+  function charts(){
+    if(typeof d3==='undefined'){el('summary').textContent='图表资源未加载；空间网格和播放仍可用。';return;}
+    const c=config(),col=colors();plots=[];
+    makePlot('budget',[{label:'K',values:c.steps.map(s=>[s.step,s.k]),color:col.dc},{label:'Full',values:c.steps.map(s=>[s.step,8]),color:col.full,dash:true}],'因子数');
+    makePlot('proxy',[{label:'Vmax',values:c.steps.map(s=>[s.step,s.residual_proxy]),color:col.dc},{label:'ε',values:c.steps.map(s=>[s.step,.08]),color:col.full,dash:true}],'代理值');
+    makePlot('iters',[{label:'DC',values:c.steps.map(s=>[s.step,s.dc_iterations]),color:col.dc},{label:'Full',values:c.steps.map(s=>[s.step,s.full_iterations]),color:col.full,dash:true}],'PCG 次数');
+    makePlot('time',[{label:'DC',values:c.steps.map(s=>[s.step,s.dc_cumulative,s.dc_cumulative_sd]),color:col.dc},{label:'Full',values:c.steps.map(s=>[s.step,s.full_cumulative,s.full_cumulative_sd]),color:col.full,dash:true}],'累计秒');
+  }
+  function draw(){
+    const c=config(),s=c.steps[step-1],phase=['下层扫描','上层扫描','双源交叉','角点重访'][Math.floor(((step-1)%16)/4)];
+    el('step').value=step;el('position').textContent=step+'/64 · t='+(step*.05).toFixed(2)+' · 第 '+(Math.floor((step-1)/16)+1)+' 周期';
+    el('status').textContent=phase+' · K='+s.k+'/8 · Vmax='+s.residual_proxy.toFixed(4)+' · PCG DC/Full='+s.dc_iterations.toFixed(0)+'/'+s.full_iterations.toFixed(0)+' · 进程刷新负载 ['+s.rank_counts.join(', ')+']';
+    el('summary').textContent='四轮均值：DC '+c.dc_mean.toFixed(2)+' s / Full '+c.full_mean.toFixed(2)+' s · DC/Full='+c.ratio.toFixed(3)+' · '+c.paired_wins+'/4 轮更快';
+    el('prev').disabled=step===1;el('next').disabled=step===64;volume();plane();plots.forEach(p=>p());
+  }
+  function stop(){if(timer)clearInterval(timer);timer=null;el('play').textContent='播放动画';}
+  function setStep(value){step=Math.max(1,Math.min(64,value));draw();}
+  el('play').addEventListener('click',()=>{if(timer){stop();persist();return;}if(step===64)setStep(1);el('play').textContent='暂停';timer=setInterval(()=>{if(step===64){stop();persist();return;}setStep(step+1);},650);});
+  el('prev').addEventListener('click',()=>{stop();setStep(step-1);persist();});
+  el('next').addEventListener('click',()=>{stop();setStep(step+1);persist();});
+  el('step').addEventListener('input',event=>{stop();setStep(Number(event.target.value));});el('step').addEventListener('change',persist);
+  el('mesh').addEventListener('change',event=>{mesh=Number(event.target.value);charts();draw();persist();});
+  el('z').addEventListener('change',event=>{slice=Number(event.target.value);plane();persist();});
+  window.addEventListener('openai:set_globals',event=>{const state=event.detail?.globals?.widgetState?.modelContent;if(!state)return;if(data.configurations.some(c=>c.mesh_n===state.mesh_n))mesh=state.mesh_n;step=Math.max(1,Math.min(64,state.step||step));slice=Math.max(0,Math.min(2,state.slice??slice));el('mesh').value=mesh;el('z').value=slice;charts();draw();});
+  new ResizeObserver(()=>{charts();draw();}).observe(root);
+  new MutationObserver(()=>{charts();draw();}).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
+  charts();draw();
+})();
+</script>

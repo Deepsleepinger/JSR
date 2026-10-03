@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>DC-JSR 算法全景推演平台 (49自由度·9子域·14时间步·轨迹同步时序图)</title>
+  <link rel="stylesheet" href="style.css?v=20261004_v9">
+</head>
+<body>
+  <!-- 顶栏导航与状态说明 -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="badge-tag">CMAME TOP JOURNAL · ADVANCED ALGORITHM VISUALIZER</div>
+      <h1>DC-JSR 缺陷约束有状态 Schwarz 预条件器维护 — 全景交互推演系统</h1>
+      <p class="subtitle">Defect-Constrained Stateful Schwarz: 49 Fine Nodes · 9 Overlapping Subdomains · 14 Steps Trajectory Evolution</p>
+    </div>
+    <div class="header-right">
+      <div class="stat-pill">
+        <span class="stat-label">细网格规模</span>
+        <span class="stat-val">7×7 = 49 自由度</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-label">子域分块</span>
+        <span class="stat-val">9 局部子域 (3×3 重叠)</span>
+      </div>
+      <div class="stat-pill highlight">
+        <span class="stat-label">代数容差 ε</span>
+        <span class="stat-val">0.08 (8% 相对漂移)</span>
+      </div>
+      <div class="stat-pill accent">
+        <span class="stat-label">全局计算节省</span>
+        <span class="stat-val" id="globalSavingsPill">78.5% 重构消除</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主控制栏 -->
+  <div class="toolbar glass-panel">
+    <div class="playback-controls">
+      <button id="btnPlayPause" class="btn btn-primary">
+        <span class="btn-icon">▶</span> <span id="lblPlay">自动演化</span>
+      </button>
+      <button id="btnPrev" class="btn btn-secondary">⏮ 上一步</button>
+      <button id="btnNext" class="btn btn-secondary">下一步 ⏭</button>
+      <button id="btnReset" class="btn btn-ghost">↺ 重置 (t=0)</button>
+    </div>
+
+    <!-- 14 个时间步的快速滚动导航栏 -->
+    <div class="step-navigator">
+      <span class="nav-label">时间步推进:</span>
+      <div class="step-buttons" id="stepButtonsContainer">
+        <!-- 动态生成 t=0 到 t=13 按钮 -->
+      </div>
+    </div>
+
+    <div class="speed-control">
+      <span>速率:</span>
+      <input type="range" id="speedSlider" min="1" max="5" value="2">
+    </div>
+
+    <!-- 布局模式切换器 -->
+    <div class="layout-switcher">
+      <span class="nav-label">布局模式:</span>
+      <div class="layout-buttons">
+        <button id="btnLayoutSplit" class="btn btn-secondary btn-sm active" title="左右对开：左侧双图联动，右侧数据推演">⚖️ 对开宽幅</button>
+        <button id="btnLayoutThree" class="btn btn-secondary btn-sm" title="三栏全景：网格拓扑、时序响应、算法数据三列展开">🖥️ 三栏全景</button>
+        <button id="btnLayoutMatrix" class="btn btn-secondary btn-sm" title="网格-矩阵对齐：一键直达细网格与49x49稀疏矩阵对照">🔬 矩阵对齐</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主工作区：左侧双图联动（网格拓扑图 + 时间步轨迹时序图），右侧真实完整数据与算法推演 -->
+  <main class="workbench" id="workbench">
+    <!-- ==================== 栏 1：图 1 物理细网格与 9 子域拓扑 ==================== -->
+    <section class="mesh-pane glass-panel">
+      <!-- 顶栏标题与即时状态 -->
+      <div class="pane-header">
+        <div class="pane-title">
+          <span class="title-icon">🎨</span>
+          <h2>图 1：物理细网格 (7×7) 与 9 子域覆盖拓扑</h2>
+        </div>
+        <div class="pane-quick-status">
+          <span class="step-badge" id="leftPaneStepBadge">t=0 · 热源 (3.0, 3.0)</span>
+        </div>
+      </div>
+
+      <!-- 独立视口工具条：对齐方式、子域聚焦、节点标注、骨架开关 -->
+      <div class="canvas-toolbar">
+        <div class="tb-group">
+          <span class="tb-label">空间对齐:</span>
+          <select id="selOrientationMode" class="tb-select" title="切换空间网格排列视角">
+            <option value="matrix" selected>📐 矩阵对齐 (左上原点·顺眼推荐)</option>
+            <option value="cartesian">🌍 笛卡尔物理视角 (左下原点)</option>
+          </select>
+        </div>
+
+        <div class="tb-group">
+          <span class="tb-label">子域聚焦:</span>
+          <select id="selFocusSubdomain" class="tb-select" title="聚焦高亮指定子域的节点划分与重叠拓扑">
+            <option value="-1">🔍 查看全场 9 子域</option>
+            <option value="0">聚焦 Ω0 (SW)</option>
+            <option value="1">聚焦 Ω1 (S)</option>
+            <option value="2">聚焦 Ω2 (SE)</option>
+            <option value="3">聚焦 Ω3 (W)</option>
+            <option value="4">聚焦 Ω4 (核心 C)</option>
+            <option value="5">聚焦 Ω5 (E)</option>
+            <option value="6">聚焦 Ω6 (NW)</option>
+            <option value="7">聚焦 Ω7 (N)</option>
+            <option value="8">聚焦 Ω8 (NE)</option>
+          </select>
+        </div>
+
+        <div class="tb-group">
+          <span class="tb-label">标注:</span>
+          <select id="selNodeDisplayMode" class="tb-select" title="选择节点文字标注内容">
+            <option value="id" selected>🏷️ 节点编号 (#0~#48)</option>
+            <option value="both">🏷️+🔥 编号+导热率</option>
+            <option value="kappa">🔥 仅导热率 κ</option>
+          </select>
+        </div>
+
+        <div class="tb-divider"></div>
+
+        <div class="tb-toggles">
+          <label class="toggle-item"><input type="checkbox" id="chkShowCoarse" checked> 粗骨架</label>
+          <label class="toggle-item"><input type="checkbox" id="chkShowTrajectory" checked> 移动轨迹</label>
+        </div>
+      </div>
+
+      <!-- SVG 物理网格与动画渲染区 -->
+      <div class="canvas-container">
+        <svg id="gridSvg" viewBox="0 0 520 420" class="interactive-svg">
+          <!-- 动态渲染网格线、9 个子域透明光晕、连通边、节点、热源与发光移动轨迹 -->
+        </svg>
+
+        <!-- 悬停节点信息浮层 -->
+        <div id="nodeTooltip" class="node-tooltip hidden"></div>
+      </div>
+
+      <!-- 9 个局部子域状态紧凑胶囊巡览条 -->
+      <div class="subdomain-ribbon-bar">
+        <div class="ribbon-header">
+          <span class="ribbon-title">🧩 9 局部子域当前步维护状态 (点击胶囊聚焦 / 双击看局部矩阵):</span>
+          <div class="status-legend-mini">
+            <span class="leg-pill pill-rebuild"><span class="legend-dot dot-rebuild"></span> 重构 (V⁻ > 0.08)</span>
+            <span class="leg-pill pill-reuse"><span class="legend-dot dot-reuse"></span> 复用 (V⁻ ≤ 0.08)</span>
+          </div>
+        </div>
+
+        <div class="subdomain-ribbon" id="subdomainCards">
+          <!-- 动态渲染 9 个紧凑状态药丸 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 栏 2：图 2 时间步轨迹与子域缺陷时序响应 ==================== -->
+    <section class="timeline-pane glass-panel">
+      <div class="pane-header chart-header">
+        <div class="pane-title">
+          <span class="title-icon">📈</span>
+          <h2>图 2：时间步演变轨迹对应响应时序图 (Trajectory & Defect Evolution)</h2>
+        </div>
+        <div class="chart-legend-mini">
+          <span class="mini-leg-item"><span class="leg-line line-thresh"></span> ε=0.08 门限</span>
+          <span class="mini-leg-item"><span class="leg-line line-defect"></span> 缺陷 V_i^-</span>
+          <span class="mini-leg-item"><span class="leg-point pt-refactor"></span> 重构触发点</span>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <svg id="timelineChartSvg" viewBox="0 0 540 160" class="timeline-svg">
+          <!-- 动态渲染时序图 -->
+        </svg>
+        <div id="chartTooltip" class="chart-tooltip hidden"></div>
+      </div>
+
+      <div class="timeline-footer">
+        <div class="timeline-status-text" id="timelineStatusText">
+          ⏱️ <strong>当前步 t=0</strong>：热源位于 (3.0, 3.0)，全场初始缺陷均为 0.000。
+        </div>
+        <div class="chart-hint">
+          💡 点击图表任意时间步位置快速跳转，全场网格动画、热源轨迹、49×49 矩阵及算法推演瞬间同步！
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 栏 3：右侧真实全量数据与推演推导 ==================== -->
+    <section class="right-pane glass-panel">
+      <!-- 选项卡导航 -->
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="trace">📋 算法六阶段详细推演</button>
+        <button class="tab-btn" data-tab="matrix">📊 完整稀疏矩阵 A(t) 全景 (49×49)</button>
+        <button class="tab-btn" data-tab="submatrices">🧩 局部子矩阵 A_i 与粗算子 A_0 (9×9)</button>
+        <button class="tab-btn" data-tab="ledger">📑 9 子域持久状态账本</button>
+      </div>
+
+      <div class="tab-content-container">
+        <!-- Tab 1: 算法六阶段详细推演 -->
+        <div id="tab-trace" class="tab-pane active">
+          <div class="step-summary-banner" id="stepBanner">
+            <!-- 动态注入时间步标题与核心结论 -->
+          </div>
+
+          <div class="phases-timeline" id="phasesContainer">
+            <!-- 动态生成 6 个阶段的卡片，图文并茂展示判断与输出 -->
+          </div>
+        </div>
+
+        <!-- Tab 2: 完整 49x49 矩阵全景表 -->
+        <div id="tab-matrix" class="tab-pane">
+          <div class="matrix-toolbar">
+            <div class="matrix-info">
+              <span>矩阵规模: <strong>49 × 49</strong> (2,401 元素, 稀疏度 ~91.2%)</span>
+              <span>非零元着色: <strong class="badge-diag">对角线红色</strong> | <strong class="badge-blocks">邻接边深蓝</strong></span>
+            </div>
+            <div class="matrix-controls">
+              <div class="btn-group">
+                <button id="btnModeFit" class="btn btn-sm btn-primary" title="自动拉伸铺满整个展示容器">📐 铺满区域</button>
+                <button id="btnModeSquare" class="btn btn-sm btn-secondary" title="保持1:1正方形单元格自适应">⬛ 等比正方</button>
+                <button id="btnModeDetail" class="btn btn-sm btn-secondary" title="精细浮点数与平滑滚动">🔍 精细数值</button>
+              </div>
+              <div class="scale-widget">
+                <button id="btnZoomOut" class="btn btn-sm btn-ghost" title="缩小">-</button>
+                <span id="zoomPercentLabel" class="zoom-label">100%</span>
+                <button id="btnZoomIn" class="btn btn-sm btn-ghost" title="放大">+</button>
+                <button id="btnMaxMatrix" class="btn btn-sm btn-secondary" title="最大化视口查看">⛶ 最大化视口</button>
+              </div>
+            </div>
+            <div class="cell-inspector" id="cellInspector">
+              悬停在矩阵单元格上查看 (i, j) 精确数值与物理传热拓扑含义
+            </div>
+          </div>
+
+          <div class="matrix-scroll-wrapper" id="matrixWrapper">
+            <table class="matrix-table compact-mode" id="matrixTable">
+              <!-- 动态构建 49x49 的真实完整数字表格 -->
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 3: 局部子矩阵与粗算子 (9x9) -->
+        <div id="tab-submatrices" class="tab-pane">
+          <div class="subdomain-selector-bar">
+            <span>选择查看的局部子域矩阵:</span>
+            <div class="sub-pill-selector" id="subSelectorPills">
+              <!-- 动态生成 9 个子域的快捷选择药丸 -->
+            </div>
+          </div>
+
+          <div class="submatrix-inspector-panel">
+            <div class="sub-matrix-card">
+              <div class="card-header-flex">
+                <div>
+                  <h3 id="currentSubMatrixTitle">子域 0 局部刚度矩阵 A_{Ω_0} (9×9)</h3>
+                  <p class="card-sub" id="currentSubMatrixDesc">管辖节点集: [0, 1, 2, 7, 8, 9, 14, 15, 16] (3×3 物理拓扑切片)</p>
+                </div>
+                <div class="anatomy-stats-pill" id="anatomyStatsPill">
+                  4 独占核心 · 4 边界重叠 · 1 十字交汇
+                </div>
+              </div>
+
+              <!-- 新增：子域 2D 几何切片与重叠解剖剖析盒 -->
+              <div class="subdomain-anatomy-box">
+                <div class="anatomy-header">
+                  <span class="an-title">🧩 该子域 9 个节点的 2D 物理拓扑排布与邻域重叠解剖：</span>
+                  <div class="an-legend">
+                    <span class="an-leg-item"><span class="an-dot dot-ex"></span> 独占内部节点</span>
+                    <span class="an-leg-item"><span class="an-dot dot-shared"></span> 边界重叠节点</span>
+                    <span class="an-leg-item"><span class="an-dot dot-cross"></span> ★ 4域十字交汇点</span>
+                  </div>
+                </div>
+
+                <div class="anatomy-grid-2d" id="anatomyGrid2D">
+                  <!-- 动态渲染 3x3 节点卡片 -->
+                </div>
+
+                <div class="anatomy-explanation">
+                  <strong>💡 什么是“管辖节点集”与“重叠边界耦合节点”？</strong>
+                  <ul>
+                    <li><strong>编号规则</strong>：细网格 $7 \times 7$ 共有 49 个节点，按行从下到上依次编号（$0 \sim 6$ 为第 0 行，$7 \sim 13$ 为第 1 行，$14 \sim 20$ 为第 2 行...），计算公式为 <code>节点ID = row × 7 + col</code>。子域 0 覆盖行 0~2、列 0~2，其节点恰好是 <code>[0, 1, 2]</code>、<code>[7, 8, 9]</code>、<code>[14, 15, 16]</code>。</li>
+                    <li><strong>为什么必须有重叠层（Overlap $\delta = 1$）</strong>：Schwarz 域分解的核心思想是各子域独立并行求解。如果子域之间没有重叠，边界就完全隔断无法传递误差。重叠节点就像<b>进程间的双向共享缓冲区</b>：子域 0 算出的内部解，直接作为子域 1 的边界条件输入！</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="sub-table-title" style="margin-top: 10px;">提取出的 9×9 局部刚度方程组 A_{Ω_i} = R_i A(t) R_i^T：</div>
+              <div class="matrix-sub-wrapper" id="currentSubMatrixContainer"></div>
+            </div>
+          </div>
+
+          <div class="coarse-matrix-card">
+            <div class="card-header-flex">
+              <div>
+                <h3>两级 Schwarz 全局粗网格 Galerkin 算子 A_0 = Z^T A(t) Z (9×9)</h3>
+                <p class="card-sub">9 个子域粗基底投影矩阵，消除全场长波低频误差，维系条件数 κ(M^{-1}A) ≤ 1.35</p>
+              </div>
+              <div class="coarse-timing" id="coarseTiming">
+                装配耗时: 0.12 ms | 直接求逆耗时: 0.04 ms
+              </div>
+            </div>
+            <div class="coarse-tables-flex">
+              <div class="coarse-col">
+                <div class="sub-table-title">粗算子刚度矩阵 A_0(t) (9×9):</div>
+                <div id="coarseMatrix"></div>
+              </div>
+              <div class="coarse-col">
+                <div class="sub-table-title">粗逆算子 A_0(t)^{-1} (精确解算子):</div>
+                <div id="coarseInverse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: 状态账本与参数全览 -->
+        <div id="tab-ledger" class="tab-pane">
+          <div class="ledger-summary-metrics">
+            <div class="metric-card">
+              <span class="m-label">当前时间步重构数</span>
+              <span class="m-val highlight" id="mRebuildCount">0 / 9</span>
+              <span class="m-sub">其余全部零成本复用</span>
+            </div>
+            <div class="metric-card">
+              <span class="m-label">累计重构次数 (DC-JSR)</span>
+              <span class="m-val" id="mCumulJSR">24 次</span>
+              <span class="m-sub">基线全量重构需 126 次</span>
+            </div>
+            <div class="metric-card">
+              <span class="m-label">累计算力节省率</span>
+              <span class="m-val green" id="mSavingsRate">80.9%</span>
+              <span class="m-sub">大幅降低求解器开销</span>
+            </div>
+            <div class="metric-card">
+              <span class="m-label">PCG 迭代步数</span>
+              <span class="m-val" id="mPcgIters">8 步</span>
+              <span class="m-sub">残差 &lt; 1.0e-9 稳定收敛</span>
+            </div>
+          </div>
+
+          <div class="ledger-card">
+            <h3>9 个子域持久化状态账本 (Persistent State Ledger)</h3>
+            <table class="ledger-table" id="ledgerTable">
+              <thead>
+                <tr>
+                  <th>子域 ID</th>
+                  <th>几何分区</th>
+                  <th>管辖节点集</th>
+                  <th>单步增量 v_i(t)</th>
+                  <th>累积缺陷 V_i^-(t)</th>
+                  <th>超标判别 (> 0.08?)</th>
+                  <th>决策结果</th>
+                  <th>重置后状态 V_i(t)</th>
+                  <th>出生步 τ_i</th>
+                  <th>缓存年龄 Age</th>
+                </tr>
+              </thead>
+              <tbody id="ledgerTableBody">
+                <!-- 动态填充 9 个子域的完整状态行 -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="formula-cheatsheet">
+            <h3>📖 DC-JSR 核心数学与计算复杂度原理</h3>
+            <div class="formula-grid">
+              <div class="formula-item">
+                <span class="formula-label">1. 单步对角线物理相对变化量 (O(n_i) 极速计算):</span>
+                <code>v_i(t) = ||diag(A_i(t)) - diag(A_i(t-1))||_2 / ||diag(A_i(t))||_2</code>
+              </div>
+              <div class="formula-item">
+                <span class="formula-label">2. 持久缺陷记忆累加 (消灭无状态算法历史盲区):</span>
+                <code>V_i^-(t) = V_i(t-1) + v_i(t)</code>
+              </div>
+              <div class="formula-item">
+                <span class="formula-label">3. 闭式最优最小基数挑选定理 (证明最小因式分解集合):</span>
+                <code>S_t* = { i : V_i^-(t) > ε }   (单调次模界, 全局复杂度 O(M))</code>
+              </div>
+              <div class="formula-item">
+                <span class="formula-label">4. 状态重置与出生步时间戳提交:</span>
+                <code>V_i(t) = 0 (若 i ∈ S_t*), 否则 V_i^-(t);  τ_i = t (若 i ∈ S_t*)</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js?v=20261003_v2"></script>
+</body>
+</html>

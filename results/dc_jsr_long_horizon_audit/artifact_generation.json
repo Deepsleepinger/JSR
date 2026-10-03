@@ -1,0 +1,4 @@
+{
+  "status": "artifact_generation_failed",
+  "error": "Command '['/mnt/h/CodexLinux/stokes-r3/envs/stokes-fenics-2020-abi6-r3/bin/python', '/mnt/h/mypaper/top_journal_stateful_joint_maintenance_2026-08-27/stateful_schwarz_jsr/benchmarks/render_dc_jsr_long_horizon_animation.py', '--mesh-n', '48']' returned non-zero exit status 1."
+}

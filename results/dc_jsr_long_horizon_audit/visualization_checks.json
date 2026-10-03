@@ -1,0 +1,14 @@
+{
+  "native_read_path": "C:\\Users\\Administrator\\.codex\\visualizations\\2026\\10\\03\\01a10068-e73c-7681-af06-1587fa095a18\\dc-jsr-long-horizon.html",
+  "playback": "passed",
+  "step_control": "passed",
+  "slice_selection": "passed",
+  "measured_charts": "passed",
+  "narrow_layout": "passed",
+  "page_errors": [],
+  "cause": "WSL /mnt/c path supplied to Windows desktop visualization reader; native absolute path required",
+  "standalone_html": "docs/visualizations/dc-jsr-long-horizon.html",
+  "template_redirect": "passed",
+  "canvas_motion": "passed",
+  "offline_resources": true
+}
